@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Find & Union Find - Visual Explanation</title>
+    <meta name="description" content="Giải thích trực quan về thuật toán Quick Find và Union Find với animation tương tác">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS Variables & Design System ===== */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1e2642;
+            --bg-code: #0d1117;
+            --text-primary: #e8edf5;
+            --text-secondary: #8b95a8;
+            --text-muted: #5a6478;
+            --accent-1: #6366f1;
+            --accent-1-glow: rgba(99, 102, 241, 0.3);
+            --accent-2: #06b6d4;
+            --accent-2-glow: rgba(6, 182, 212, 0.3);
+            --accent-3: #f59e0b;
+            --accent-3-glow: rgba(245, 158, 11, 0.3);
+            --accent-4: #10b981;
+            --accent-4-glow: rgba(16, 185, 129, 0.3);
+            --accent-5: #ef4444;
+            --accent-5-glow: rgba(239, 68, 68, 0.3);
+            --accent-6: #ec4899;
+            --accent-6-glow: rgba(236, 72, 153, 0.3);
+            --border: rgba(99, 102, 241, 0.15);
+            --border-hover: rgba(99, 102, 241, 0.35);
+            --glass: rgba(26, 32, 53, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== Reset & Base ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== Animated Background ===== */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-1-glow) 0%, transparent 70%);
+            top: -200px; left: -200px;
+            animation: floatBg 20s ease-in-out infinite;
+        }
+        .bg-pattern::after {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-2-glow) 0%, transparent 70%);
+            bottom: -150px; right: -150px;
+            animation: floatBg 25s ease-in-out infinite reverse;
+        }
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(80px, 50px) scale(1.1); }
+            66% { transform: translate(-40px, -30px) scale(0.95); }
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* ===== Hero Header ===== */
+        .hero {
+            text-align: center;
+            padding: 60px 0 50px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            border-radius: 100px;
+            background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-2-glow));
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #e8edf5 0%, #6366f1 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 28px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: inherit;
+        }
+        .tab-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        .tab-btn.active {
+            border-color: var(--accent-1);
+            color: #fff;
+            box-shadow: var(--shadow-glow);
+        }
+        .tab-btn.active::before { opacity: 1; }
+        .tab-btn span { position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeInUp 0.5s ease-out; }
+        .tab-content.active { display: block; }
+
+        /* ===== Section Titles ===== */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title .icon {
+            width: 42px; height: 42px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 32px;
+        }
+
+        /* ===== Cards ===== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 28px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+        .card:hover::before { opacity: 1; }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        /* ===== Complexity Grid ===== */
+        .complexity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .complexity-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .complexity-item:hover { border-color: var(--border-hover); }
+        .complexity-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .complexity-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .fast { color: var(--accent-4); }
+        .medium { color: var(--accent-3); }
+        .slow { color: var(--accent-5); }
+
+        /* ===== Array Visualization ===== */
+        .array-vis {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .array-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .array-index {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .array-val {
+            width: 48px; height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-xs);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            border: 2px solid var(--glass-border);
+            background: var(--bg-secondary);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .array-val.highlight {
+            border-color: var(--accent-1);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.2));
+            box-shadow: 0 0 20px var(--accent-1-glow);
+            transform: scale(1.12);
+        }
+        .array-val.changed {
+            border-color: var(--accent-3);
+            background: rgba(245, 158, 11, 0.15);
+            box-shadow: 0 0 20px var(--accent-3-glow);
+            animation: pulse 0.6s ease-out;
+        }
+        .array-val.connected {
+            border-color: var(--accent-4);
+            background: rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 20px var(--accent-4-glow);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* ===== Graph / Tree Canvas ===== */
+        .canvas-wrapper {
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            border-radius: var(--radius-xs);
+        }
+
+        /* ===== Controls ===== */
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .btn {
+            padding: 10px 22px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            border-color: var(--accent-1);
+            background: var(--bg-card-hover);
+            transform: translateY(-1px);
+        }
+        .btn:active { transform: translateY(0); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-1), #818cf8);
+            border-color: var(--accent-1);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 20px var(--accent-1-glow);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-4), #34d399);
+            border-color: var(--accent-4);
+            color: #fff;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, var(--accent-3), #fbbf24);
+            border-color: var(--accent-3);
+            color: #000;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-5), #f87171);
+            border-color: var(--accent-5);
+            color: #fff;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .input-field {
+            width: 60px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            background: var(--bg-code);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-align: center;
+            outline: none;
+            transition: var(--transition);
+        }
+        .input-field:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 12px var(--accent-1-glow);
+        }
+
+        /* ===== Code Block ===== */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            position: relative;
+        }
+        .code-block .lang-badge {
+            position: absolute;
+            top: 12px; right: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        .code-keyword { color: #c678dd; }
+        .code-type { color: #e5c07b; }
+        .code-func { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .code-comment { color: #5c6370; font-style: italic; }
+        .code-string { color: #98c379; }
+        .code-operator { color: #56b6c2; }
+
+        /* ===== Log / Steps ===== */
+        .log-area {
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            margin: 16px 0;
+            max-height: 220px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.9;
+        }
+        .log-area::-webkit-scrollbar { width: 6px; }
+        .log-area::-webkit-scrollbar-track { background: transparent; }
+        .log-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        .log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .log-step { color: var(--accent-1); font-weight: 600; }
+        .log-action { color: var(--accent-3); }
+        .log-result { color: var(--accent-4); }
+
+        /* ===== Explanation Blocks ===== */
+        .explain-block {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.05));
+            border-left: 4px solid var(--accent-1);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+        .explain-block h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--accent-2);
+        }
+        .explain-block p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .explain-block ul {
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+        .explain-block li {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+            margin-bottom: 4px;
+        }
+        .explain-block code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--accent-2);
+        }
+
+        /* ===== Comparison Table ===== */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.92rem;
+        }
+        .compare-table th, .compare-table td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .compare-table th {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .compare-table tr:hover td {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .compare-table td:first-child {
+            font-weight: 600;
+            color: var(--accent-2);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out both;
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .container { padding: 20px 16px 60px; }
+            .hero { padding: 30px 0; }
+            .card { padding: 20px; }
+            .code-block { padding: 16px; font-size: 0.78rem; }
+            .array-val { width: 40px; height: 40px; font-size: 0.85rem; }
+            .controls { flex-direction: column; align-items: stretch; }
+            .btn { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <div class="container">
+        <!-- Hero -->
+        <header class="hero">
+            <div class="hero-badge">🔍 Data Structures & Algorithms</div>
+            <h1>Quick Find & Union Find</h1>
+            <p>Giải thích trực quan về cấu trúc dữ liệu Union-Find — từ ý tưởng cơ bản đến tối ưu hóa nâng cao, với animation tương tác.</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')"><span>📖 Tổng Quan</span></button>
+            <button class="tab-btn" data-tab="quickfind" onclick="switchTab('quickfind')"><span>⚡ Quick Find</span></button>
+            <button class="tab-btn" data-tab="quickunion" onclick="switchTab('quickunion')"><span>🌳 Quick Union</span></button>
+            <button class="tab-btn" data-tab="weighted" onclick="switchTab('weighted')"><span>⚖️ Weighted QU</span></button>
+            <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')"><span>📊 So Sánh</span></button>
+        </nav>
+
+        <!-- ======================== TAB: OVERVIEW ======================== -->
+        <section class="tab-content active" id="tab-overview">
+            <h2 class="section-title">
+                <span class="icon" style="background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-2-glow));">🧩</span>
+                Bài Toán Dynamic Connectivity
+            </h2>
+            <p class="section-subtitle">Cho N đối tượng, thực hiện hai thao tác: <strong>Union</strong> (nối hai đối tượng) và <strong>Find/Connected</strong> (kiểm tra hai đối tượng có liên thông không).</p>
+
+            <div class="card animate-in">
+                <h3>🎯 Tại sao cần Union-Find?</h3>
+                <div class="explain-block">
+                    <h4>Ứng dụng thực tế</h4>
+                    <ul>
+                        <li><strong>Mạng máy tính:</strong> Kiểm tra hai máy tính có kết nối được với nhau không</li>
+                        <li><strong>Mạng xã hội:</strong> Hai người có thuộc cùng nhóm bạn bè không</li>
+                        <li><strong>Xử lý ảnh:</strong> Nhận diện vùng liên thông trong ảnh</li>
+                        <li><strong>Thuật toán Kruskal:</strong> Tìm cây khung nhỏ nhất (MST)</li>
+                        <li><strong>Game:</strong> Kiểm tra thắng trong trò chơi Hex</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-1">
+                <h3>📐 API Cơ Bản (Interface)</h3>
+                <div class="code-block">
+                    <span class="lang-badge">Java</span>
+<span class="code-keyword">public class</span> <span class="code-type">UnionFind</span> {
+    <span class="code-comment">// Khởi tạo N đối tượng (0 đến N-1)</span>
+    <span class="code-keyword">public</span> <span class="code-func">UnionFind</span>(<span class="code-keyword">int</span> N)
+
+    <span class="code-comment">// Nối đối tượng p và q vào cùng một nhóm</span>
+    <span class="code-keyword">public void</span> <span class="code-func">union</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q)
+
+    <span class="code-comment">// Kiểm tra p và q có liên thông không</span>
+    <span class="code-keyword">public boolean</span> <span class="code-func">connected</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q)
+}
+                </div>
+                <div class="explain-block">
+                    <h4>💡 Tính chất quan hệ tương đương</h4>
+                    <ul>
+                        <li><strong>Phản xạ:</strong> p liên thông với chính p</li>
+                        <li><strong>Đối xứng:</strong> Nếu p liên thông với q → q liên thông với p</li>
+                        <li><strong>Bắc cầu:</strong> Nếu p↔q và q↔r → p↔r</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-2">
+                <h3>💡 Ý Tưởng Core: Component ID</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                    Mỗi đối tượng thuộc một <strong>"nhóm liên thông" (connected component)</strong>. 
+                    Ta lưu mảng <code style="font-family: 'JetBrains Mono', monospace; background: rgba(99,102,241,0.15); padding: 2px 7px; border-radius: 4px; color: var(--accent-2);">id[]</code> 
+                    để biết mỗi đối tượng thuộc nhóm nào.
+                </p>
+                <div class="array-vis" id="overviewArray">
+                    <!-- Generated by JS -->
+                </div>
+                <p style="color: var(--text-muted); text-align: center; font-size: 0.85rem; margin-top: 8px;">
+                    Ban đầu mỗi phần tử là component riêng: id[i] = i
+                </p>
+            </div>
+        </section>
+
+        <!-- ======================== TAB: QUICK FIND ======================== -->
+        <section class="tab-content" id="tab-quickfind">
+            <h2 class="section-title">
+                <span class="icon" style="background: linear-gradient(135deg, var(--accent-3-glow), var(--accent-5-glow));">⚡</span>
+                Quick Find (Eager Approach)
+            </h2>
+            <p class="section-subtitle">Tìm nhanh nhưng Union chậm — "Quick Find" hy sinh tốc độ union để có find tức thì.</p>
+
+            <div class="card animate-in">
+                <h3>🧠 Ý Tưởng Cốt Lõi</h3>
+                <div class="explain-block">
+                    <h4>Cấu trúc dữ liệu</h4>
+                    <p>Dùng mảng <code>id[]</code> có kích thước N. Quy tắc: <strong>p và q liên thông ⟺ id[p] == id[q]</strong></p>
+                </div>
+                <div class="explain-block">
+                    <h4>🔍 Find (Connected) — O(1)</h4>
+                    <p>Chỉ cần so sánh: <code>return id[p] == id[q]</code>. Cực kỳ nhanh, chỉ 1 phép so sánh!</p>
+                </div>
+                <div class="explain-block">
+                    <h4>🔗 Union — O(N)</h4>
+                    <p>Để nối p với q: duyệt <strong>toàn bộ mảng</strong>, đổi tất cả phần tử có <code>id[i] == id[p]</code> thành <code>id[q]</code>. 
+                    Đây là nhược điểm lớn — mỗi lần union phải quét N phần tử!</p>
+                </div>
+
+                <!-- Complexity -->
+                <div class="complexity-grid">
+                    <div class="complexity-item">
+                        <div class="complexity-label">Initialize</div>
+                        <div class="complexity-value medium">O(N)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Find</div>
+                        <div class="complexity-value fast">O(1)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Union</div>
+                        <div class="complexity-value slow">O(N)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">N union trên N phần tử</div>
+                        <div class="complexity-value slow">O(N²)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-1">
+                <h3>💻 Code Java</h3>
+                <div class="code-block">
+                    <span class="lang-badge">Java</span>
+<span class="code-keyword">public class</span> <span class="code-type">QuickFindUF</span> {
+    <span class="code-keyword">private int</span>[] id;
+
+    <span class="code-comment">// Khởi tạo: mỗi phần tử là component riêng</span>
+    <span class="code-keyword">public</span> <span class="code-func">QuickFindUF</span>(<span class="code-keyword">int</span> N) {
+        id = <span class="code-keyword">new int</span>[N];
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < N; i++)
+            id[i] = i;  <span class="code-comment">// id[i] = i ban đầu</span>
+    }
+
+    <span class="code-comment">// Find: p và q liên thông ⟺ cùng id</span>
+    <span class="code-keyword">public boolean</span> <span class="code-func">connected</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q) {
+        <span class="code-keyword">return</span> id[p] <span class="code-operator">==</span> id[q];  <span class="code-comment">// O(1) ✨</span>
+    }
+
+    <span class="code-comment">// Union: đổi TẤT CẢ id[p] thành id[q]</span>
+    <span class="code-keyword">public void</span> <span class="code-func">union</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q) {
+        <span class="code-keyword">int</span> pid = id[p], qid = id[q]; <span class="code-comment">// lưu lại giá trị</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < id.length; i++)
+            <span class="code-keyword">if</span> (id[i] <span class="code-operator">==</span> pid)
+                id[i] = qid;  <span class="code-comment">// đổi tất cả → O(N) 🐢</span>
+    }
+}
+                </div>
+            </div>
+
+            <!-- Interactive Demo -->
+            <div class="card animate-in delay-2">
+                <h3>🎮 Demo Tương Tác — Quick Find</h3>
+                <div class="controls">
+                    <div class="input-group">
+                        <label>p:</label>
+                        <input type="number" class="input-field" id="qf-p" min="0" max="9" value="3">
+                    </div>
+                    <div class="input-group">
+                        <label>q:</label>
+                        <input type="number" class="input-field" id="qf-q" min="0" max="9" value="8">
+                    </div>
+                    <button class="btn btn-primary" onclick="qfUnion()">🔗 Union(p, q)</button>
+                    <button class="btn btn-success" onclick="qfFind()">🔍 Connected(p, q)</button>
+                    <button class="btn btn-danger" onclick="qfReset()">↩️ Reset</button>
+                </div>
+
+                <div style="margin-top: 12px;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">INDEX</div>
+                    <div class="array-vis" id="qf-index"></div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; margin-top: 12px; font-weight: 600; letter-spacing: 0.5px;">ID[ ]</div>
+                    <div class="array-vis" id="qf-array"></div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="qf-canvas" height="250"></canvas>
+                </div>
+
+                <div class="log-area" id="qf-log">
+                    <div class="log-entry"><span class="log-step">⏳ Sẵn sàng.</span> Nhập p, q và nhấn Union hoặc Connected.</div>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-3">
+                <h3>⚠️ Nhược Điểm Nghiêm Trọng</h3>
+                <div class="explain-block">
+                    <h4>Quá chậm cho dữ liệu lớn</h4>
+                    <p>Với N = 10⁹ (1 tỷ) phần tử và N lệnh union → cần ~10¹⁸ thao tác. 
+                    Với tốc độ 10⁹ ops/giây → mất <strong>~30 năm</strong>! Quick Find không scalable.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== TAB: QUICK UNION ======================== -->
+        <section class="tab-content" id="tab-quickunion">
+            <h2 class="section-title">
+                <span class="icon" style="background: linear-gradient(135deg, var(--accent-4-glow), var(--accent-2-glow));">🌳</span>
+                Quick Union (Lazy Approach)
+            </h2>
+            <p class="section-subtitle">Cải tiến: biểu diễn bằng cây — union nhanh hơn nhưng find có thể chậm.</p>
+
+            <div class="card animate-in">
+                <h3>🧠 Ý Tưởng Cốt Lõi</h3>
+                <div class="explain-block">
+                    <h4>Cấu trúc dữ liệu: Forest of Trees</h4>
+                    <p>Mảng <code>parent[]</code> (hay <code>id[]</code>): <strong>id[i] là cha của i</strong>. 
+                    Gốc (root) của cây là phần tử có <code>id[i] == i</code>.</p>
+                </div>
+                <div class="explain-block">
+                    <h4>🔍 Find (Root) — O(N) worst case</h4>
+                    <p>Đi từ i lên cha, lên ông, ... cho đến khi gặp gốc: <code>while (id[i] != i) i = id[i];</code></p>
+                </div>
+                <div class="explain-block">
+                    <h4>🔗 Union — O(N) worst case</h4>
+                    <p>Tìm gốc của p và q. Nếu khác nhau → gắn gốc p làm con của gốc q: <code>id[root_p] = root_q</code>. 
+                    Chỉ thay đổi <strong>1 phần tử</strong> trong mảng!</p>
+                </div>
+
+                <div class="complexity-grid">
+                    <div class="complexity-item">
+                        <div class="complexity-label">Initialize</div>
+                        <div class="complexity-value medium">O(N)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Find (root)</div>
+                        <div class="complexity-value slow">O(N)*</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Union</div>
+                        <div class="complexity-value slow">O(N)*</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">* Worst case</div>
+                        <div class="complexity-value" style="color: var(--text-muted); font-size: 0.85rem;">Khi cây bị skewed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-1">
+                <h3>💻 Code Java</h3>
+                <div class="code-block">
+                    <span class="lang-badge">Java</span>
+<span class="code-keyword">public class</span> <span class="code-type">QuickUnionUF</span> {
+    <span class="code-keyword">private int</span>[] id;  <span class="code-comment">// id[i] = parent of i</span>
+
+    <span class="code-keyword">public</span> <span class="code-func">QuickUnionUF</span>(<span class="code-keyword">int</span> N) {
+        id = <span class="code-keyword">new int</span>[N];
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < N; i++)
+            id[i] = i;  <span class="code-comment">// mỗi node là gốc của chính nó</span>
+    }
+
+    <span class="code-comment">// Tìm gốc: đi lên cho đến khi id[i] == i</span>
+    <span class="code-keyword">private int</span> <span class="code-func">root</span>(<span class="code-keyword">int</span> i) {
+        <span class="code-keyword">while</span> (id[i] <span class="code-operator">!=</span> i)
+            i = id[i];  <span class="code-comment">// leo lên cha</span>
+        <span class="code-keyword">return</span> i;
+    }
+
+    <span class="code-comment">// Connected: cùng gốc ⟺ liên thông</span>
+    <span class="code-keyword">public boolean</span> <span class="code-func">connected</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q) {
+        <span class="code-keyword">return</span> <span class="code-func">root</span>(p) <span class="code-operator">==</span> <span class="code-func">root</span>(q);
+    }
+
+    <span class="code-comment">// Union: gắn gốc p vào gốc q</span>
+    <span class="code-keyword">public void</span> <span class="code-func">union</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q) {
+        <span class="code-keyword">int</span> rootP = <span class="code-func">root</span>(p);
+        <span class="code-keyword">int</span> rootQ = <span class="code-func">root</span>(q);
+        id[rootP] = rootQ;  <span class="code-comment">// 1 thao tác gán ✨</span>
+    }
+}
+                </div>
+            </div>
+
+            <!-- Interactive Demo -->
+            <div class="card animate-in delay-2">
+                <h3>🎮 Demo Tương Tác — Quick Union</h3>
+                <div class="controls">
+                    <div class="input-group">
+                        <label>p:</label>
+                        <input type="number" class="input-field" id="qu-p" min="0" max="9" value="4">
+                    </div>
+                    <div class="input-group">
+                        <label>q:</label>
+                        <input type="number" class="input-field" id="qu-q" min="0" max="9" value="6">
+                    </div>
+                    <button class="btn btn-primary" onclick="quUnion()">🔗 Union(p, q)</button>
+                    <button class="btn btn-success" onclick="quFind()">🔍 Connected(p, q)</button>
+                    <button class="btn btn-danger" onclick="quReset()">↩️ Reset</button>
+                </div>
+
+                <div style="margin-top: 12px;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">INDEX</div>
+                    <div class="array-vis" id="qu-index"></div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; margin-top: 12px; font-weight: 600; letter-spacing: 0.5px;">PARENT[ ]</div>
+                    <div class="array-vis" id="qu-array"></div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="qu-canvas" height="300"></canvas>
+                </div>
+
+                <div class="log-area" id="qu-log">
+                    <div class="log-entry"><span class="log-step">⏳ Sẵn sàng.</span> Nhập p, q và nhấn Union hoặc Connected.</div>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-3">
+                <h3>⚠️ Vấn Đề: Cây Có Thể Bị "Cao" (Tall Trees)</h3>
+                <div class="explain-block">
+                    <h4>Worst case: Chuỗi liên kết dài</h4>
+                    <p>Nếu union theo thứ tự xấu (0-1, 1-2, 2-3, ...), cây sẽ thành <strong>danh sách liên kết</strong> (chiều cao = N-1). 
+                    Khi đó find phải duyệt N bước → cũng O(N²) cho N thao tác!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== TAB: WEIGHTED QU ======================== -->
+        <section class="tab-content" id="tab-weighted">
+            <h2 class="section-title">
+                <span class="icon" style="background: linear-gradient(135deg, var(--accent-6-glow), var(--accent-4-glow));">⚖️</span>
+                Weighted Quick Union + Path Compression
+            </h2>
+            <p class="section-subtitle">Hai cải tiến then chốt biến Union-Find thành thuật toán gần như O(1) cho mỗi thao tác.</p>
+
+            <div class="card animate-in">
+                <h3>🧠 Cải Tiến 1: Weighted (Union by Size/Rank)</h3>
+                <div class="explain-block">
+                    <h4>Ý tưởng: Luôn gắn cây nhỏ vào cây lớn</h4>
+                    <p>Thêm mảng <code>size[]</code> đếm số node của mỗi cây. Khi union, cây nhỏ hơn sẽ được gắn vào gốc cây lớn hơn.
+                    Điều này đảm bảo chiều cao cây ≤ <strong>lg(N)</strong> (logarit cơ số 2).</p>
+                </div>
+                <div class="explain-block">
+                    <h4>📏 Tại sao chiều cao ≤ lg(N)?</h4>
+                    <p>Chiều sâu của node x chỉ tăng khi cây chứa x bị merge vào cây lớn hơn (kích thước ≥ gấp đôi). 
+                    Điều này chỉ xảy ra tối đa <strong>lg(N)</strong> lần → chiều sâu tối đa = lg(N).</p>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-1">
+                <h3>🧠 Cải Tiến 2: Path Compression</h3>
+                <div class="explain-block">
+                    <h4>Ý tưởng: "Làm phẳng" cây khi tìm gốc</h4>
+                    <p>Khi tìm gốc của node i, trên đường đi lên, ta trỏ mỗi node trực tiếp lên gốc (hoặc lên ông nội).
+                    Hai cách phổ biến:</p>
+                    <ul>
+                        <li><strong>One-pass (Halving):</strong> <code>id[i] = id[id[i]]</code> — trỏ lên ông nội, giảm chiều cao ~50%</li>
+                        <li><strong>Two-pass (Full):</strong> Tìm gốc trước, rồi trỏ tất cả node trên đường đi thẳng vào gốc</li>
+                    </ul>
+                </div>
+
+                <div class="complexity-grid">
+                    <div class="complexity-item">
+                        <div class="complexity-label">Initialize</div>
+                        <div class="complexity-value medium">O(N)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Find</div>
+                        <div class="complexity-value fast">O(α(N))*</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Union</div>
+                        <div class="complexity-value fast">O(α(N))*</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">* α(N)</div>
+                        <div class="complexity-value" style="color: var(--accent-4); font-size: 0.75rem;">Inverse Ackermann<br>≤ 5 thực tế</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-2">
+                <h3>💻 Code Java — Weighted QU + Path Compression</h3>
+                <div class="code-block">
+                    <span class="lang-badge">Java</span>
+<span class="code-keyword">public class</span> <span class="code-type">WeightedQuickUnionUF</span> {
+    <span class="code-keyword">private int</span>[] id;    <span class="code-comment">// parent[i] = cha của i</span>
+    <span class="code-keyword">private int</span>[] size;  <span class="code-comment">// size[i] = số node trong cây gốc i</span>
+
+    <span class="code-keyword">public</span> <span class="code-func">WeightedQuickUnionUF</span>(<span class="code-keyword">int</span> N) {
+        id   = <span class="code-keyword">new int</span>[N];
+        size = <span class="code-keyword">new int</span>[N];
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < N; i++) {
+            id[i]   = i;
+            size[i] = <span class="code-number">1</span>;
+        }
+    }
+
+    <span class="code-comment">// Tìm gốc + Path Compression (halving)</span>
+    <span class="code-keyword">private int</span> <span class="code-func">root</span>(<span class="code-keyword">int</span> i) {
+        <span class="code-keyword">while</span> (id[i] <span class="code-operator">!=</span> i) {
+            id[i] = id[id[i]]; <span class="code-comment">// ⚡ path compression!</span>
+            i = id[i];
+        }
+        <span class="code-keyword">return</span> i;
+    }
+
+    <span class="code-keyword">public boolean</span> <span class="code-func">connected</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q) {
+        <span class="code-keyword">return</span> <span class="code-func">root</span>(p) <span class="code-operator">==</span> <span class="code-func">root</span>(q);
+    }
+
+    <span class="code-comment">// Weighted Union: cây nhỏ → gắn vào cây lớn</span>
+    <span class="code-keyword">public void</span> <span class="code-func">union</span>(<span class="code-keyword">int</span> p, <span class="code-keyword">int</span> q) {
+        <span class="code-keyword">int</span> rootP = <span class="code-func">root</span>(p);
+        <span class="code-keyword">int</span> rootQ = <span class="code-func">root</span>(q);
+        <span class="code-keyword">if</span> (rootP <span class="code-operator">==</span> rootQ) <span class="code-keyword">return</span>;
+
+        <span class="code-comment">// ⚖️ Gắn cây nhỏ vào cây lớn</span>
+        <span class="code-keyword">if</span> (size[rootP] < size[rootQ]) {
+            id[rootP] = rootQ;
+            size[rootQ] <span class="code-operator">+=</span> size[rootP];
+        } <span class="code-keyword">else</span> {
+            id[rootQ] = rootP;
+            size[rootP] <span class="code-operator">+=</span> size[rootQ];
+        }
+    }
+}
+                </div>
+            </div>
+
+            <!-- Interactive Demo -->
+            <div class="card animate-in delay-3">
+                <h3>🎮 Demo Tương Tác — Weighted Quick Union</h3>
+                <div class="controls">
+                    <div class="input-group">
+                        <label>p:</label>
+                        <input type="number" class="input-field" id="wqu-p" min="0" max="9" value="2">
+                    </div>
+                    <div class="input-group">
+                        <label>q:</label>
+                        <input type="number" class="input-field" id="wqu-q" min="0" max="9" value="7">
+                    </div>
+                    <button class="btn btn-primary" onclick="wquUnion()">🔗 Union(p, q)</button>
+                    <button class="btn btn-success" onclick="wquFind()">🔍 Connected(p, q)</button>
+                    <button class="btn btn-danger" onclick="wquReset()">↩️ Reset</button>
+                    <button class="btn btn-warning" onclick="wquDemo()">▶️ Auto Demo</button>
+                </div>
+
+                <div style="margin-top: 12px;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">INDEX</div>
+                    <div class="array-vis" id="wqu-index"></div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; margin-top: 12px; font-weight: 600; letter-spacing: 0.5px;">PARENT[ ]</div>
+                    <div class="array-vis" id="wqu-array"></div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; margin-top: 12px; font-weight: 600; letter-spacing: 0.5px;">SIZE[ ]</div>
+                    <div class="array-vis" id="wqu-size"></div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="wqu-canvas" height="320"></canvas>
+                </div>
+
+                <div class="log-area" id="wqu-log">
+                    <div class="log-entry"><span class="log-step">⏳ Sẵn sàng.</span> Nhấn Auto Demo để xem animation tự động, hoặc nhập thủ công.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== TAB: COMPARE ======================== -->
+        <section class="tab-content" id="tab-compare">
+            <h2 class="section-title">
+                <span class="icon" style="background: linear-gradient(135deg, var(--accent-6-glow), var(--accent-3-glow));">📊</span>
+                So Sánh Các Thuật Toán
+            </h2>
+            <p class="section-subtitle">Tổng kết sự khác biệt về hiệu năng giữa các biến thể Union-Find.</p>
+
+            <div class="card animate-in">
+                <h3>📋 Bảng So Sánh Độ Phức Tạp</h3>
+                <div style="overflow-x: auto;">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th>Thuật Toán</th>
+                                <th>Initialize</th>
+                                <th>Union</th>
+                                <th>Find</th>
+                                <th>N thao tác trên N phần tử</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Quick Find</td>
+                                <td>N</td>
+                                <td style="color: var(--accent-5); font-weight: 600;">N</td>
+                                <td style="color: var(--accent-4); font-weight: 600;">1</td>
+                                <td style="color: var(--accent-5);">N²</td>
+                            </tr>
+                            <tr>
+                                <td>Quick Union</td>
+                                <td>N</td>
+                                <td style="color: var(--accent-5); font-weight: 600;">N*</td>
+                                <td style="color: var(--accent-5); font-weight: 600;">N*</td>
+                                <td style="color: var(--accent-5);">N²</td>
+                            </tr>
+                            <tr>
+                                <td>Weighted QU</td>
+                                <td>N</td>
+                                <td style="color: var(--accent-3); font-weight: 600;">lg N</td>
+                                <td style="color: var(--accent-3); font-weight: 600;">lg N</td>
+                                <td style="color: var(--accent-3);">N lg N</td>
+                            </tr>
+                            <tr>
+                                <td style="color: var(--accent-4) !important;">WQU + Path Comp.</td>
+                                <td>N</td>
+                                <td style="color: var(--accent-4); font-weight: 600;">α(N)*</td>
+                                <td style="color: var(--accent-4); font-weight: 600;">α(N)*</td>
+                                <td style="color: var(--accent-4);">N α(N) ≈ N</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="explain-block">
+                    <h4>📝 Ghi chú</h4>
+                    <ul>
+                        <li><strong>* worst case</strong> — khi cây bị lệch thành danh sách liên kết</li>
+                        <li><strong>α(N)</strong> = hàm nghịch đảo Ackermann, tăng CỰC kỳ chậm (≤ 5 với mọi N thực tế, kể cả N = 2<sup>65536</sup>)</li>
+                        <li><strong>lg N</strong> = log₂(N)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-1">
+                <h3>🏁 Kết Luận — Chọn Thuật Toán Nào?</h3>
+                <div class="explain-block">
+                    <h4>✅ Luôn dùng Weighted Quick Union + Path Compression</h4>
+                    <p>Đây là implementation chuẩn. Code đơn giản, hiệu năng gần như tối ưu lý thuyết O(N α(N)).</p>
+                    <ul>
+                        <li>🚫 <strong>Quick Find:</strong> Union quá chậm O(N) — không dùng cho dữ liệu lớn</li>
+                        <li>🚫 <strong>Quick Union thuần:</strong> Cây có thể bị cao → find chậm O(N)</li>
+                        <li>✅ <strong>Weighted QU:</strong> Đảm bảo chiều cao ≤ lg(N)</li>
+                        <li>✅✅ <strong>Weighted QU + Path Compression:</strong> Gần như O(1) amortized</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card animate-in delay-2">
+                <h3>📈 So Sánh Trực Quan Hiệu Năng</h3>
+                <div class="canvas-wrapper">
+                    <canvas id="perf-canvas" height="350"></canvas>
+                </div>
+                <p style="color: var(--text-muted); text-align: center; font-size: 0.85rem; margin-top: 8px;">
+                    Trục X: Số phần tử (N) — Trục Y: Thời gian (tương đối) cho N thao tác union
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // ======================== TAB SWITCHING ========================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+            // Trigger canvas renders
+            if (tab === 'quickfind') renderQFCanvas();
+            if (tab === 'quickunion') renderQUCanvas();
+            if (tab === 'weighted') renderWQUCanvas();
+            if (tab === 'compare') renderPerfChart();
+        }
+
+        // ======================== COLOR PALETTE FOR COMPONENTS ========================
+        const COLORS = [
+            '#6366f1', '#06b6d4', '#f59e0b', '#10b981', '#ef4444',
+            '#ec4899', '#8b5cf6', '#14b8a6', '#f97316', '#84cc16'
+        ];
+
+        function getComponentColor(id) {
+            return COLORS[id % COLORS.length];
+        }
+
+        // ======================== OVERVIEW ARRAY ========================
+        (function initOverview() {
+            const container = document.getElementById('overviewArray');
+            for (let i = 0; i < 10; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'array-cell';
+                cell.innerHTML = `
+                    <div class="array-index">${i}</div>
+                    <div class="array-val" style="border-color: ${getComponentColor(i)}40; color: ${getComponentColor(i)};">${i}</div>
+                `;
+                container.appendChild(cell);
+            }
+        })();
+
+        // ======================== HELPER: Render Array ========================
+        function renderArray(containerId, arr, highlights = [], changed = [], connected = []) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            arr.forEach((val, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'array-cell';
+                let cls = 'array-val';
+                if (changed.includes(i)) cls += ' changed';
+                else if (highlights.includes(i)) cls += ' highlight';
+                else if (connected.includes(i)) cls += ' connected';
+
+                const color = getComponentColor(val);
+                cell.innerHTML = `
+                    <div class="array-val ${cls.replace('array-val ', '')}" style="border-color: ${color}60; color: ${color};">${val}</div>
+                `;
+                container.appendChild(cell);
+            });
+        }
+
+        function renderIndex(containerId, n) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 0; i < n; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'array-cell';
+                cell.innerHTML = `<div class="array-val" style="background: var(--bg-code); border-color: var(--glass-border); color: var(--text-muted); font-size: 0.8rem;">${i}</div>`;
+                container.appendChild(cell);
+            }
+        }
+
+        function addLog(logId, html) {
+            const log = document.getElementById(logId);
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = html;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // ======================== QUICK FIND ========================
+        let qfId = [];
+        const QF_N = 10;
+
+        function qfInit() {
+            qfId = Array.from({ length: QF_N }, (_, i) => i);
+            renderIndex('qf-index', QF_N);
+            renderArray('qf-array', qfId);
+            renderQFCanvas();
+        }
+
+        function qfReset() {
+            qfInit();
+            document.getElementById('qf-log').innerHTML = '<div class="log-entry"><span class="log-step">🔄 Reset.</span> Mảng id[] trở về trạng thái ban đầu.</div>';
+        }
+
+        function qfUnion() {
+            const p = parseInt(document.getElementById('qf-p').value);
+            const q = parseInt(document.getElementById('qf-q').value);
+            if (isNaN(p) || isNaN(q) || p < 0 || p >= QF_N || q < 0 || q >= QF_N) return;
+
+            const pid = qfId[p], qid = qfId[q];
+            if (pid === qid) {
+                addLog('qf-log', `<span class="log-step">union(${p}, ${q})</span> → <span class="log-result">Đã liên thông (id[${p}]=id[${q}]=${pid}), bỏ qua.</span>`);
+                renderArray('qf-array', qfId, [p, q]);
+                return;
+            }
+
+            const changed = [];
+            addLog('qf-log', `<span class="log-step">union(${p}, ${q})</span> → <span class="log-action">Đổi tất cả id=${pid} thành ${qid}</span>`);
+
+            for (let i = 0; i < QF_N; i++) {
+                if (qfId[i] === pid) {
+                    qfId[i] = qid;
+                    changed.push(i);
+                }
+            }
+
+            addLog('qf-log', `  → <span class="log-result">Đã đổi ${changed.length} phần tử: [${changed.join(', ')}]</span>`);
+            renderArray('qf-array', qfId, [], changed);
+            renderQFCanvas();
+        }
+
+        function qfFind() {
+            const p = parseInt(document.getElementById('qf-p').value);
+            const q = parseInt(document.getElementById('qf-q').value);
+            if (isNaN(p) || isNaN(q) || p < 0 || p >= QF_N || q < 0 || q >= QF_N) return;
+
+            const result = qfId[p] === qfId[q];
+            const connected = result ? qfId.reduce((acc, v, i) => v === qfId[p] ? [...acc, i] : acc, []) : [];
+            addLog('qf-log', `<span class="log-step">connected(${p}, ${q})</span> → id[${p}]=${qfId[p]}, id[${q}]=${qfId[q]} → <span class="log-result">${result ? '✅ TRUE' : '❌ FALSE'}</span>`);
+            renderArray('qf-array', qfId, [p, q], [], connected);
+        }
+
+        function renderQFCanvas() {
+            const canvas = document.getElementById('qf-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = 250 * dpr;
+            ctx.scale(dpr, dpr);
+            ctx.clearRect(0, 0, rect.width, 250);
+
+            // Group by component id
+            const groups = {};
+            qfId.forEach((id, i) => {
+                if (!groups[id]) groups[id] = [];
+                groups[id].push(i);
+            });
+
+            const groupKeys = Object.keys(groups);
+            const gapX = rect.width / (groupKeys.length + 1);
+
+            groupKeys.forEach((gid, gi) => {
+                const members = groups[gid];
+                const cx = gapX * (gi + 1);
+                const color = getComponentColor(parseInt(gid));
+
+                // Draw group circle
+                const radius = Math.max(30, members.length * 12 + 15);
+                ctx.beginPath();
+                ctx.arc(cx, 125, radius, 0, Math.PI * 2);
+                ctx.fillStyle = color + '15';
+                ctx.fill();
+                ctx.strokeStyle = color + '50';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw members
+                members.forEach((m, mi) => {
+                    const angle = (Math.PI * 2 * mi) / members.length - Math.PI / 2;
+                    const r = members.length === 1 ? 0 : radius * 0.55;
+                    const mx = cx + Math.cos(angle) * r;
+                    const my = 125 + Math.sin(angle) * r;
+
+                    ctx.beginPath();
+                    ctx.arc(mx, my, 18, 0, Math.PI * 2);
+                    ctx.fillStyle = color + '30';
+                    ctx.fill();
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    ctx.fillStyle = color;
+                    ctx.font = '600 13px "Inter"';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(m, mx, my);
+                });
+
+                // Group label
+                ctx.fillStyle = color;
+                ctx.font = '700 11px "JetBrains Mono"';
+                ctx.textAlign = 'center';
+                ctx.fillText(`id=${gid}`, cx, 125 + radius + 22);
+            });
+        }
+
+        // ======================== QUICK UNION ========================
+        let quId = [];
+        const QU_N = 10;
+
+        function quInit() {
+            quId = Array.from({ length: QU_N }, (_, i) => i);
+            renderIndex('qu-index', QU_N);
+            renderArray('qu-array', quId);
+            renderQUCanvas();
+        }
+
+        function quReset() {
+            quInit();
+            document.getElementById('qu-log').innerHTML = '<div class="log-entry"><span class="log-step">🔄 Reset.</span> Mảng parent[] trở về trạng thái ban đầu.</div>';
+        }
+
+        function quRoot(i) {
+            const path = [i];
+            while (quId[i] !== i) {
+                i = quId[i];
+                path.push(i);
+            }
+            return { root: i, path };
+        }
+
+        function quUnion() {
+            const p = parseInt(document.getElementById('qu-p').value);
+            const q = parseInt(document.getElementById('qu-q').value);
+            if (isNaN(p) || isNaN(q) || p < 0 || p >= QU_N || q < 0 || q >= QU_N) return;
+
+            const rp = quRoot(p);
+            const rq = quRoot(q);
+
+            addLog('qu-log', `<span class="log-step">union(${p}, ${q})</span> → root(${p}): ${rp.path.join('→')} = <span class="log-action">${rp.root}</span>, root(${q}): ${rq.path.join('→')} = <span class="log-action">${rq.root}</span>`);
+
+            if (rp.root === rq.root) {
+                addLog('qu-log', `  → <span class="log-result">Đã liên thông, bỏ qua.</span>`);
+                renderArray('qu-array', quId, [...rp.path, ...rq.path]);
+                return;
+            }
+
+            quId[rp.root] = rq.root;
+            addLog('qu-log', `  → <span class="log-result">parent[${rp.root}] = ${rq.root}</span>`);
+            renderArray('qu-array', quId, [], [rp.root]);
+            renderQUCanvas();
+        }
+
+        function quFind() {
+            const p = parseInt(document.getElementById('qu-p').value);
+            const q = parseInt(document.getElementById('qu-q').value);
+            if (isNaN(p) || isNaN(q) || p < 0 || p >= QU_N || q < 0 || q >= QU_N) return;
+
+            const rp = quRoot(p);
+            const rq = quRoot(q);
+            const result = rp.root === rq.root;
+
+            addLog('qu-log', `<span class="log-step">connected(${p}, ${q})</span> → root(${p})=${rp.root} [${rp.path.join('→')}], root(${q})=${rq.root} [${rq.path.join('→')}] → <span class="log-result">${result ? '✅ TRUE' : '❌ FALSE'}</span>`);
+            renderArray('qu-array', quId, [...rp.path, ...rq.path]);
+        }
+
+        function renderTreeCanvas(canvasId, parentArr, sizeArr = null) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            const h = parseInt(canvas.height);
+            canvas.width = rect.width * dpr;
+            canvas.height = h * dpr;
+            ctx.scale(dpr, dpr);
+            ctx.clearRect(0, 0, rect.width, h);
+
+            const N = parentArr.length;
+
+            // Find roots
+            function findRoot(i) {
+                while (parentArr[i] !== i) i = parentArr[i];
+                return i;
+            }
+
+            // Build tree structure
+            const children = Array.from({ length: N }, () => []);
+            const roots = [];
+            for (let i = 0; i < N; i++) {
+                if (parentArr[i] === i) roots.push(i);
+                else children[parentArr[i]].push(i);
+            }
+
+            // Compute tree sizes for layout
+            function subtreeSize(node) {
+                let s = 1;
+                for (const c of children[node]) s += subtreeSize(c);
+                return s;
+            }
+
+            // Compute positions
+            const pos = {};
+            const nodeR = 18;
+            const levelH = 60;
+
+            // Distribute roots across width
+            const totalWeight = roots.reduce((s, r) => s + subtreeSize(r), 0);
+            let xOffset = 30;
+            const availW = rect.width - 60;
+
+            roots.forEach(root => {
+                const weight = subtreeSize(root);
+                const slotW = (weight / totalWeight) * availW;
+
+                function layout(node, x, y, w) {
+                    pos[node] = { x: x + w / 2, y };
+                    const ch = children[node];
+                    if (ch.length === 0) return;
+                    const chWeights = ch.map(c => subtreeSize(c));
+                    const totalW = chWeights.reduce((a, b) => a + b, 0);
+                    let cx = x;
+                    ch.forEach((c, ci) => {
+                        const cw = (chWeights[ci] / totalW) * w;
+                        layout(c, cx, y + levelH, cw);
+                        cx += cw;
+                    });
+                }
+
+                layout(root, xOffset, 35, slotW);
+                xOffset += slotW;
+            });
+
+            // Draw edges
+            for (let i = 0; i < N; i++) {
+                if (parentArr[i] !== i && pos[i] && pos[parentArr[i]]) {
+                    const p = pos[parentArr[i]];
+                    const c = pos[i];
+                    const root = findRoot(i);
+                    const color = getComponentColor(root);
+
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y + nodeR);
+                    ctx.lineTo(c.x, c.y - nodeR);
+                    ctx.strokeStyle = color + '60';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Arrow
+                    const angle = Math.atan2(p.y + nodeR - (c.y - nodeR), p.x - c.x);
+                    const ax = c.x;
+                    const ay = c.y - nodeR;
+                    ctx.beginPath();
+                    ctx.moveTo(ax, ay);
+                    ctx.lineTo(ax + 8 * Math.cos(angle + 0.4), ay + 8 * Math.sin(angle + 0.4));
+                    ctx.lineTo(ax + 8 * Math.cos(angle - 0.4), ay + 8 * Math.sin(angle - 0.4));
+                    ctx.closePath();
+                    ctx.fillStyle = color + '80';
+                    ctx.fill();
+                }
+            }
+
+            // Draw nodes
+            for (let i = 0; i < N; i++) {
+                if (!pos[i]) continue;
+                const { x, y } = pos[i];
+                const root = findRoot(i);
+                const color = getComponentColor(root);
+                const isRoot = parentArr[i] === i;
+
+                // Glow for roots
+                if (isRoot) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, nodeR + 6, 0, Math.PI * 2);
+                    ctx.fillStyle = color + '20';
+                    ctx.fill();
+                }
+
+                ctx.beginPath();
+                ctx.arc(x, y, nodeR, 0, Math.PI * 2);
+                ctx.fillStyle = isRoot ? color + '40' : color + '20';
+                ctx.fill();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = isRoot ? 3 : 2;
+                ctx.stroke();
+
+                ctx.fillStyle = '#fff';
+                ctx.font = `${isRoot ? '700' : '600'} 13px "Inter"`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(i, x, y);
+
+                // Size label for weighted
+                if (sizeArr && isRoot) {
+                    ctx.fillStyle = color;
+                    ctx.font = '600 10px "JetBrains Mono"';
+                    ctx.fillText(`sz=${sizeArr[i]}`, x, y + nodeR + 14);
+                }
+            }
+        }
+
+        function renderQUCanvas() { renderTreeCanvas('qu-canvas', quId); }
+
+        // ======================== WEIGHTED QUICK UNION ========================
+        let wquId = [];
+        let wquSize = [];
+        const WQU_N = 10;
+
+        function wquInit() {
+            wquId = Array.from({ length: WQU_N }, (_, i) => i);
+            wquSize = Array.from({ length: WQU_N }, () => 1);
+            renderIndex('wqu-index', WQU_N);
+            renderArray('wqu-array', wquId);
+            renderArray('wqu-size', wquSize);
+            renderWQUCanvas();
+        }
+
+        function wquReset() {
+            wquInit();
+            document.getElementById('wqu-log').innerHTML = '<div class="log-entry"><span class="log-step">🔄 Reset.</span> Mảng parent[] và size[] trở về trạng thái ban đầu.</div>';
+        }
+
+        function wquRoot(i) {
+            const path = [i];
+            while (wquId[i] !== i) {
+                // Path compression (halving)
+                wquId[i] = wquId[wquId[i]];
+                i = wquId[i];
+                path.push(i);
+            }
+            return { root: i, path };
+        }
+
+        function wquUnionInternal(p, q) {
+            const rp = wquRoot(p);
+            const rq = wquRoot(q);
+
+            addLog('wqu-log', `<span class="log-step">union(${p}, ${q})</span> → root(${p})=<span class="log-action">${rp.root}</span> (sz=${wquSize[rp.root]}), root(${q})=<span class="log-action">${rq.root}</span> (sz=${wquSize[rq.root]})`);
+
+            if (rp.root === rq.root) {
+                addLog('wqu-log', `  → <span class="log-result">Đã liên thông, bỏ qua.</span>`);
+                return;
+            }
+
+            // Weighted: smaller tree → larger tree
+            if (wquSize[rp.root] < wquSize[rq.root]) {
+                wquId[rp.root] = rq.root;
+                wquSize[rq.root] += wquSize[rp.root];
+                addLog('wqu-log', `  → <span class="log-result">⚖️ sz[${rp.root}]=${wquSize[rp.root] - wquSize[rq.root]}(nhỏ) < sz[${rq.root}]=${wquSize[rq.root] - wquSize[rp.root]}(lớn) → parent[${rp.root}] = ${rq.root}</span>`);
+            } else {
+                wquId[rq.root] = rp.root;
+                wquSize[rp.root] += wquSize[rq.root];
+                addLog('wqu-log', `  → <span class="log-result">⚖️ sz[${rq.root}](nhỏ/bằng) → parent[${rq.root}] = ${rp.root}</span>`);
+            }
+        }
+
+        function wquUnion() {
+            const p = parseInt(document.getElementById('wqu-p').value);
+            const q = parseInt(document.getElementById('wqu-q').value);
+            if (isNaN(p) || isNaN(q) || p < 0 || p >= WQU_N || q < 0 || q >= WQU_N) return;
+
+            wquUnionInternal(p, q);
+            renderArray('wqu-array', wquId, [], []);
+            renderArray('wqu-size', wquSize);
+            renderWQUCanvas();
+        }
+
+        function wquFind() {
+            const p = parseInt(document.getElementById('wqu-p').value);
+            const q = parseInt(document.getElementById('wqu-q').value);
+            if (isNaN(p) || isNaN(q) || p < 0 || p >= WQU_N || q < 0 || q >= WQU_N) return;
+
+            const rp = wquRoot(p);
+            const rq = wquRoot(q);
+            const result = rp.root === rq.root;
+
+            addLog('wqu-log', `<span class="log-step">connected(${p}, ${q})</span> → root(${p})=${rp.root}, root(${q})=${rq.root} → <span class="log-result">${result ? '✅ TRUE' : '❌ FALSE'}</span>`);
+            renderArray('wqu-array', wquId, [...rp.path, ...rq.path]);
+            renderWQUCanvas();
+        }
+
+        async function wquDemo() {
+            wquReset();
+            const ops = [[4,3],[3,8],[6,5],[9,4],[2,1],[5,0],[7,2],[6,1],[7,3]];
+
+            for (const [p, q] of ops) {
+                await new Promise(r => setTimeout(r, 800));
+                wquUnionInternal(p, q);
+                renderArray('wqu-array', wquId);
+                renderArray('wqu-size', wquSize);
+                renderWQUCanvas();
+            }
+        }
+
+        function renderWQUCanvas() { renderTreeCanvas('wqu-canvas', wquId, wquSize); }
+
+        // ======================== PERFORMANCE CHART ========================
+        function renderPerfChart() {
+            const canvas = document.getElementById('perf-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = 350 * dpr;
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = 350;
+            const pad = { top: 40, right: 30, bottom: 60, left: 70 };
+            const plotW = w - pad.left - pad.right;
+            const plotH = h - pad.top - pad.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Background
+            ctx.fillStyle = '#0d1117';
+            ctx.fillRect(0, 0, w, h);
+
+            // Grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = pad.top + (plotH / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(pad.left, y);
+                ctx.lineTo(w - pad.right, y);
+                ctx.stroke();
+            }
+
+            // Data points
+            const points = 50;
+            const maxN = 1000;
+            const data = {
+                'Quick Find (N²)': { color: '#ef4444', fn: n => n * n / 1000 },
+                'Quick Union (N²)': { color: '#f97316', fn: n => n * n / 1200 },
+                'Weighted QU (N lg N)': { color: '#f59e0b', fn: n => n * Math.log2(n + 1) / 10 },
+                'WQU + PC (N α(N))': { color: '#10b981', fn: n => n * 4.5 / 10 },
+            };
+
+            const maxVal = maxN * maxN / 1000;
+
+            // Draw curves
+            Object.entries(data).forEach(([label, { color, fn }]) => {
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+
+                for (let i = 0; i <= points; i++) {
+                    const n = (i / points) * maxN;
+                    const v = fn(n);
+                    const x = pad.left + (i / points) * plotW;
+                    const y = pad.top + plotH - (v / maxVal) * plotH;
+                    if (i === 0) ctx.moveTo(x, Math.max(pad.top, y));
+                    else ctx.lineTo(x, Math.max(pad.top, y));
+                }
+                ctx.stroke();
+
+                // Glow
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 8;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            });
+
+            // Legend
+            const legends = Object.entries(data);
+            let lx = pad.left + 10;
+            let ly = h - 18;
+            ctx.font = '600 11px "Inter"';
+            legends.forEach(([label, { color }]) => {
+                ctx.fillStyle = color;
+                ctx.fillRect(lx, ly - 8, 14, 3);
+                lx += 18;
+                ctx.fillStyle = '#8b95a8';
+                ctx.textAlign = 'left';
+                ctx.fillText(label, lx, ly);
+                lx += ctx.measureText(label).width + 20;
+            });
+
+            // Axes labels
+            ctx.fillStyle = '#5a6478';
+            ctx.font = '600 12px "Inter"';
+            ctx.textAlign = 'center';
+            ctx.fillText('Số phần tử (N)', w / 2, h - 2);
+            ctx.save();
+            ctx.translate(18, h / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Thời gian', 0, 0);
+            ctx.restore();
+
+            // Axis ticks
+            ctx.fillStyle = '#5a6478';
+            ctx.font = '500 10px "JetBrains Mono"';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= 5; i++) {
+                const n = (i / 5) * maxN;
+                const x = pad.left + (i / 5) * plotW;
+                ctx.fillText(Math.round(n), x, h - 38);
+            }
+        }
+
+        // ======================== INIT ========================
+        window.addEventListener('DOMContentLoaded', () => {
+            qfInit();
+            quInit();
+            wquInit();
+        });
+
+        window.addEventListener('resize', () => {
+            const active = document.querySelector('.tab-content.active');
+            if (active.id === 'tab-quickfind') renderQFCanvas();
+            else if (active.id === 'tab-quickunion') renderQUCanvas();
+            else if (active.id === 'tab-weighted') renderWQUCanvas();
+            else if (active.id === 'tab-compare') renderPerfChart();
+        });
+    </script>
+</body>
+</html>
