@@ -4,10 +4,10 @@
  * ============================================================
  *
  *  📌 Khái niệm:
- *  Stack là cấu trúc dữ liệu hoạt động theo nguyên tắc LIFO
+ *  Stack là cấu trúc dữ liệu hoạt động theo nguyên tắc LIFO (thêm đầu xóa đầu)
  *  (Last In, First Out) — phần tử được thêm vào SAU CÙNG
  *  sẽ được lấy ra ĐẦU TIÊN.
- *
+ * // đề bài có thể cài đặt stack bằng linkedlist hoặc bằng array và có resizing 
  *  🍽️ Ví dụ thực tế:
  *  - Chồng đĩa: đĩa đặt lên trên cùng sẽ được lấy ra trước
  *  - Nút Undo (Ctrl+Z): thao tác gần nhất được hoàn tác trước

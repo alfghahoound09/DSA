@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stack & Queue - Visual Explanation</title>
     <meta name="description" content="Giải thích trực quan về cấu trúc dữ liệu Stack và Queue với animation tương tác">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <style>
         /* ===== CSS Variables & Design System ===== */
         :root {
@@ -42,8 +45,18 @@
         }
 
         /* ===== Reset & Base ===== */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg-primary);
@@ -55,36 +68,57 @@
 
         /* ===== Animated Background ===== */
         .bg-pattern {
-            position: fixed; inset: 0; z-index: 0;
-            overflow: hidden; pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
         }
+
         .bg-pattern::before {
             content: '';
             position: absolute;
-            width: 600px; height: 600px;
+            width: 600px;
+            height: 600px;
             border-radius: 50%;
             background: radial-gradient(circle, var(--accent-1-glow) 0%, transparent 70%);
-            top: -200px; left: -200px;
+            top: -200px;
+            left: -200px;
             animation: floatBg 20s ease-in-out infinite;
         }
+
         .bg-pattern::after {
             content: '';
             position: absolute;
-            width: 500px; height: 500px;
+            width: 500px;
+            height: 500px;
             border-radius: 50%;
             background: radial-gradient(circle, var(--accent-2-glow) 0%, transparent 70%);
-            bottom: -150px; right: -150px;
+            bottom: -150px;
+            right: -150px;
             animation: floatBg 25s ease-in-out infinite reverse;
         }
+
         @keyframes floatBg {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(80px, 50px) scale(1.1); }
-            66% { transform: translate(-40px, -30px) scale(0.95); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(80px, 50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-40px, -30px) scale(0.95);
+            }
         }
 
         /* ===== Layout ===== */
         .container {
-            position: relative; z-index: 1;
+            position: relative;
+            z-index: 1;
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px 24px 80px;
@@ -96,19 +130,23 @@
             padding: 60px 0 50px;
             animation: fadeInUp 0.8s ease-out;
         }
+
         .hero-badge {
             display: inline-flex;
-            align-items: center; gap: 8px;
+            align-items: center;
+            gap: 8px;
             padding: 6px 18px;
             border-radius: 100px;
             background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-2-glow));
             border: 1px solid var(--border);
-            font-size: 0.8rem; font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 600;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: var(--accent-2);
             margin-bottom: 24px;
         }
+
         .hero h1 {
             font-size: clamp(2.2rem, 5vw, 3.8rem);
             font-weight: 900;
@@ -120,6 +158,7 @@
             background-clip: text;
             margin-bottom: 16px;
         }
+
         .hero p {
             font-size: 1.1rem;
             color: var(--text-secondary);
@@ -129,9 +168,13 @@
 
         /* ===== Tab Navigation ===== */
         .tab-nav {
-            display: flex; justify-content: center;
-            gap: 8px; margin-bottom: 48px; flex-wrap: wrap;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
         }
+
         .tab-btn {
             padding: 12px 28px;
             border: 1px solid var(--border);
@@ -140,46 +183,75 @@
             backdrop-filter: blur(12px);
             color: var(--text-secondary);
             font-family: inherit;
-            font-size: 0.95rem; font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            position: relative; overflow: hidden;
+            position: relative;
+            overflow: hidden;
         }
+
         .tab-btn::before {
             content: '';
-            position: absolute; inset: 0;
+            position: absolute;
+            inset: 0;
             background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            opacity: 0; transition: opacity 0.3s;
+            opacity: 0;
+            transition: opacity 0.3s;
             border-radius: inherit;
         }
+
         .tab-btn:hover {
             border-color: var(--border-hover);
             color: var(--text-primary);
             transform: translateY(-2px);
         }
+
         .tab-btn.active {
             border-color: var(--accent-1);
             color: #fff;
             box-shadow: var(--shadow-glow);
         }
-        .tab-btn.active::before { opacity: 1; }
-        .tab-btn span { position: relative; z-index: 1; }
 
-        .tab-content { display: none; animation: fadeInUp 0.5s ease-out; }
-        .tab-content.active { display: block; }
+        .tab-btn.active::before {
+            opacity: 1;
+        }
+
+        .tab-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
 
         /* ===== Section Titles ===== */
         .section-title {
-            font-size: 1.8rem; font-weight: 800;
+            font-size: 1.8rem;
+            font-weight: 800;
             margin-bottom: 12px;
-            display: flex; align-items: center; gap: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
+
         .section-title .icon {
-            width: 42px; height: 42px;
+            width: 42px;
+            height: 42px;
             border-radius: var(--radius-sm);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem; flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
         }
+
         .section-subtitle {
             color: var(--text-secondary);
             font-size: 1.05rem;
@@ -191,90 +263,156 @@
             background: var(--bg-card);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            padding: 32px; margin-bottom: 28px;
+            padding: 32px;
+            margin-bottom: 28px;
             transition: var(--transition);
-            position: relative; overflow: hidden;
+            position: relative;
+            overflow: hidden;
         }
+
         .card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 3px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
             background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
-            opacity: 0; transition: opacity 0.3s;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
+
         .card:hover {
             border-color: var(--border-hover);
             box-shadow: var(--shadow);
             transform: translateY(-2px);
         }
-        .card:hover::before { opacity: 1; }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
         .card h3 {
-            font-size: 1.25rem; font-weight: 700;
-            margin-bottom: 16px; color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
         }
 
         /* ===== Complexity Grid ===== */
         .complexity-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px; margin: 24px 0;
+            gap: 16px;
+            margin: 24px 0;
         }
+
         .complexity-item {
             background: var(--bg-secondary);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-sm);
-            padding: 20px; text-align: center;
+            padding: 20px;
+            text-align: center;
             transition: var(--transition);
         }
-        .complexity-item:hover { border-color: var(--border-hover); }
-        .complexity-label {
-            font-size: 0.8rem; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1px;
-            color: var(--text-muted); margin-bottom: 8px;
+
+        .complexity-item:hover {
+            border-color: var(--border-hover);
         }
+
+        .complexity-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
         .complexity-value {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.5rem; font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
-        .fast { color: var(--accent-4); }
-        .medium { color: var(--accent-3); }
-        .slow { color: var(--accent-5); }
+
+        .fast {
+            color: var(--accent-4);
+        }
+
+        .medium {
+            color: var(--accent-3);
+        }
+
+        .slow {
+            color: var(--accent-5);
+        }
 
         /* ===== Code Block ===== */
         .code-block {
             background: var(--bg-code);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-sm);
-            padding: 24px; margin: 20px 0;
+            padding: 24px;
+            margin: 20px 0;
             overflow-x: auto;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
             line-height: 1.8;
             position: relative;
         }
+
         .code-block .code-lang {
             position: absolute;
-            top: 12px; right: 16px;
-            font-size: 0.7rem; font-weight: 600;
+            top: 12px;
+            right: 16px;
+            font-size: 0.7rem;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .code-block pre { white-space: pre; }
-        .kw { color: #c678dd; }
-        .type { color: #e5c07b; }
-        .fn { color: #61afef; }
-        .str { color: #98c379; }
-        .num { color: #d19a66; }
-        .cmt { color: #5c6370; font-style: italic; }
-        .op { color: #56b6c2; }
+
+        .code-block pre {
+            white-space: pre;
+        }
+
+        .kw {
+            color: #c678dd;
+        }
+
+        .type {
+            color: #e5c07b;
+        }
+
+        .fn {
+            color: #61afef;
+        }
+
+        .str {
+            color: #98c379;
+        }
+
+        .num {
+            color: #d19a66;
+        }
+
+        .cmt {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .op {
+            color: #56b6c2;
+        }
 
         /* ===== Info Boxes ===== */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px; margin: 20px 0;
+            gap: 16px;
+            margin: 20px 0;
         }
+
         .info-box {
             background: var(--bg-secondary);
             border: 1px solid var(--glass-border);
@@ -282,14 +420,23 @@
             padding: 20px;
             transition: var(--transition);
         }
-        .info-box:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-        .info-box .info-icon {
-            font-size: 1.5rem; margin-bottom: 10px;
+
+        .info-box:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
         }
+
+        .info-box .info-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
         .info-box h4 {
-            font-size: 0.95rem; font-weight: 700;
+            font-size: 0.95rem;
+            font-weight: 700;
             margin-bottom: 6px;
         }
+
         .info-box p {
             font-size: 0.88rem;
             color: var(--text-secondary);
@@ -304,6 +451,7 @@
             gap: 20px;
             padding: 30px 0;
         }
+
         .stack-visual {
             position: relative;
             width: 200px;
@@ -318,6 +466,7 @@
             border-bottom: 3px solid var(--accent-1);
             border-radius: 0 0 var(--radius-sm) var(--radius-sm);
         }
+
         .stack-visual::after {
             content: '📦 STACK';
             position: absolute;
@@ -327,6 +476,7 @@
             color: var(--text-muted);
             letter-spacing: 2px;
         }
+
         .stack-element {
             width: 160px;
             height: 48px;
@@ -342,9 +492,11 @@
             animation: stackPushIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transition: var(--transition);
         }
+
         .stack-element.removing {
             animation: stackPopOut 0.4s ease-in forwards;
         }
+
         .stack-top-label {
             position: absolute;
             right: -55px;
@@ -356,16 +508,39 @@
         }
 
         @keyframes stackPushIn {
-            0% { transform: translateY(-60px) scale(0.8); opacity: 0; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
+            0% {
+                transform: translateY(-60px) scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
         }
+
         @keyframes stackPopOut {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-60px) scale(0.8);
+                opacity: 0;
+            }
         }
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
         }
 
         /* ===== Queue Visual ===== */
@@ -376,6 +551,7 @@
             gap: 20px;
             padding: 30px 0;
         }
+
         .queue-visual {
             position: relative;
             display: flex;
@@ -387,6 +563,7 @@
             border-top: 3px solid var(--accent-2);
             border-bottom: 3px solid var(--accent-2);
         }
+
         .queue-visual::before {
             content: 'FRONT →';
             position: absolute;
@@ -397,6 +574,7 @@
             letter-spacing: 1px;
             white-space: nowrap;
         }
+
         .queue-visual::after {
             content: '← REAR';
             position: absolute;
@@ -407,6 +585,7 @@
             letter-spacing: 1px;
             white-space: nowrap;
         }
+
         .queue-element {
             width: 64px;
             height: 56px;
@@ -421,25 +600,51 @@
             animation: queueEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transition: var(--transition);
         }
+
         .queue-element.removing {
             animation: queueLeave 0.4s ease-in forwards;
         }
+
         .queue-arrow {
             font-size: 1.2rem;
             color: var(--text-muted);
             animation: arrowPulse 2s ease-in-out infinite;
         }
+
         @keyframes queueEnter {
-            0% { transform: translateX(60px) scale(0.8); opacity: 0; }
-            100% { transform: translateX(0) scale(1); opacity: 1; }
+            0% {
+                transform: translateX(60px) scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
         }
+
         @keyframes queueLeave {
-            0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(-60px) scale(0.8); opacity: 0; }
+            0% {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(-60px) scale(0.8);
+                opacity: 0;
+            }
         }
+
         @keyframes arrowPulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         /* ===== Control Buttons ===== */
@@ -451,6 +656,7 @@
             align-items: center;
             margin: 16px 0;
         }
+
         .ctrl-input {
             width: 80px;
             padding: 10px 14px;
@@ -464,7 +670,12 @@
             transition: var(--transition);
             outline: none;
         }
-        .ctrl-input:focus { border-color: var(--accent-1); box-shadow: 0 0 12px var(--accent-1-glow); }
+
+        .ctrl-input:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 12px var(--accent-1-glow);
+        }
+
         .ctrl-btn {
             padding: 10px 22px;
             border: none;
@@ -480,15 +691,51 @@
             align-items: center;
             gap: 6px;
         }
-        .ctrl-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-        .ctrl-btn:active { transform: translateY(0); }
-        .ctrl-btn.push-btn { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
-        .ctrl-btn.pop-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-        .ctrl-btn.peek-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
-        .ctrl-btn.reset-btn { background: linear-gradient(135deg, var(--accent-1), #4f46e5); color: #fff; }
-        .ctrl-btn.enqueue-btn { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
-        .ctrl-btn.dequeue-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-        .ctrl-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .ctrl-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(0);
+        }
+
+        .ctrl-btn.push-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .ctrl-btn.pop-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+        }
+
+        .ctrl-btn.peek-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+        }
+
+        .ctrl-btn.reset-btn {
+            background: linear-gradient(135deg, var(--accent-1), #4f46e5);
+            color: #fff;
+        }
+
+        .ctrl-btn.enqueue-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .ctrl-btn.dequeue-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+        }
+
+        .ctrl-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
 
         /* ===== Log Output ===== */
         .log-panel {
@@ -503,17 +750,38 @@
             line-height: 1.6;
             margin-top: 16px;
         }
+
         .log-panel .log-line {
             padding: 2px 0;
             animation: logFade 0.3s ease-out;
         }
-        .log-success { color: var(--accent-4); }
-        .log-error { color: var(--accent-5); }
-        .log-info { color: var(--accent-2); }
-        .log-warn { color: var(--accent-3); }
+
+        .log-success {
+            color: var(--accent-4);
+        }
+
+        .log-error {
+            color: var(--accent-5);
+        }
+
+        .log-info {
+            color: var(--accent-2);
+        }
+
+        .log-warn {
+            color: var(--accent-3);
+        }
+
         @keyframes logFade {
-            0% { opacity: 0; transform: translateX(-10px); }
-            100% { opacity: 1; transform: translateX(0); }
+            0% {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         /* ===== Status Bar ===== */
@@ -524,6 +792,7 @@
             flex-wrap: wrap;
             margin: 16px 0;
         }
+
         .status-item {
             display: flex;
             align-items: center;
@@ -531,7 +800,11 @@
             font-size: 0.85rem;
             color: var(--text-secondary);
         }
-        .status-item .status-label { font-weight: 600; }
+
+        .status-item .status-label {
+            font-weight: 600;
+        }
+
         .status-item .status-value {
             font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
@@ -548,11 +821,14 @@
             border-radius: var(--radius-sm);
             overflow: hidden;
         }
-        .compare-table th, .compare-table td {
+
+        .compare-table th,
+        .compare-table td {
             padding: 14px 20px;
             text-align: left;
             border-bottom: 1px solid var(--glass-border);
         }
+
         .compare-table th {
             background: var(--bg-secondary);
             font-size: 0.8rem;
@@ -561,31 +837,71 @@
             letter-spacing: 1px;
             color: var(--text-muted);
         }
+
         .compare-table td {
             font-size: 0.92rem;
             color: var(--text-secondary);
         }
+
         .compare-table tr:hover td {
             background: var(--bg-card-hover);
             color: var(--text-primary);
         }
-        .compare-table .highlight-stack { color: var(--accent-1); font-weight: 600; }
-        .compare-table .highlight-queue { color: var(--accent-2); font-weight: 600; }
+
+        .compare-table .highlight-stack {
+            color: var(--accent-1);
+            font-weight: 600;
+        }
+
+        .compare-table .highlight-queue {
+            color: var(--accent-2);
+            font-weight: 600;
+        }
 
         /* ===== Animations ===== */
         @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ===== Responsive ===== */
         @media (max-width: 768px) {
-            .container { padding: 20px 16px 60px; }
-            .hero { padding: 40px 0 30px; }
-            .card { padding: 24px; }
-            .queue-visual::before { left: -10px; top: -24px; position: absolute; }
-            .queue-visual::after { right: -10px; bottom: -24px; position: absolute; }
-            .queue-visual { min-width: 200px; padding: 16px; margin: 30px 0; }
+            .container {
+                padding: 20px 16px 60px;
+            }
+
+            .hero {
+                padding: 40px 0 30px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .queue-visual::before {
+                left: -10px;
+                top: -24px;
+                position: absolute;
+            }
+
+            .queue-visual::after {
+                right: -10px;
+                bottom: -24px;
+                position: absolute;
+            }
+
+            .queue-visual {
+                min-width: 200px;
+                padding: 16px;
+                margin: 30px 0;
+            }
         }
 
         /* ===== Concept Flow ===== */
@@ -597,6 +913,7 @@
             margin: 24px 0;
             flex-wrap: wrap;
         }
+
         .concept-step {
             background: var(--bg-secondary);
             border: 1px solid var(--glass-border);
@@ -606,7 +923,12 @@
             transition: var(--transition);
             min-width: 100px;
         }
-        .concept-step:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+
+        .concept-step:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+        }
+
         .concept-step .step-num {
             font-size: 0.7rem;
             font-weight: 700;
@@ -615,10 +937,12 @@
             color: var(--text-muted);
             margin-bottom: 4px;
         }
+
         .concept-step .step-label {
             font-size: 1rem;
             font-weight: 700;
         }
+
         .concept-arrow {
             font-size: 1.3rem;
             color: var(--text-muted);
@@ -640,6 +964,7 @@
             gap: 14px;
             margin: 20px 0;
         }
+
         .use-case-item {
             background: var(--bg-secondary);
             border: 1px solid var(--glass-border);
@@ -650,158 +975,188 @@
             gap: 12px;
             transition: var(--transition);
         }
-        .use-case-item:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-        .use-case-item .uc-icon { font-size: 1.4rem; flex-shrink: 0; }
-        .use-case-item .uc-text h5 { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; }
-        .use-case-item .uc-text p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; }
+
+        .use-case-item:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .use-case-item .uc-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .use-case-item .uc-text h5 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .use-case-item .uc-text p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="bg-pattern"></div>
+    <div class="bg-pattern"></div>
 
-<div class="container">
+    <div class="container">
 
-    <!-- ===== HERO ===== -->
-    <header class="hero">
-        <div class="hero-badge">📚 Data Structures</div>
-        <h1>Stack & Queue</h1>
-        <p>Giải thích trực quan về hai cấu trúc dữ liệu nền tảng: Stack (Ngăn xếp) và Queue (Hàng đợi) với animation tương tác</p>
-    </header>
+        <!-- ===== HERO ===== -->
+        <header class="hero">
+            <div class="hero-badge">📚 Data Structures</div>
+            <h1>Stack & Queue</h1>
+            <p>Giải thích trực quan về hai cấu trúc dữ liệu nền tảng: Stack (Ngăn xếp) và Queue (Hàng đợi) với animation
+                tương tác</p>
+        </header>
 
-    <!-- ===== TAB NAV ===== -->
-    <nav class="tab-nav" id="tabNav">
-        <button class="tab-btn active" data-tab="stack" onclick="switchTab('stack')"><span>📥 Stack (LIFO)</span></button>
-        <button class="tab-btn" data-tab="queue" onclick="switchTab('queue')"><span>🚶 Queue (FIFO)</span></button>
-        <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')"><span>⚖️ So sánh</span></button>
-    </nav>
+        <!-- ===== TAB NAV ===== -->
+        <nav class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="stack" onclick="switchTab('stack')"><span>📥 Stack
+                    (LIFO)</span></button>
+            <button class="tab-btn" data-tab="queue" onclick="switchTab('queue')"><span>🚶 Queue (FIFO)</span></button>
+            <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')"><span>⚖️ So sánh</span></button>
+        </nav>
 
-    <!-- ============================================================ -->
-    <!--                      TAB 1: STACK                            -->
-    <!-- ============================================================ -->
-    <section class="tab-content active" id="tab-stack">
+        <!-- ============================================================ -->
+        <!--                      TAB 1: STACK                            -->
+        <!-- ============================================================ -->
+        <section class="tab-content active" id="tab-stack">
 
-        <!-- Khái niệm -->
-        <div class="section-title">
-            <div class="icon" style="background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-6-glow));">📥</div>
-            Stack — Ngăn xếp
-        </div>
-        <p class="section-subtitle">Cấu trúc dữ liệu hoạt động theo nguyên tắc <strong>LIFO</strong> (Last In, First Out) — phần tử vào sau cùng được lấy ra đầu tiên.</p>
+            <!-- Khái niệm -->
+            <div class="section-title">
+                <div class="icon"
+                    style="background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-6-glow));">📥</div>
+                Stack — Ngăn xếp
+            </div>
+            <p class="section-subtitle">Cấu trúc dữ liệu hoạt động theo nguyên tắc <strong>LIFO</strong> (Last In, First
+                Out) — phần tử vào sau cùng được lấy ra đầu tiên.</p>
 
-        <div class="card">
-            <h3>🧠 Hiểu nhanh qua ví dụ thực tế</h3>
-            <div class="info-grid">
-                <div class="info-box">
-                    <div class="info-icon">🍽️</div>
-                    <h4>Chồng đĩa</h4>
-                    <p>Đĩa đặt lên trên cùng sẽ được lấy ra trước. Bạn không thể rút đĩa ở giữa mà không lấy đĩa trên ra.</p>
-                </div>
-                <div class="info-box">
-                    <div class="info-icon">↩️</div>
-                    <h4>Nút Undo (Ctrl+Z)</h4>
-                    <p>Mỗi thao tác được push vào stack. Khi undo, thao tác gần nhất (trên cùng) được pop ra và hoàn tác.</p>
-                </div>
-                <div class="info-box">
-                    <div class="info-icon">🌐</div>
-                    <h4>Lịch sử trình duyệt</h4>
-                    <p>Nút Back quay lại trang gần nhất trước đó — đúng nguyên tắc LIFO.</p>
-                </div>
-                <div class="info-box">
-                    <div class="info-icon">🔄</div>
-                    <h4>Call Stack (Đệ quy)</h4>
-                    <p>Khi gọi hàm đệ quy, hàm gọi cuối cùng sẽ return trước — hệ thống dùng stack để quản lý.</p>
+            <div class="card">
+                <h3>🧠 Hiểu nhanh qua ví dụ thực tế</h3>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-icon">🍽️</div>
+                        <h4>Chồng đĩa</h4>
+                        <p>Đĩa đặt lên trên cùng sẽ được lấy ra trước. Bạn không thể rút đĩa ở giữa mà không lấy đĩa
+                            trên ra.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">↩️</div>
+                        <h4>Nút Undo (Ctrl+Z)</h4>
+                        <p>Mỗi thao tác được push vào stack. Khi undo, thao tác gần nhất (trên cùng) được pop ra và hoàn
+                            tác.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">🌐</div>
+                        <h4>Lịch sử trình duyệt</h4>
+                        <p>Nút Back quay lại trang gần nhất trước đó — đúng nguyên tắc LIFO.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">🔄</div>
+                        <h4>Call Stack (Đệ quy)</h4>
+                        <p>Khi gọi hàm đệ quy, hàm gọi cuối cùng sẽ return trước — hệ thống dùng stack để quản lý.</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Concept Flow -->
-        <div class="card">
-            <h3>🔄 Nguyên tắc LIFO</h3>
-            <div class="concept-flow">
-                <div class="concept-step">
-                    <div class="step-num">Bước 1</div>
-                    <div class="step-label" style="color: var(--accent-4);">Push A</div>
+            <!-- Concept Flow -->
+            <div class="card">
+                <h3>🔄 Nguyên tắc LIFO</h3>
+                <div class="concept-flow">
+                    <div class="concept-step">
+                        <div class="step-num">Bước 1</div>
+                        <div class="step-label" style="color: var(--accent-4);">Push A</div>
+                    </div>
+                    <span class="concept-arrow">→</span>
+                    <div class="concept-step">
+                        <div class="step-num">Bước 2</div>
+                        <div class="step-label" style="color: var(--accent-2);">Push B</div>
+                    </div>
+                    <span class="concept-arrow">→</span>
+                    <div class="concept-step">
+                        <div class="step-num">Bước 3</div>
+                        <div class="step-label" style="color: var(--accent-1);">Push C</div>
+                    </div>
+                    <span class="concept-arrow">→</span>
+                    <div class="concept-step">
+                        <div class="step-num">Pop</div>
+                        <div class="step-label" style="color: var(--accent-5);">Ra C !</div>
+                    </div>
                 </div>
-                <span class="concept-arrow">→</span>
-                <div class="concept-step">
-                    <div class="step-num">Bước 2</div>
-                    <div class="step-label" style="color: var(--accent-2);">Push B</div>
-                </div>
-                <span class="concept-arrow">→</span>
-                <div class="concept-step">
-                    <div class="step-num">Bước 3</div>
-                    <div class="step-label" style="color: var(--accent-1);">Push C</div>
-                </div>
-                <span class="concept-arrow">→</span>
-                <div class="concept-step">
-                    <div class="step-num">Pop</div>
-                    <div class="step-label" style="color: var(--accent-5);">Ra C !</div>
-                </div>
+                <p style="text-align:center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 12px;">
+                    C vào <strong>sau cùng</strong> nhưng lại được lấy ra <strong>đầu tiên</strong> → Last In, First Out
+                </p>
             </div>
-            <p style="text-align:center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 12px;">
-                C vào <strong>sau cùng</strong> nhưng lại được lấy ra <strong>đầu tiên</strong> → Last In, First Out
-            </p>
-        </div>
 
-        <!-- Độ phức tạp -->
-        <div class="card">
-            <h3>📊 Độ phức tạp (Time Complexity)</h3>
-            <div class="complexity-grid">
-                <div class="complexity-item">
-                    <div class="complexity-label">Push</div>
-                    <div class="complexity-value fast">O(1)*</div>
+            <!-- Độ phức tạp -->
+            <div class="card">
+                <h3>📊 Độ phức tạp (Time Complexity)</h3>
+                <div class="complexity-grid">
+                    <div class="complexity-item">
+                        <div class="complexity-label">Push</div>
+                        <div class="complexity-value fast">O(1)*</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Pop</div>
+                        <div class="complexity-value fast">O(1)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Peek</div>
+                        <div class="complexity-value fast">O(1)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Search</div>
+                        <div class="complexity-value slow">O(n)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Space</div>
+                        <div class="complexity-value medium">O(n)</div>
+                    </div>
                 </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Pop</div>
-                    <div class="complexity-value fast">O(1)</div>
-                </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Peek</div>
-                    <div class="complexity-value fast">O(1)</div>
-                </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Search</div>
-                    <div class="complexity-value slow">O(n)</div>
-                </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Space</div>
-                    <div class="complexity-value medium">O(n)</div>
-                </div>
+                <p style="color: var(--text-muted); font-size: 0.82rem;">* Push là O(1) amortized — thỉnh thoảng phải
+                    resize mảng (O(n)) nhưng trung bình vẫn là O(1).</p>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.82rem;">* Push là O(1) amortized — thỉnh thoảng phải resize mảng (O(n)) nhưng trung bình vẫn là O(1).</p>
-        </div>
 
-        <!-- Interactive Visual -->
-        <div class="card">
-            <h3>🎮 Tương tác — Thử Push / Pop / Peek</h3>
-            <div class="controls">
-                <input type="number" id="stackInput" class="ctrl-input" value="10" min="0" max="999" placeholder="Giá trị">
-                <button class="ctrl-btn push-btn" onclick="stackPush()">⬆ Push</button>
-                <button class="ctrl-btn pop-btn" onclick="stackPop()">⬇ Pop</button>
-                <button class="ctrl-btn peek-btn" onclick="stackPeek()">👁 Peek</button>
-                <button class="ctrl-btn reset-btn" onclick="stackReset()">↺ Reset</button>
-            </div>
-            <div class="status-bar" id="stackStatus">
-                <div class="status-item"><span class="status-label">Size:</span> <span class="status-value" id="stackSize">0</span></div>
-                <div class="status-item"><span class="status-label">Top:</span> <span class="status-value" id="stackTop">—</span></div>
-                <div class="status-item"><span class="status-label">isEmpty:</span> <span class="status-value" id="stackEmpty">true</span></div>
-            </div>
-            <div class="stack-container">
-                <div class="stack-visual" id="stackVisual">
-                    <div class="empty-state" id="stackEmptyState">Stack rỗng — hãy Push phần tử!</div>
+            <!-- Interactive Visual -->
+            <div class="card">
+                <h3>🎮 Tương tác — Thử Push / Pop / Peek</h3>
+                <div class="controls">
+                    <input type="number" id="stackInput" class="ctrl-input" value="10" min="0" max="999"
+                        placeholder="Giá trị">
+                    <button class="ctrl-btn push-btn" onclick="stackPush()">⬆ Push</button>
+                    <button class="ctrl-btn pop-btn" onclick="stackPop()">⬇ Pop</button>
+                    <button class="ctrl-btn peek-btn" onclick="stackPeek()">👁 Peek</button>
+                    <button class="ctrl-btn reset-btn" onclick="stackReset()">↺ Reset</button>
+                </div>
+                <div class="status-bar" id="stackStatus">
+                    <div class="status-item"><span class="status-label">Size:</span> <span class="status-value"
+                            id="stackSize">0</span></div>
+                    <div class="status-item"><span class="status-label">Top:</span> <span class="status-value"
+                            id="stackTop">—</span></div>
+                    <div class="status-item"><span class="status-label">isEmpty:</span> <span class="status-value"
+                            id="stackEmpty">true</span></div>
+                </div>
+                <div class="stack-container">
+                    <div class="stack-visual" id="stackVisual">
+                        <div class="empty-state" id="stackEmptyState">Stack rỗng — hãy Push phần tử!</div>
+                    </div>
+                </div>
+                <div class="log-panel" id="stackLog">
+                    <div class="log-line log-info">// Sẵn sàng — nhập giá trị và nhấn Push!</div>
                 </div>
             </div>
-            <div class="log-panel" id="stackLog">
-                <div class="log-line log-info">// Sẵn sàng — nhập giá trị và nhấn Push!</div>
-            </div>
-        </div>
 
-        <!-- Code Java -->
-        <div class="card">
-            <h3>💻 Code Java — Stack (Array-based)</h3>
-            <div class="code-block">
-                <span class="code-lang">Java</span>
-<pre><span class="kw">public class</span> <span class="type">Stack</span> {
+            <!-- Code Java -->
+            <div class="card">
+                <h3>💻 Code Java — Stack (Array-based)</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre><span class="kw">public class</span> <span class="type">Stack</span> {
     <span class="kw">private</span> <span class="type">int</span>[] data;   <span class="cmt">// Mảng lưu trữ phần tử</span>
     <span class="kw">private</span> <span class="type">int</span> top;      <span class="cmt">// Index phần tử trên cùng (-1 = rỗng)</span>
 
@@ -833,137 +1188,145 @@
     <span class="kw">public boolean</span> <span class="fn">isEmpty</span>() { <span class="kw">return</span> top <span class="op">==</span> <span class="num">-1</span>; }
     <span class="kw">public</span> <span class="type">int</span> <span class="fn">size</span>()      { <span class="kw">return</span> top <span class="op">+</span> <span class="num">1</span>; }
 }</pre>
-            </div>
-        </div>
-
-    </section>
-
-    <!-- ============================================================ -->
-    <!--                      TAB 2: QUEUE                            -->
-    <!-- ============================================================ -->
-    <section class="tab-content" id="tab-queue">
-
-        <div class="section-title">
-            <div class="icon" style="background: linear-gradient(135deg, var(--accent-2-glow), var(--accent-4-glow));">🚶</div>
-            Queue — Hàng đợi
-        </div>
-        <p class="section-subtitle">Cấu trúc dữ liệu hoạt động theo nguyên tắc <strong>FIFO</strong> (First In, First Out) — phần tử vào trước được lấy ra trước.</p>
-
-        <div class="card">
-            <h3>🧠 Hiểu nhanh qua ví dụ thực tế</h3>
-            <div class="info-grid">
-                <div class="info-box">
-                    <div class="info-icon">🎫</div>
-                    <h4>Xếp hàng mua vé</h4>
-                    <p>Người đến trước sẽ được phục vụ trước. Không ai được chen hàng — đúng FIFO.</p>
-                </div>
-                <div class="info-box">
-                    <div class="info-icon">🖨️</div>
-                    <h4>Hàng đợi máy in</h4>
-                    <p>Tài liệu gửi trước sẽ được in trước, các tài liệu gửi sau sẽ chờ trong hàng đợi.</p>
-                </div>
-                <div class="info-box">
-                    <div class="info-icon">💬</div>
-                    <h4>Tin nhắn chat</h4>
-                    <p>Tin nhắn gửi trước hiển thị trước — thứ tự được bảo toàn nhờ queue.</p>
-                </div>
-                <div class="info-box">
-                    <div class="info-icon">🔍</div>
-                    <h4>BFS (Duyệt theo chiều rộng)</h4>
-                    <p>Thuật toán BFS sử dụng queue để duyệt qua tất cả đỉnh theo từng "lớp" kề nhau.</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Concept Flow -->
-        <div class="card">
-            <h3>🔄 Nguyên tắc FIFO</h3>
-            <div class="concept-flow">
-                <div class="concept-step">
-                    <div class="step-num">Bước 1</div>
-                    <div class="step-label" style="color: var(--accent-4);">Enqueue A</div>
-                </div>
-                <span class="concept-arrow">→</span>
-                <div class="concept-step">
-                    <div class="step-num">Bước 2</div>
-                    <div class="step-label" style="color: var(--accent-2);">Enqueue B</div>
-                </div>
-                <span class="concept-arrow">→</span>
-                <div class="concept-step">
-                    <div class="step-num">Bước 3</div>
-                    <div class="step-label" style="color: var(--accent-1);">Enqueue C</div>
-                </div>
-                <span class="concept-arrow">→</span>
-                <div class="concept-step">
-                    <div class="step-num">Dequeue</div>
-                    <div class="step-label" style="color: var(--accent-5);">Ra A !</div>
-                </div>
-            </div>
-            <p style="text-align:center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 12px;">
-                A vào <strong>đầu tiên</strong> và cũng được lấy ra <strong>đầu tiên</strong> → First In, First Out
-            </p>
-        </div>
+        </section>
 
-        <!-- Độ phức tạp -->
-        <div class="card">
-            <h3>📊 Độ phức tạp (Time Complexity)</h3>
-            <div class="complexity-grid">
-                <div class="complexity-item">
-                    <div class="complexity-label">Enqueue</div>
-                    <div class="complexity-value fast">O(1)</div>
-                </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Dequeue</div>
-                    <div class="complexity-value fast">O(1)</div>
-                </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Peek</div>
-                    <div class="complexity-value fast">O(1)</div>
-                </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Search</div>
-                    <div class="complexity-value slow">O(n)</div>
-                </div>
-                <div class="complexity-item">
-                    <div class="complexity-label">Space</div>
-                    <div class="complexity-value medium">O(n)</div>
-                </div>
-            </div>
-            <p style="color: var(--text-muted); font-size: 0.82rem;">Triển khai bằng Linked List giúp enqueue và dequeue đều O(1) mà không cần resize.</p>
-        </div>
+        <!-- ============================================================ -->
+        <!--                      TAB 2: QUEUE                            -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-queue">
 
-        <!-- Interactive Visual -->
-        <div class="card">
-            <h3>🎮 Tương tác — Thử Enqueue / Dequeue / Peek</h3>
-            <div class="controls">
-                <input type="number" id="queueInput" class="ctrl-input" value="10" min="0" max="999" placeholder="Giá trị">
-                <button class="ctrl-btn enqueue-btn" onclick="queueEnqueue()">➡ Enqueue</button>
-                <button class="ctrl-btn dequeue-btn" onclick="queueDequeue()">⬅ Dequeue</button>
-                <button class="ctrl-btn peek-btn" onclick="queuePeek()">👁 Peek</button>
-                <button class="ctrl-btn reset-btn" onclick="queueReset()">↺ Reset</button>
+            <div class="section-title">
+                <div class="icon"
+                    style="background: linear-gradient(135deg, var(--accent-2-glow), var(--accent-4-glow));">🚶</div>
+                Queue — Hàng đợi
             </div>
-            <div class="status-bar">
-                <div class="status-item"><span class="status-label">Size:</span> <span class="status-value" id="queueSize">0</span></div>
-                <div class="status-item"><span class="status-label">Front:</span> <span class="status-value" id="queueFront">—</span></div>
-                <div class="status-item"><span class="status-label">Rear:</span> <span class="status-value" id="queueRear">—</span></div>
-                <div class="status-item"><span class="status-label">isEmpty:</span> <span class="status-value" id="queueEmpty">true</span></div>
-            </div>
-            <div class="queue-container">
-                <div class="queue-visual" id="queueVisual">
-                    <div class="empty-state" id="queueEmptyState">Queue rỗng — hãy Enqueue phần tử!</div>
+            <p class="section-subtitle">Cấu trúc dữ liệu hoạt động theo nguyên tắc <strong>FIFO</strong> (First In,
+                First Out) — phần tử vào trước được lấy ra trước.</p>
+
+            <div class="card">
+                <h3>🧠 Hiểu nhanh qua ví dụ thực tế</h3>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-icon">🎫</div>
+                        <h4>Xếp hàng mua vé</h4>
+                        <p>Người đến trước sẽ được phục vụ trước. Không ai được chen hàng — đúng FIFO.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">🖨️</div>
+                        <h4>Hàng đợi máy in</h4>
+                        <p>Tài liệu gửi trước sẽ được in trước, các tài liệu gửi sau sẽ chờ trong hàng đợi.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">💬</div>
+                        <h4>Tin nhắn chat</h4>
+                        <p>Tin nhắn gửi trước hiển thị trước — thứ tự được bảo toàn nhờ queue.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">🔍</div>
+                        <h4>BFS (Duyệt theo chiều rộng)</h4>
+                        <p>Thuật toán BFS sử dụng queue để duyệt qua tất cả đỉnh theo từng "lớp" kề nhau.</p>
+                    </div>
                 </div>
             </div>
-            <div class="log-panel" id="queueLog">
-                <div class="log-line log-info">// Sẵn sàng — nhập giá trị và nhấn Enqueue!</div>
-            </div>
-        </div>
 
-        <!-- Code Java -->
-        <div class="card">
-            <h3>💻 Code Java — Queue (Linked-List-based)</h3>
-            <div class="code-block">
-                <span class="code-lang">Java</span>
-<pre><span class="kw">public class</span> <span class="type">Queue</span> {
+            <!-- Concept Flow -->
+            <div class="card">
+                <h3>🔄 Nguyên tắc FIFO</h3>
+                <div class="concept-flow">
+                    <div class="concept-step">
+                        <div class="step-num">Bước 1</div>
+                        <div class="step-label" style="color: var(--accent-4);">Enqueue A</div>
+                    </div>
+                    <span class="concept-arrow">→</span>
+                    <div class="concept-step">
+                        <div class="step-num">Bước 2</div>
+                        <div class="step-label" style="color: var(--accent-2);">Enqueue B</div>
+                    </div>
+                    <span class="concept-arrow">→</span>
+                    <div class="concept-step">
+                        <div class="step-num">Bước 3</div>
+                        <div class="step-label" style="color: var(--accent-1);">Enqueue C</div>
+                    </div>
+                    <span class="concept-arrow">→</span>
+                    <div class="concept-step">
+                        <div class="step-num">Dequeue</div>
+                        <div class="step-label" style="color: var(--accent-5);">Ra A !</div>
+                    </div>
+                </div>
+                <p style="text-align:center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 12px;">
+                    A vào <strong>đầu tiên</strong> và cũng được lấy ra <strong>đầu tiên</strong> → First In, First Out
+                </p>
+            </div>
+
+            <!-- Độ phức tạp -->
+            <div class="card">
+                <h3>📊 Độ phức tạp (Time Complexity)</h3>
+                <div class="complexity-grid">
+                    <div class="complexity-item">
+                        <div class="complexity-label">Enqueue</div>
+                        <div class="complexity-value fast">O(1)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Dequeue</div>
+                        <div class="complexity-value fast">O(1)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Peek</div>
+                        <div class="complexity-value fast">O(1)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Search</div>
+                        <div class="complexity-value slow">O(n)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-label">Space</div>
+                        <div class="complexity-value medium">O(n)</div>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.82rem;">Triển khai bằng Linked List giúp enqueue và
+                    dequeue đều O(1) mà không cần resize.</p>
+            </div>
+
+            <!-- Interactive Visual -->
+            <div class="card">
+                <h3>🎮 Tương tác — Thử Enqueue / Dequeue / Peek</h3>
+                <div class="controls">
+                    <input type="number" id="queueInput" class="ctrl-input" value="10" min="0" max="999"
+                        placeholder="Giá trị">
+                    <button class="ctrl-btn enqueue-btn" onclick="queueEnqueue()">➡ Enqueue</button>
+                    <button class="ctrl-btn dequeue-btn" onclick="queueDequeue()">⬅ Dequeue</button>
+                    <button class="ctrl-btn peek-btn" onclick="queuePeek()">👁 Peek</button>
+                    <button class="ctrl-btn reset-btn" onclick="queueReset()">↺ Reset</button>
+                </div>
+                <div class="status-bar">
+                    <div class="status-item"><span class="status-label">Size:</span> <span class="status-value"
+                            id="queueSize">0</span></div>
+                    <div class="status-item"><span class="status-label">Front:</span> <span class="status-value"
+                            id="queueFront">—</span></div>
+                    <div class="status-item"><span class="status-label">Rear:</span> <span class="status-value"
+                            id="queueRear">—</span></div>
+                    <div class="status-item"><span class="status-label">isEmpty:</span> <span class="status-value"
+                            id="queueEmpty">true</span></div>
+                </div>
+                <div class="queue-container">
+                    <div class="queue-visual" id="queueVisual">
+                        <div class="empty-state" id="queueEmptyState">Queue rỗng — hãy Enqueue phần tử!</div>
+                    </div>
+                </div>
+                <div class="log-panel" id="queueLog">
+                    <div class="log-line log-info">// Sẵn sàng — nhập giá trị và nhấn Enqueue!</div>
+                </div>
+            </div>
+
+            <!-- Code Java -->
+            <div class="card">
+                <h3>💻 Code Java — Queue (Linked-List-based)</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre><span class="kw">public class</span> <span class="type">Queue</span> {
     <span class="kw">private static class</span> <span class="type">Node</span> {
         <span class="type">int</span> data;
         <span class="type">Node</span> next;
@@ -995,460 +1358,465 @@
     <span class="kw">public boolean</span> <span class="fn">isEmpty</span>() { <span class="kw">return</span> front <span class="op">==</span> <span class="kw">null</span>; }
     <span class="kw">public</span> <span class="type">int</span> <span class="fn">size</span>()      { <span class="kw">return</span> count; }
 }</pre>
-            </div>
-        </div>
-
-    </section>
-
-    <!-- ============================================================ -->
-    <!--                    TAB 3: SO SÁNH                            -->
-    <!-- ============================================================ -->
-    <section class="tab-content" id="tab-compare">
-
-        <div class="section-title">
-            <div class="icon" style="background: linear-gradient(135deg, var(--accent-3-glow), var(--accent-6-glow));">⚖️</div>
-            So sánh Stack vs Queue
-        </div>
-        <p class="section-subtitle">Hai cấu trúc dữ liệu nền tảng, mỗi loại phù hợp với những bài toán khác nhau.</p>
-
-        <div class="card">
-            <h3>📋 Bảng so sánh tổng quan</h3>
-            <div style="overflow-x: auto;">
-                <table class="compare-table">
-                    <thead>
-                        <tr>
-                            <th>Tiêu chí</th>
-                            <th>📥 Stack</th>
-                            <th>🚶 Queue</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Nguyên tắc</td>
-                            <td class="highlight-stack">LIFO (Last In, First Out)</td>
-                            <td class="highlight-queue">FIFO (First In, First Out)</td>
-                        </tr>
-                        <tr>
-                            <td>Thêm phần tử</td>
-                            <td>push() — thêm vào <strong>đỉnh</strong></td>
-                            <td>enqueue() — thêm vào <strong>cuối</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Lấy phần tử</td>
-                            <td>pop() — lấy từ <strong>đỉnh</strong></td>
-                            <td>dequeue() — lấy từ <strong>đầu</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Xem phần tử</td>
-                            <td>peek() — xem <strong>đỉnh</strong></td>
-                            <td>peek() — xem <strong>đầu</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Triển khai phổ biến</td>
-                            <td>Array / Linked List</td>
-                            <td>Linked List / Circular Array</td>
-                        </tr>
-                        <tr>
-                            <td>Insert / Remove</td>
-                            <td class="highlight-stack">O(1)</td>
-                            <td class="highlight-queue">O(1)</td>
-                        </tr>
-                        <tr>
-                            <td>Search</td>
-                            <td>O(n)</td>
-                            <td>O(n)</td>
-                        </tr>
-                        <tr>
-                            <td>Ví dụ thực tế</td>
-                            <td>Undo, Call Stack, DFS</td>
-                            <td>Xếp hàng, BFS, Scheduler</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>📥 Khi nào dùng Stack?</h3>
-            <div class="use-case-grid">
-                <div class="use-case-item">
-                    <div class="uc-icon">↩️</div>
-                    <div class="uc-text">
-                        <h5>Undo / Redo</h5>
-                        <p>Lưu lại lịch sử thao tác, hoàn tác theo thứ tự ngược.</p>
-                    </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">🧮</div>
-                    <div class="uc-text">
-                        <h5>Tính biểu thức</h5>
-                        <p>Chuyển Infix → Postfix, tính toán biểu thức hậu tố.</p>
-                    </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">🔄</div>
-                    <div class="uc-text">
-                        <h5>Đệ quy</h5>
-                        <p>Hệ thống dùng Call Stack để quản lý các lời gọi hàm.</p>
-                    </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">🗺️</div>
-                    <div class="uc-text">
-                        <h5>DFS (Duyệt sâu)</h5>
-                        <p>Duyệt đồ thị/cây theo chiều sâu bằng stack.</p>
-                    </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">✅</div>
-                    <div class="uc-text">
-                        <h5>Kiểm tra ngoặc</h5>
-                        <p>Balanced Parentheses — kiểm tra chuỗi ngoặc có hợp lệ không.</p>
-                    </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">📜</div>
-                    <div class="uc-text">
-                        <h5>Lịch sử trình duyệt</h5>
-                        <p>Nút Back/Forward sử dụng hai stack.</p>
-                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h3>🚶 Khi nào dùng Queue?</h3>
-            <div class="use-case-grid">
-                <div class="use-case-item">
-                    <div class="uc-icon">🔍</div>
-                    <div class="uc-text">
-                        <h5>BFS (Duyệt rộng)</h5>
-                        <p>Duyệt đồ thị/cây theo chiều rộng, xử lý từng "lớp".</p>
-                    </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    TAB 3: SO SÁNH                            -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-compare">
+
+            <div class="section-title">
+                <div class="icon"
+                    style="background: linear-gradient(135deg, var(--accent-3-glow), var(--accent-6-glow));">⚖️</div>
+                So sánh Stack vs Queue
+            </div>
+            <p class="section-subtitle">Hai cấu trúc dữ liệu nền tảng, mỗi loại phù hợp với những bài toán khác nhau.
+            </p>
+
+            <div class="card">
+                <h3>📋 Bảng so sánh tổng quan</h3>
+                <div style="overflow-x: auto;">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th>Tiêu chí</th>
+                                <th>📥 Stack</th>
+                                <th>🚶 Queue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nguyên tắc</td>
+                                <td class="highlight-stack">LIFO (Last In, First Out)</td>
+                                <td class="highlight-queue">FIFO (First In, First Out)</td>
+                            </tr>
+                            <tr>
+                                <td>Thêm phần tử</td>
+                                <td>push() — thêm vào <strong>đỉnh</strong></td>
+                                <td>enqueue() — thêm vào <strong>cuối</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Lấy phần tử</td>
+                                <td>pop() — lấy từ <strong>đỉnh</strong></td>
+                                <td>dequeue() — lấy từ <strong>đầu</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Xem phần tử</td>
+                                <td>peek() — xem <strong>đỉnh</strong></td>
+                                <td>peek() — xem <strong>đầu</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Triển khai phổ biến</td>
+                                <td>Array / Linked List</td>
+                                <td>Linked List / Circular Array</td>
+                            </tr>
+                            <tr>
+                                <td>Insert / Remove</td>
+                                <td class="highlight-stack">O(1)</td>
+                                <td class="highlight-queue">O(1)</td>
+                            </tr>
+                            <tr>
+                                <td>Search</td>
+                                <td>O(n)</td>
+                                <td>O(n)</td>
+                            </tr>
+                            <tr>
+                                <td>Ví dụ thực tế</td>
+                                <td>Undo, Call Stack, DFS</td>
+                                <td>Xếp hàng, BFS, Scheduler</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">⏰</div>
-                    <div class="uc-text">
-                        <h5>Task Scheduling</h5>
-                        <p>Hệ điều hành xếp lịch CPU cho các tiến trình.</p>
+            </div>
+
+            <div class="card">
+                <h3>📥 Khi nào dùng Stack?</h3>
+                <div class="use-case-grid">
+                    <div class="use-case-item">
+                        <div class="uc-icon">↩️</div>
+                        <div class="uc-text">
+                            <h5>Undo / Redo</h5>
+                            <p>Lưu lại lịch sử thao tác, hoàn tác theo thứ tự ngược.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">🖨️</div>
-                    <div class="uc-text">
-                        <h5>Print Queue</h5>
-                        <p>Hàng đợi tài liệu chờ in — in theo thứ tự gửi.</p>
+                    <div class="use-case-item">
+                        <div class="uc-icon">🧮</div>
+                        <div class="uc-text">
+                            <h5>Tính biểu thức</h5>
+                            <p>Chuyển Infix → Postfix, tính toán biểu thức hậu tố.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">📨</div>
-                    <div class="uc-text">
-                        <h5>Message Queue</h5>
-                        <p>Hệ thống tin nhắn (Kafka, RabbitMQ) xử lý message theo FIFO.</p>
+                    <div class="use-case-item">
+                        <div class="uc-icon">🔄</div>
+                        <div class="uc-text">
+                            <h5>Đệ quy</h5>
+                            <p>Hệ thống dùng Call Stack để quản lý các lời gọi hàm.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">🚗</div>
-                    <div class="uc-text">
-                        <h5>Traffic / Buffer</h5>
-                        <p>Bộ đệm mạng, hàng đợi request HTTP.</p>
+                    <div class="use-case-item">
+                        <div class="uc-icon">🗺️</div>
+                        <div class="uc-text">
+                            <h5>DFS (Duyệt sâu)</h5>
+                            <p>Duyệt đồ thị/cây theo chiều sâu bằng stack.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="use-case-item">
-                    <div class="uc-icon">🎮</div>
-                    <div class="uc-text">
-                        <h5>Game Event Queue</h5>
-                        <p>Xử lý input người chơi theo thứ tự nhấn.</p>
+                    <div class="use-case-item">
+                        <div class="uc-icon">✅</div>
+                        <div class="uc-text">
+                            <h5>Kiểm tra ngoặc</h5>
+                            <p>Balanced Parentheses — kiểm tra chuỗi ngoặc có hợp lệ không.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="uc-icon">📜</div>
+                        <div class="uc-text">
+                            <h5>Lịch sử trình duyệt</h5>
+                            <p>Nút Back/Forward sử dụng hai stack.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h3>💡 Tóm tắt nhanh</h3>
-            <div class="info-grid">
-                <div class="info-box" style="border-left: 3px solid var(--accent-1);">
-                    <div class="info-icon">📥</div>
-                    <h4>Stack = "Chồng đĩa"</h4>
-                    <p>Dùng khi bạn cần xử lý theo thứ tự <strong>ngược</strong> — thao tác gần nhất được xử lý trước. Nghĩ đến: Undo, DFS, đệ quy.</p>
-                </div>
-                <div class="info-box" style="border-left: 3px solid var(--accent-2);">
-                    <div class="info-icon">🚶</div>
-                    <h4>Queue = "Xếp hàng"</h4>
-                    <p>Dùng khi bạn cần xử lý theo thứ tự <strong>đúng</strong> — ai đến trước phục vụ trước. Nghĩ đến: BFS, scheduling, buffer.</p>
+            <div class="card">
+                <h3>🚶 Khi nào dùng Queue?</h3>
+                <div class="use-case-grid">
+                    <div class="use-case-item">
+                        <div class="uc-icon">🔍</div>
+                        <div class="uc-text">
+                            <h5>BFS (Duyệt rộng)</h5>
+                            <p>Duyệt đồ thị/cây theo chiều rộng, xử lý từng "lớp".</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="uc-icon">⏰</div>
+                        <div class="uc-text">
+                            <h5>Task Scheduling</h5>
+                            <p>Hệ điều hành xếp lịch CPU cho các tiến trình.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="uc-icon">🖨️</div>
+                        <div class="uc-text">
+                            <h5>Print Queue</h5>
+                            <p>Hàng đợi tài liệu chờ in — in theo thứ tự gửi.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="uc-icon">📨</div>
+                        <div class="uc-text">
+                            <h5>Message Queue</h5>
+                            <p>Hệ thống tin nhắn (Kafka, RabbitMQ) xử lý message theo FIFO.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="uc-icon">🚗</div>
+                        <div class="uc-text">
+                            <h5>Traffic / Buffer</h5>
+                            <p>Bộ đệm mạng, hàng đợi request HTTP.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="uc-icon">🎮</div>
+                        <div class="uc-text">
+                            <h5>Game Event Queue</h5>
+                            <p>Xử lý input người chơi theo thứ tự nhấn.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </section>
+            <div class="card">
+                <h3>💡 Tóm tắt nhanh</h3>
+                <div class="info-grid">
+                    <div class="info-box" style="border-left: 3px solid var(--accent-1);">
+                        <div class="info-icon">📥</div>
+                        <h4>Stack = "Chồng đĩa"</h4>
+                        <p>Dùng khi bạn cần xử lý theo thứ tự <strong>ngược</strong> — thao tác gần nhất được xử lý
+                            trước. Nghĩ đến: Undo, DFS, đệ quy.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--accent-2);">
+                        <div class="info-icon">🚶</div>
+                        <h4>Queue = "Xếp hàng"</h4>
+                        <p>Dùng khi bạn cần xử lý theo thứ tự <strong>đúng</strong> — ai đến trước phục vụ trước. Nghĩ
+                            đến: BFS, scheduling, buffer.</p>
+                    </div>
+                </div>
+            </div>
 
-</div>
+        </section>
 
-<script>
-    // ==========================================
-    //  TAB SWITCHING
-    // ==========================================
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-        document.getElementById(`tab-${tabId}`).classList.add('active');
-    }
+    </div>
 
-    // ==========================================
-    //  COLOR PALETTE for elements
-    // ==========================================
-    const COLORS = [
-        'linear-gradient(135deg, #6366f1, #4f46e5)',
-        'linear-gradient(135deg, #06b6d4, #0891b2)',
-        'linear-gradient(135deg, #10b981, #059669)',
-        'linear-gradient(135deg, #f59e0b, #d97706)',
-        'linear-gradient(135deg, #ef4444, #dc2626)',
-        'linear-gradient(135deg, #ec4899, #db2777)',
-        'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-        'linear-gradient(135deg, #14b8a6, #0d9488)',
-    ];
-    let colorIndex = 0;
-    function nextColor() {
-        const c = COLORS[colorIndex % COLORS.length];
-        colorIndex++;
-        return c;
-    }
-
-    // ==========================================
-    //  STACK LOGIC
-    // ==========================================
-    let stackData = [];
-    const MAX_STACK = 8;
-
-    function updateStackStatus() {
-        document.getElementById('stackSize').textContent = stackData.length;
-        document.getElementById('stackTop').textContent = stackData.length > 0 ? stackData[stackData.length - 1] : '—';
-        document.getElementById('stackEmpty').textContent = stackData.length === 0 ? 'true' : 'false';
-    }
-
-    function stackLog(msg, type = 'info') {
-        const panel = document.getElementById('stackLog');
-        const line = document.createElement('div');
-        line.className = `log-line log-${type}`;
-        line.textContent = msg;
-        panel.appendChild(line);
-        panel.scrollTop = panel.scrollHeight;
-    }
-
-    function renderStack() {
-        const vis = document.getElementById('stackVisual');
-        const emptyState = document.getElementById('stackEmptyState');
-
-        if (stackData.length === 0) {
-            vis.innerHTML = '';
-            vis.appendChild(emptyState);
-            emptyState.style.display = 'block';
-        } else {
-            emptyState.style.display = 'none';
-            // Remove all elements except empty state
-            Array.from(vis.children).forEach(child => {
-                if (child !== emptyState) vis.removeChild(child);
-            });
-
-            stackData.forEach((val, i) => {
-                const el = document.createElement('div');
-                el.className = 'stack-element';
-                el.style.background = COLORS[i % COLORS.length];
-                el.textContent = val;
-                el.style.animationDelay = `${i * 0.05}s`;
-
-                if (i === stackData.length - 1) {
-                    const label = document.createElement('span');
-                    label.className = 'stack-top-label';
-                    label.textContent = '← TOP';
-                    el.appendChild(label);
-                }
-
-                vis.appendChild(el);
-            });
+    <script>
+        // ==========================================
+        //  TAB SWITCHING
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
         }
-        updateStackStatus();
-    }
 
-    function stackPush() {
-        if (stackData.length >= MAX_STACK) {
-            stackLog(`❌ Stack đầy! (max ${MAX_STACK} phần tử cho demo)`, 'error');
-            return;
+        // ==========================================
+        //  COLOR PALETTE for elements
+        // ==========================================
+        const COLORS = [
+            'linear-gradient(135deg, #6366f1, #4f46e5)',
+            'linear-gradient(135deg, #06b6d4, #0891b2)',
+            'linear-gradient(135deg, #10b981, #059669)',
+            'linear-gradient(135deg, #f59e0b, #d97706)',
+            'linear-gradient(135deg, #ef4444, #dc2626)',
+            'linear-gradient(135deg, #ec4899, #db2777)',
+            'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+            'linear-gradient(135deg, #14b8a6, #0d9488)',
+        ];
+        let colorIndex = 0;
+        function nextColor() {
+            const c = COLORS[colorIndex % COLORS.length];
+            colorIndex++;
+            return c;
         }
-        const input = document.getElementById('stackInput');
-        const val = parseInt(input.value) || 0;
-        stackData.push(val);
-        stackLog(`⬆ push(${val}) → Stack size = ${stackData.length}`, 'success');
-        renderStack();
-        input.value = Math.floor(Math.random() * 90) + 10;
-    }
 
-    function stackPop() {
-        if (stackData.length === 0) {
-            stackLog('❌ Stack Underflow! Stack đang rỗng.', 'error');
-            return;
+        // ==========================================
+        //  STACK LOGIC
+        // ==========================================
+        let stackData = [];
+        const MAX_STACK = 8;
+
+        function updateStackStatus() {
+            document.getElementById('stackSize').textContent = stackData.length;
+            document.getElementById('stackTop').textContent = stackData.length > 0 ? stackData[stackData.length - 1] : '—';
+            document.getElementById('stackEmpty').textContent = stackData.length === 0 ? 'true' : 'false';
         }
-        const vis = document.getElementById('stackVisual');
-        const lastEl = vis.lastElementChild;
-        if (lastEl && lastEl.classList.contains('stack-element')) {
-            lastEl.classList.add('removing');
-            const val = stackData.pop();
-            setTimeout(() => {
-                renderStack();
-            }, 350);
-            stackLog(`⬇ pop() → Lấy ra: ${val}, Stack size = ${stackData.length}`, 'warn');
+
+        function stackLog(msg, type = 'info') {
+            const panel = document.getElementById('stackLog');
+            const line = document.createElement('div');
+            line.className = `log-line log-${type}`;
+            line.textContent = msg;
+            panel.appendChild(line);
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        function renderStack() {
+            const vis = document.getElementById('stackVisual');
+            const emptyState = document.getElementById('stackEmptyState');
+
+            if (stackData.length === 0) {
+                vis.innerHTML = '';
+                vis.appendChild(emptyState);
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                // Remove all elements except empty state
+                Array.from(vis.children).forEach(child => {
+                    if (child !== emptyState) vis.removeChild(child);
+                });
+
+                stackData.forEach((val, i) => {
+                    const el = document.createElement('div');
+                    el.className = 'stack-element';
+                    el.style.background = COLORS[i % COLORS.length];
+                    el.textContent = val;
+                    el.style.animationDelay = `${i * 0.05}s`;
+
+                    if (i === stackData.length - 1) {
+                        const label = document.createElement('span');
+                        label.className = 'stack-top-label';
+                        label.textContent = '← TOP';
+                        el.appendChild(label);
+                    }
+
+                    vis.appendChild(el);
+                });
+            }
             updateStackStatus();
         }
-    }
 
-    function stackPeek() {
-        if (stackData.length === 0) {
-            stackLog('❌ Stack rỗng! Không có phần tử để peek.', 'error');
-            return;
+        function stackPush() {
+            if (stackData.length >= MAX_STACK) {
+                stackLog(`❌ Stack đầy! (max ${MAX_STACK} phần tử cho demo)`, 'error');
+                return;
+            }
+            const input = document.getElementById('stackInput');
+            const val = parseInt(input.value) || 0;
+            stackData.push(val);
+            stackLog(`⬆ push(${val}) → Stack size = ${stackData.length}`, 'success');
+            renderStack();
+            input.value = Math.floor(Math.random() * 90) + 10;
         }
-        const val = stackData[stackData.length - 1];
-        stackLog(`👁 peek() → Đỉnh stack = ${val} (stack không thay đổi)`, 'info');
 
-        // Highlight animation
-        const vis = document.getElementById('stackVisual');
-        const lastEl = vis.lastElementChild;
-        if (lastEl && lastEl.classList.contains('stack-element')) {
-            lastEl.style.transform = 'scale(1.1)';
-            lastEl.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.6)';
-            setTimeout(() => {
-                lastEl.style.transform = '';
-                lastEl.style.boxShadow = '';
-            }, 600);
+        function stackPop() {
+            if (stackData.length === 0) {
+                stackLog('❌ Stack Underflow! Stack đang rỗng.', 'error');
+                return;
+            }
+            const vis = document.getElementById('stackVisual');
+            const lastEl = vis.lastElementChild;
+            if (lastEl && lastEl.classList.contains('stack-element')) {
+                lastEl.classList.add('removing');
+                const val = stackData.pop();
+                setTimeout(() => {
+                    renderStack();
+                }, 350);
+                stackLog(`⬇ pop() → Lấy ra: ${val}, Stack size = ${stackData.length}`, 'warn');
+                updateStackStatus();
+            }
         }
-    }
 
-    function stackReset() {
-        stackData = [];
-        colorIndex = 0;
-        renderStack();
-        document.getElementById('stackLog').innerHTML = '<div class="log-line log-info">// Stack đã được reset!</div>';
-    }
+        function stackPeek() {
+            if (stackData.length === 0) {
+                stackLog('❌ Stack rỗng! Không có phần tử để peek.', 'error');
+                return;
+            }
+            const val = stackData[stackData.length - 1];
+            stackLog(`👁 peek() → Đỉnh stack = ${val} (stack không thay đổi)`, 'info');
 
-    // ==========================================
-    //  QUEUE LOGIC
-    // ==========================================
-    let queueData = [];
-    const MAX_QUEUE = 8;
-
-    function updateQueueStatus() {
-        document.getElementById('queueSize').textContent = queueData.length;
-        document.getElementById('queueFront').textContent = queueData.length > 0 ? queueData[0] : '—';
-        document.getElementById('queueRear').textContent = queueData.length > 0 ? queueData[queueData.length - 1] : '—';
-        document.getElementById('queueEmpty').textContent = queueData.length === 0 ? 'true' : 'false';
-    }
-
-    function queueLog(msg, type = 'info') {
-        const panel = document.getElementById('queueLog');
-        const line = document.createElement('div');
-        line.className = `log-line log-${type}`;
-        line.textContent = msg;
-        panel.appendChild(line);
-        panel.scrollTop = panel.scrollHeight;
-    }
-
-    function renderQueue() {
-        const vis = document.getElementById('queueVisual');
-        const emptyState = document.getElementById('queueEmptyState');
-
-        if (queueData.length === 0) {
-            vis.innerHTML = '';
-            vis.appendChild(emptyState);
-            emptyState.style.display = 'block';
-        } else {
-            emptyState.style.display = 'none';
-            Array.from(vis.children).forEach(child => {
-                if (child !== emptyState) vis.removeChild(child);
-            });
-
-            queueData.forEach((val, i) => {
-                if (i > 0) {
-                    const arrow = document.createElement('span');
-                    arrow.className = 'queue-arrow';
-                    arrow.textContent = '→';
-                    vis.appendChild(arrow);
-                }
-
-                const el = document.createElement('div');
-                el.className = 'queue-element';
-                el.style.background = COLORS[i % COLORS.length];
-                el.textContent = val;
-                el.style.animationDelay = `${i * 0.05}s`;
-                vis.appendChild(el);
-            });
+            // Highlight animation
+            const vis = document.getElementById('stackVisual');
+            const lastEl = vis.lastElementChild;
+            if (lastEl && lastEl.classList.contains('stack-element')) {
+                lastEl.style.transform = 'scale(1.1)';
+                lastEl.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.6)';
+                setTimeout(() => {
+                    lastEl.style.transform = '';
+                    lastEl.style.boxShadow = '';
+                }, 600);
+            }
         }
-        updateQueueStatus();
-    }
 
-    function queueEnqueue() {
-        if (queueData.length >= MAX_QUEUE) {
-            queueLog(`❌ Queue đầy! (max ${MAX_QUEUE} phần tử cho demo)`, 'error');
-            return;
+        function stackReset() {
+            stackData = [];
+            colorIndex = 0;
+            renderStack();
+            document.getElementById('stackLog').innerHTML = '<div class="log-line log-info">// Stack đã được reset!</div>';
         }
-        const input = document.getElementById('queueInput');
-        const val = parseInt(input.value) || 0;
-        queueData.push(val);
-        queueLog(`➡ enqueue(${val}) → Queue size = ${queueData.length}`, 'success');
-        renderQueue();
-        input.value = Math.floor(Math.random() * 90) + 10;
-    }
 
-    function queueDequeue() {
-        if (queueData.length === 0) {
-            queueLog('❌ Queue Underflow! Queue đang rỗng.', 'error');
-            return;
+        // ==========================================
+        //  QUEUE LOGIC
+        // ==========================================
+        let queueData = [];
+        const MAX_QUEUE = 8;
+
+        function updateQueueStatus() {
+            document.getElementById('queueSize').textContent = queueData.length;
+            document.getElementById('queueFront').textContent = queueData.length > 0 ? queueData[0] : '—';
+            document.getElementById('queueRear').textContent = queueData.length > 0 ? queueData[queueData.length - 1] : '—';
+            document.getElementById('queueEmpty').textContent = queueData.length === 0 ? 'true' : 'false';
         }
-        const vis = document.getElementById('queueVisual');
-        const firstEl = vis.querySelector('.queue-element');
-        if (firstEl) {
-            firstEl.classList.add('removing');
-            const val = queueData.shift();
-            setTimeout(() => {
-                renderQueue();
-            }, 350);
-            queueLog(`⬅ dequeue() → Lấy ra: ${val}, Queue size = ${queueData.length}`, 'warn');
+
+        function queueLog(msg, type = 'info') {
+            const panel = document.getElementById('queueLog');
+            const line = document.createElement('div');
+            line.className = `log-line log-${type}`;
+            line.textContent = msg;
+            panel.appendChild(line);
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        function renderQueue() {
+            const vis = document.getElementById('queueVisual');
+            const emptyState = document.getElementById('queueEmptyState');
+
+            if (queueData.length === 0) {
+                vis.innerHTML = '';
+                vis.appendChild(emptyState);
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                Array.from(vis.children).forEach(child => {
+                    if (child !== emptyState) vis.removeChild(child);
+                });
+
+                queueData.forEach((val, i) => {
+                    if (i > 0) {
+                        const arrow = document.createElement('span');
+                        arrow.className = 'queue-arrow';
+                        arrow.textContent = '→';
+                        vis.appendChild(arrow);
+                    }
+
+                    const el = document.createElement('div');
+                    el.className = 'queue-element';
+                    el.style.background = COLORS[i % COLORS.length];
+                    el.textContent = val;
+                    el.style.animationDelay = `${i * 0.05}s`;
+                    vis.appendChild(el);
+                });
+            }
             updateQueueStatus();
         }
-    }
 
-    function queuePeek() {
-        if (queueData.length === 0) {
-            queueLog('❌ Queue rỗng! Không có phần tử để peek.', 'error');
-            return;
+        function queueEnqueue() {
+            if (queueData.length >= MAX_QUEUE) {
+                queueLog(`❌ Queue đầy! (max ${MAX_QUEUE} phần tử cho demo)`, 'error');
+                return;
+            }
+            const input = document.getElementById('queueInput');
+            const val = parseInt(input.value) || 0;
+            queueData.push(val);
+            queueLog(`➡ enqueue(${val}) → Queue size = ${queueData.length}`, 'success');
+            renderQueue();
+            input.value = Math.floor(Math.random() * 90) + 10;
         }
-        const val = queueData[0];
-        queueLog(`👁 peek() → Đầu queue = ${val} (queue không thay đổi)`, 'info');
 
-        const vis = document.getElementById('queueVisual');
-        const firstEl = vis.querySelector('.queue-element');
-        if (firstEl) {
-            firstEl.style.transform = 'scale(1.15)';
-            firstEl.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.6)';
-            setTimeout(() => {
-                firstEl.style.transform = '';
-                firstEl.style.boxShadow = '';
-            }, 600);
+        function queueDequeue() {
+            if (queueData.length === 0) {
+                queueLog('❌ Queue Underflow! Queue đang rỗng.', 'error');
+                return;
+            }
+            const vis = document.getElementById('queueVisual');
+            const firstEl = vis.querySelector('.queue-element');
+            if (firstEl) {
+                firstEl.classList.add('removing');
+                const val = queueData.shift();
+                setTimeout(() => {
+                    renderQueue();
+                }, 350);
+                queueLog(`⬅ dequeue() → Lấy ra: ${val}, Queue size = ${queueData.length}`, 'warn');
+                updateQueueStatus();
+            }
         }
-    }
 
-    function queueReset() {
-        queueData = [];
-        colorIndex = 0;
+        function queuePeek() {
+            if (queueData.length === 0) {
+                queueLog('❌ Queue rỗng! Không có phần tử để peek.', 'error');
+                return;
+            }
+            const val = queueData[0];
+            queueLog(`👁 peek() → Đầu queue = ${val} (queue không thay đổi)`, 'info');
+
+            const vis = document.getElementById('queueVisual');
+            const firstEl = vis.querySelector('.queue-element');
+            if (firstEl) {
+                firstEl.style.transform = 'scale(1.15)';
+                firstEl.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.6)';
+                setTimeout(() => {
+                    firstEl.style.transform = '';
+                    firstEl.style.boxShadow = '';
+                }, 600);
+            }
+        }
+
+        function queueReset() {
+            queueData = [];
+            colorIndex = 0;
+            renderQueue();
+            document.getElementById('queueLog').innerHTML = '<div class="log-line log-info">// Queue đã được reset!</div>';
+        }
+
+        // ==========================================
+        //  INIT
+        // ==========================================
+        renderStack();
         renderQueue();
-        document.getElementById('queueLog').innerHTML = '<div class="log-line log-info">// Queue đã được reset!</div>';
-    }
-
-    // ==========================================
-    //  INIT
-    // ==========================================
-    renderStack();
-    renderQueue();
-</script>
+    </script>
 
 </body>
+
 </html>
