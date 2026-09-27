@@ -957,6 +957,139 @@
             font-style: italic;
         }
 
+        /* ===== Implementation Toggle ===== */
+        .impl-toggle {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-radius: var(--radius-xs);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            width: fit-content;
+        }
+
+        .impl-toggle-btn {
+            padding: 10px 24px;
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .impl-toggle-btn:not(:last-child) {
+            border-right: 1px solid var(--border);
+        }
+
+        .impl-toggle-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .impl-toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: #fff;
+        }
+
+        .impl-toggle-btn .impl-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 100px;
+            background: rgba(255,255,255,0.15);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .impl-toggle-btn.active .impl-badge {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .impl-code-panel {
+            display: none;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .impl-code-panel.active {
+            display: block;
+        }
+
+        .impl-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.08));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            padding: 14px 18px;
+            margin-top: 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .impl-note .note-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .impl-compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .impl-compare-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .impl-compare-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xs);
+            padding: 14px;
+        }
+
+        .impl-compare-item h5 {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .impl-compare-item ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .impl-compare-item li {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            padding: 3px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .impl-compare-item li::before {
+            content: '•';
+            color: var(--accent-2);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
         /* ===== Use-case tag ===== */
         .use-case-grid {
             display: grid;
@@ -1153,10 +1286,22 @@
 
             <!-- Code Java -->
             <div class="card">
-                <h3>💻 Code Java — Stack (Array-based)</h3>
-                <div class="code-block">
-                    <span class="code-lang">Java</span>
-                    <pre><span class="kw">public class</span> <span class="type">Stack</span> {
+                <h3>💻 Code Java — Cài đặt Stack</h3>
+                <div class="impl-toggle">
+                    <button class="impl-toggle-btn active" onclick="switchImpl('stack', 'array')">
+                        <span>📦 Array</span>
+                        <span class="impl-badge">RESIZING</span>
+                    </button>
+                    <button class="impl-toggle-btn" onclick="switchImpl('stack', 'linkedlist')">
+                        <span>🔗 Linked List</span>
+                    </button>
+                </div>
+
+                <!-- Array-based Stack -->
+                <div class="impl-code-panel active" id="stack-impl-array">
+                    <div class="code-block">
+                        <span class="code-lang">Java — Array</span>
+                        <pre><span class="kw">public class</span> <span class="type">Stack</span> {
     <span class="kw">private</span> <span class="type">int</span>[] data;   <span class="cmt">// Mảng lưu trữ phần tử</span>
     <span class="kw">private</span> <span class="type">int</span> top;      <span class="cmt">// Index phần tử trên cùng (-1 = rỗng)</span>
 
@@ -1187,7 +1332,89 @@
 
     <span class="kw">public boolean</span> <span class="fn">isEmpty</span>() { <span class="kw">return</span> top <span class="op">==</span> <span class="num">-1</span>; }
     <span class="kw">public</span> <span class="type">int</span> <span class="fn">size</span>()      { <span class="kw">return</span> top <span class="op">+</span> <span class="num">1</span>; }
+
+    <span class="cmt">// Mở rộng / thu nhỏ mảng</span>
+    <span class="kw">private void</span> <span class="fn">resize</span>(<span class="type">int</span> newCap) {
+        <span class="type">int</span>[] newData <span class="op">=</span> <span class="kw">new</span> <span class="type">int</span>[newCap];
+        <span class="kw">for</span> (<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op"><=</span> top; i<span class="op">++</span>)
+            newData[i] <span class="op">=</span> data[i];
+        data <span class="op">=</span> newData;
+    }
 }</pre>
+                    </div>
+                    <div class="impl-note">
+                        <span class="note-icon">💡</span>
+                        <span><strong>Array-based:</strong> Dùng mảng động với resize gấp đôi khi đầy, thu nhỏ 1/2 khi dùng ≤ 1/4. Push amortized O(1). Ưu điểm: cache-friendly, ít overhead bộ nhớ.</span>
+                    </div>
+                </div>
+
+                <!-- Linked-List-based Stack -->
+                <div class="impl-code-panel" id="stack-impl-linkedlist">
+                    <div class="code-block">
+                        <span class="code-lang">Java — Linked List</span>
+                        <pre><span class="kw">public class</span> <span class="type">StackLL</span> {
+    <span class="kw">private static class</span> <span class="type">Node</span> {
+        <span class="type">int</span> data;
+        <span class="type">Node</span> next;
+        <span class="fn">Node</span>(<span class="type">int</span> data) { <span class="kw">this</span>.data <span class="op">=</span> data; }
+    }
+
+    <span class="kw">private</span> <span class="type">Node</span> top;    <span class="cmt">// Con trỏ đến đỉnh stack</span>
+    <span class="kw">private</span> <span class="type">int</span> count;   <span class="cmt">// Số phần tử</span>
+
+    <span class="cmt">// Thêm phần tử vào đỉnh stack</span>
+    <span class="kw">public void</span> <span class="fn">push</span>(<span class="type">int</span> value) {
+        <span class="type">Node</span> node <span class="op">=</span> <span class="kw">new</span> <span class="fn">Node</span>(value);
+        node.next <span class="op">=</span> top;   <span class="cmt">// Node mới trỏ đến top cũ</span>
+        top <span class="op">=</span> node;          <span class="cmt">// Cập nhật top</span>
+        count<span class="op">++</span>;
+    }
+
+    <span class="cmt">// Lấy và xóa phần tử đỉnh</span>
+    <span class="kw">public</span> <span class="type">int</span> <span class="fn">pop</span>() {
+        <span class="kw">if</span> (<span class="fn">isEmpty</span>()) <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"Stack Underflow!"</span>);
+        <span class="type">int</span> val <span class="op">=</span> top.data;
+        top <span class="op">=</span> top.next;      <span class="cmt">// Di chuyển top xuống</span>
+        count<span class="op">--</span>;
+        <span class="kw">return</span> val;
+    }
+
+    <span class="cmt">// Xem phần tử đỉnh mà KHÔNG xóa</span>
+    <span class="kw">public</span> <span class="type">int</span> <span class="fn">peek</span>() {
+        <span class="kw">if</span> (<span class="fn">isEmpty</span>()) <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"Stack rỗng!"</span>);
+        <span class="kw">return</span> top.data;
+    }
+
+    <span class="kw">public boolean</span> <span class="fn">isEmpty</span>() { <span class="kw">return</span> top <span class="op">==</span> <span class="kw">null</span>; }
+    <span class="kw">public</span> <span class="type">int</span> <span class="fn">size</span>()      { <span class="kw">return</span> count; }
+}</pre>
+                    </div>
+                    <div class="impl-note">
+                        <span class="note-icon">💡</span>
+                        <span><strong>Linked-List-based:</strong> Mỗi node chứa data + next pointer. Push/Pop luôn O(1) worst-case (không cần resize). Ưu điểm: kích thước linh hoạt, không lãng phí bộ nhớ.</span>
+                    </div>
+                </div>
+
+                <!-- So sánh 2 cách -->
+                <div class="impl-compare-grid">
+                    <div class="impl-compare-item" style="border-top: 2px solid var(--accent-1);">
+                        <h5>📦 Array-based</h5>
+                        <ul>
+                            <li>Push amortized O(1), worst-case O(n) khi resize</li>
+                            <li>Cache-friendly (phần tử liền kề trong bộ nhớ)</li>
+                            <li>Ít bộ nhớ overhead (không cần pointer)</li>
+                            <li>Có thể lãng phí bộ nhớ nếu mảng lớn hơn cần thiết</li>
+                        </ul>
+                    </div>
+                    <div class="impl-compare-item" style="border-top: 2px solid var(--accent-2);">
+                        <h5>🔗 Linked-List-based</h5>
+                        <ul>
+                            <li>Push/Pop luôn O(1) worst-case</li>
+                            <li>Kích thước linh hoạt, tự co giãn</li>
+                            <li>Mỗi node cần thêm bộ nhớ cho pointer</li>
+                            <li>Không cache-friendly (node phân tán trong bộ nhớ)</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -1323,10 +1550,22 @@
 
             <!-- Code Java -->
             <div class="card">
-                <h3>💻 Code Java — Queue (Linked-List-based)</h3>
-                <div class="code-block">
-                    <span class="code-lang">Java</span>
-                    <pre><span class="kw">public class</span> <span class="type">Queue</span> {
+                <h3>💻 Code Java — Cài đặt Queue</h3>
+                <div class="impl-toggle">
+                    <button class="impl-toggle-btn active" onclick="switchImpl('queue', 'linkedlist')">
+                        <span>🔗 Linked List</span>
+                    </button>
+                    <button class="impl-toggle-btn" onclick="switchImpl('queue', 'array')">
+                        <span>📦 Array</span>
+                        <span class="impl-badge">CIRCULAR</span>
+                    </button>
+                </div>
+
+                <!-- Linked-List-based Queue -->
+                <div class="impl-code-panel active" id="queue-impl-linkedlist">
+                    <div class="code-block">
+                        <span class="code-lang">Java — Linked List</span>
+                        <pre><span class="kw">public class</span> <span class="type">Queue</span> {
     <span class="kw">private static class</span> <span class="type">Node</span> {
         <span class="type">int</span> data;
         <span class="type">Node</span> next;
@@ -1358,6 +1597,94 @@
     <span class="kw">public boolean</span> <span class="fn">isEmpty</span>() { <span class="kw">return</span> front <span class="op">==</span> <span class="kw">null</span>; }
     <span class="kw">public</span> <span class="type">int</span> <span class="fn">size</span>()      { <span class="kw">return</span> count; }
 }</pre>
+                    </div>
+                    <div class="impl-note">
+                        <span class="note-icon">💡</span>
+                        <span><strong>Linked-List-based:</strong> Enqueue thêm node vào rear, Dequeue bỏ node ở front. Cả hai đều O(1) worst-case. Không cần resize, kích thước linh hoạt.</span>
+                    </div>
+                </div>
+
+                <!-- Array-based Queue (Circular) -->
+                <div class="impl-code-panel" id="queue-impl-array">
+                    <div class="code-block">
+                        <span class="code-lang">Java — Circular Array</span>
+                        <pre><span class="kw">public class</span> <span class="type">QueueArray</span> {
+    <span class="kw">private</span> <span class="type">int</span>[] data;     <span class="cmt">// Mảng lưu trữ (circular)</span>
+    <span class="kw">private</span> <span class="type">int</span> front;      <span class="cmt">// Index phần tử đầu</span>
+    <span class="kw">private</span> <span class="type">int</span> rear;       <span class="cmt">// Index vị trí tiếp theo để thêm</span>
+    <span class="kw">private</span> <span class="type">int</span> count;      <span class="cmt">// Số phần tử hiện có</span>
+
+    <span class="kw">public</span> <span class="fn">QueueArray</span>() {
+        <span class="kw">this</span>.data <span class="op">=</span> <span class="kw">new</span> <span class="type">int</span>[<span class="num">10</span>];
+        <span class="kw">this</span>.front <span class="op">=</span> <span class="num">0</span>;
+        <span class="kw">this</span>.rear <span class="op">=</span> <span class="num">0</span>;
+        <span class="kw">this</span>.count <span class="op">=</span> <span class="num">0</span>;
+    }
+
+    <span class="cmt">// Thêm vào cuối hàng đợi</span>
+    <span class="kw">public void</span> <span class="fn">enqueue</span>(<span class="type">int</span> value) {
+        <span class="kw">if</span> (count <span class="op">==</span> data.length) <span class="fn">resize</span>(data.length <span class="op">*</span> <span class="num">2</span>);
+        data[rear] <span class="op">=</span> value;
+        rear <span class="op">=</span> (rear <span class="op">+</span> <span class="num">1</span>) <span class="op">%</span> data.length;  <span class="cmt">// Wrap around</span>
+        count<span class="op">++</span>;
+    }
+
+    <span class="cmt">// Lấy ra từ đầu hàng đợi</span>
+    <span class="kw">public</span> <span class="type">int</span> <span class="fn">dequeue</span>() {
+        <span class="kw">if</span> (<span class="fn">isEmpty</span>()) <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"Queue rỗng!"</span>);
+        <span class="type">int</span> val <span class="op">=</span> data[front];
+        front <span class="op">=</span> (front <span class="op">+</span> <span class="num">1</span>) <span class="op">%</span> data.length; <span class="cmt">// Wrap around</span>
+        count<span class="op">--</span>;
+        <span class="kw">if</span> (count <span class="op">></span> <span class="num">0</span> <span class="op">&&</span> count <span class="op">==</span> data.length <span class="op">/</span> <span class="num">4</span>)
+            <span class="fn">resize</span>(data.length <span class="op">/</span> <span class="num">2</span>);
+        <span class="kw">return</span> val;
+    }
+
+    <span class="kw">public</span> <span class="type">int</span> <span class="fn">peek</span>() {
+        <span class="kw">if</span> (<span class="fn">isEmpty</span>()) <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"Queue rỗng!"</span>);
+        <span class="kw">return</span> data[front];
+    }
+
+    <span class="kw">public boolean</span> <span class="fn">isEmpty</span>() { <span class="kw">return</span> count <span class="op">==</span> <span class="num">0</span>; }
+    <span class="kw">public</span> <span class="type">int</span> <span class="fn">size</span>()      { <span class="kw">return</span> count; }
+
+    <span class="cmt">// Resize: copy phần tử theo thứ tự từ front → rear</span>
+    <span class="kw">private void</span> <span class="fn">resize</span>(<span class="type">int</span> newCap) {
+        <span class="type">int</span>[] newData <span class="op">=</span> <span class="kw">new</span> <span class="type">int</span>[newCap];
+        <span class="kw">for</span> (<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op"><</span> count; i<span class="op">++</span>)
+            newData[i] <span class="op">=</span> data[(front <span class="op">+</span> i) <span class="op">%</span> data.length];
+        data <span class="op">=</span> newData;
+        front <span class="op">=</span> <span class="num">0</span>;
+        rear <span class="op">=</span> count;
+    }
+}</pre>
+                    </div>
+                    <div class="impl-note">
+                        <span class="note-icon">💡</span>
+                        <span><strong>Circular Array:</strong> Dùng phép chia dư <code>%</code> để "quấn vòng" — khi rear/front vượt cuối mảng thì quay lại đầu. Tránh lãng phí ô trống sau dequeue. Resize khi đầy hoặc dùng ≤ 1/4.</span>
+                    </div>
+                </div>
+
+                <!-- So sánh 2 cách -->
+                <div class="impl-compare-grid">
+                    <div class="impl-compare-item" style="border-top: 2px solid var(--accent-2);">
+                        <h5>🔗 Linked-List-based</h5>
+                        <ul>
+                            <li>Enqueue/Dequeue luôn O(1) worst-case</li>
+                            <li>Kích thước linh hoạt, tự co giãn</li>
+                            <li>Mỗi node cần thêm bộ nhớ cho pointer</li>
+                            <li>Không cache-friendly</li>
+                        </ul>
+                    </div>
+                    <div class="impl-compare-item" style="border-top: 2px solid var(--accent-1);">
+                        <h5>📦 Array (Circular)</h5>
+                        <ul>
+                            <li>Enqueue amortized O(1), worst-case O(n) khi resize</li>
+                            <li>Cache-friendly, ít bộ nhớ overhead</li>
+                            <li>Cần circular index (phép %) để tránh lãng phí</li>
+                            <li>Resize phải copy lại theo thứ tự front→rear</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -1808,6 +2135,32 @@
             colorIndex = 0;
             renderQueue();
             document.getElementById('queueLog').innerHTML = '<div class="log-line log-info">// Queue đã được reset!</div>';
+        }
+
+        // ==========================================
+        //  IMPLEMENTATION TOGGLE
+        // ==========================================
+        function switchImpl(ds, impl) {
+            // ds = 'stack' | 'queue', impl = 'array' | 'linkedlist'
+            const container = (ds === 'stack')
+                ? document.getElementById('tab-stack')
+                : document.getElementById('tab-queue');
+
+            // Toggle buttons
+            const buttons = container.querySelectorAll('.impl-toggle-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            // Find the button that was clicked based on text content
+            buttons.forEach(btn => {
+                const text = btn.textContent.toLowerCase();
+                if (impl === 'array' && text.includes('array')) btn.classList.add('active');
+                if (impl === 'linkedlist' && text.includes('linked')) btn.classList.add('active');
+            });
+
+            // Toggle code panels
+            const panels = container.querySelectorAll('.impl-code-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            const targetPanel = document.getElementById(`${ds}-impl-${impl}`);
+            if (targetPanel) targetPanel.classList.add('active');
         }
 
         // ==========================================
