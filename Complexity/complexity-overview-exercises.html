@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Complexity — Overview & Exercises</title>
+    <meta name="description" content="Ôn tập và kiểm tra kiến thức về phân tích thuật toán, Big-O, Big-Ω, Big-Θ, và các bậc phức tạp phổ biến">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== CSS Variables & Design System ===== */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1e2642;
+            --bg-code: #0d1117;
+            --text-primary: #e8edf5;
+            --text-secondary: #8b95a8;
+            --text-muted: #5a6478;
+            --accent-1: #6366f1;
+            --accent-1-glow: rgba(99, 102, 241, 0.3);
+            --accent-2: #06b6d4;
+            --accent-2-glow: rgba(6, 182, 212, 0.3);
+            --accent-3: #f59e0b;
+            --accent-3-glow: rgba(245, 158, 11, 0.3);
+            --accent-4: #10b981;
+            --accent-4-glow: rgba(16, 185, 129, 0.3);
+            --accent-5: #ef4444;
+            --accent-5-glow: rgba(239, 68, 68, 0.3);
+            --accent-6: #ec4899;
+            --accent-6-glow: rgba(236, 72, 153, 0.3);
+            --border: rgba(99, 102, 241, 0.15);
+            --border-hover: rgba(99, 102, 241, 0.35);
+            --glass: rgba(26, 32, 53, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --correct: #10b981;
+            --correct-glow: rgba(16, 185, 129, 0.2);
+            --wrong: #ef4444;
+            --wrong-glow: rgba(239, 68, 68, 0.2);
+        }
+
+        /* ===== Reset & Base ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== Animated Background ===== */
+        .bg-pattern {
+            position: fixed; inset: 0; z-index: 0;
+            overflow: hidden; pointer-events: none;
+        }
+        .bg-pattern::before {
+            content: ''; position: absolute;
+            width: 600px; height: 600px; border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-1-glow) 0%, transparent 70%);
+            top: -200px; left: -200px;
+            animation: floatBg 20s ease-in-out infinite;
+        }
+        .bg-pattern::after {
+            content: ''; position: absolute;
+            width: 500px; height: 500px; border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-2-glow) 0%, transparent 70%);
+            bottom: -150px; right: -150px;
+            animation: floatBg 25s ease-in-out infinite reverse;
+        }
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(80px, 50px) scale(1.1); }
+            66% { transform: translate(-40px, -30px) scale(0.95); }
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            position: relative; z-index: 1;
+            max-width: 1100px; margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* ===== Hero ===== */
+        .hero {
+            text-align: center;
+            padding: 50px 0 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 18px; border-radius: 100px;
+            background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-2-glow));
+            border: 1px solid var(--border);
+            font-size: 0.8rem; font-weight: 600;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            color: var(--accent-2); margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900; letter-spacing: -1.5px; line-height: 1.15;
+            background: linear-gradient(135deg, #e8edf5 0%, #6366f1 50%, #06b6d4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 16px;
+        }
+        .hero p {
+            font-size: 1.05rem; color: var(--text-secondary);
+            max-width: 640px; margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .tab-nav {
+            display: flex; justify-content: center;
+            gap: 8px; margin-bottom: 42px; flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 28px;
+            border: 1px solid var(--border); border-radius: 100px;
+            background: var(--glass); backdrop-filter: blur(12px);
+            color: var(--text-secondary); font-family: inherit;
+            font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .tab-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            opacity: 0; transition: opacity 0.3s; border-radius: inherit;
+        }
+        .tab-btn:hover { border-color: var(--border-hover); color: var(--text-primary); transform: translateY(-2px); }
+        .tab-btn.active { border-color: var(--accent-1); color: #fff; box-shadow: var(--shadow-glow); }
+        .tab-btn.active::before { opacity: 1; }
+        .tab-btn span { position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeInUp 0.5s ease-out; }
+        .tab-content.active { display: block; }
+
+        /* ===== Section Titles ===== */
+        .section-title {
+            font-size: 1.7rem; font-weight: 800;
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .section-title .icon {
+            width: 42px; height: 42px; border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .section-subtitle {
+            color: var(--text-secondary); font-size: 1.02rem; margin-bottom: 32px;
+        }
+
+        /* ===== Card ===== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 32px; margin-bottom: 24px;
+            transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .card:hover { border-color: var(--border-hover); box-shadow: var(--shadow); transform: translateY(-2px); }
+        .card:hover::before { opacity: 1; }
+        .card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; }
+
+        /* ===== Complexity Chart ===== */
+        .chart-container {
+            width: 100%; max-width: 700px; margin: 0 auto;
+            padding: 20px 0;
+        }
+        .chart-container canvas { width: 100% !important; }
+
+        /* ===== Complexity Table ===== */
+        .cmp-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            margin: 20px 0; border-radius: var(--radius-sm); overflow: hidden;
+        }
+        .cmp-table th, .cmp-table td {
+            padding: 14px 18px; text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .cmp-table th {
+            background: var(--bg-secondary);
+            font-size: 0.78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .cmp-table td {
+            font-size: 0.9rem; color: var(--text-secondary);
+        }
+        .cmp-table tr:hover td {
+            background: var(--bg-card-hover); color: var(--text-primary);
+        }
+        .cmp-table .big-o {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700; font-size: 0.95rem;
+        }
+        .speed-1 { color: var(--accent-4); }
+        .speed-2 { color: #22d3ee; }
+        .speed-3 { color: var(--accent-3); }
+        .speed-4 { color: #fb923c; }
+        .speed-5 { color: var(--accent-5); }
+        .speed-6 { color: var(--accent-6); }
+
+        /* ===== Notation Cards ===== */
+        .notation-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px; margin: 20px 0;
+        }
+        .notation-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 24px; transition: var(--transition);
+        }
+        .notation-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+        .notation-symbol {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem; font-weight: 900;
+            margin-bottom: 8px;
+        }
+        .notation-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .notation-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+        .notation-card .math {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem; color: var(--accent-2);
+            background: var(--bg-code); padding: 6px 12px;
+            border-radius: var(--radius-xs); margin-top: 10px;
+            display: inline-block;
+        }
+
+        /* ===== Code Block ===== */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 20px; margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem; line-height: 1.8;
+            position: relative;
+        }
+        .code-block .code-lang {
+            position: absolute; top: 10px; right: 14px;
+            font-size: 0.65rem; font-weight: 600;
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
+        }
+        .kw { color: #c678dd; } .type { color: #e5c07b; }
+        .fn { color: #61afef; } .str { color: #98c379; }
+        .num { color: #d19a66; } .cmt { color: #5c6370; font-style: italic; }
+        .op { color: #56b6c2; } .hl { background: rgba(245, 158, 11, 0.15); padding: 0 4px; border-radius: 3px; }
+
+        /* ===== Interactive Growth Bars ===== */
+        .growth-demo {
+            display: flex; flex-direction: column; gap: 12px;
+            margin: 20px 0;
+        }
+        .growth-row {
+            display: flex; align-items: center; gap: 14px;
+        }
+        .growth-label {
+            width: 100px; flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem; font-weight: 700;
+            text-align: right;
+        }
+        .growth-bar-track {
+            flex: 1; height: 28px;
+            background: var(--bg-secondary);
+            border-radius: 100px; overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        .growth-bar-fill {
+            height: 100%; border-radius: 100px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 0.68rem; font-weight: 700; color: #fff;
+        }
+        .growth-val {
+            width: 80px; flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem; color: var(--text-muted);
+        }
+
+        /* ===== Info Grid ===== */
+        .info-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px; margin: 20px 0;
+        }
+        .info-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 20px; transition: var(--transition);
+        }
+        .info-box:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+        .info-box .info-icon { font-size: 1.5rem; margin-bottom: 10px; }
+        .info-box h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 6px; }
+        .info-box p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* ===== Quiz ===== */
+        .quiz-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 32px; margin-bottom: 24px;
+            transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .quiz-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-3), var(--accent-5));
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .quiz-card:hover::before { opacity: 1; }
+        .quiz-card.answered-correct {
+            border-color: var(--correct) !important;
+            box-shadow: 0 0 20px var(--correct-glow);
+        }
+        .quiz-card.answered-correct::before { background: var(--correct) !important; opacity: 1; }
+        .quiz-card.answered-wrong {
+            border-color: var(--wrong) !important;
+            box-shadow: 0 0 20px var(--wrong-glow);
+        }
+        .quiz-card.answered-wrong::before { background: var(--wrong) !important; opacity: 1; }
+
+        .q-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+        .q-number {
+            flex-shrink: 0; width: 40px; height: 40px;
+            border-radius: var(--radius-xs);
+            background: linear-gradient(135deg, var(--accent-3), var(--accent-5));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem; font-weight: 800; color: #fff;
+        }
+        .q-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+        .q-tag {
+            padding: 3px 10px; border-radius: 100px;
+            font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.5px; text-transform: uppercase;
+        }
+        .q-tag.easy { background: var(--accent-4-glow); color: var(--accent-4); }
+        .q-tag.medium { background: var(--accent-3-glow); color: var(--accent-3); }
+        .q-tag.hard { background: var(--accent-5-glow); color: var(--accent-5); }
+        .q-tag.bigo { background: var(--accent-1-glow); color: var(--accent-1); }
+        .q-tag.code { background: var(--accent-2-glow); color: var(--accent-2); }
+        .q-tag.concept { background: var(--accent-6-glow); color: var(--accent-6); }
+
+        .q-text { font-size: 1rem; font-weight: 600; line-height: 1.6; }
+
+        .mcq-options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+        .mcq-option {
+            display: flex; align-items: center; gap: 14px;
+            padding: 13px 18px; background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            cursor: pointer; transition: var(--transition);
+        }
+        .mcq-option:hover:not(.disabled) {
+            border-color: var(--border-hover); background: var(--bg-card-hover);
+            transform: translateX(4px);
+        }
+        .mcq-option.selected { border-color: var(--accent-1); background: rgba(99,102,241,0.08); }
+        .mcq-option.correct { border-color: var(--correct) !important; background: rgba(16,185,129,0.08) !important; }
+        .mcq-option.wrong { border-color: var(--wrong) !important; background: rgba(239,68,68,0.08) !important; }
+        .mcq-option.disabled { cursor: default; pointer-events: none; }
+
+        .mcq-marker {
+            width: 30px; height: 30px; flex-shrink: 0;
+            border-radius: 50%; border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem; font-weight: 700;
+            color: var(--text-muted); transition: var(--transition);
+        }
+        .mcq-option.selected .mcq-marker { border-color: var(--accent-1); background: var(--accent-1); color: #fff; }
+        .mcq-option.correct .mcq-marker { border-color: var(--correct); background: var(--correct); color: #fff; }
+        .mcq-option.wrong .mcq-marker { border-color: var(--wrong); background: var(--wrong); color: #fff; }
+        .mcq-text { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+        .mcq-option.correct .mcq-text, .mcq-option.selected .mcq-text { color: var(--text-primary); }
+
+        /* ===== Written ===== */
+        .text-editor, .code-editor-input {
+            width: 100%;
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 16px; resize: vertical;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.84rem; line-height: 1.7;
+            color: var(--text-primary);
+            outline: none; transition: var(--transition);
+            tab-size: 4;
+        }
+        .text-editor { font-family: 'Inter', sans-serif; font-size: 0.9rem; min-height: 100px; background: var(--bg-secondary); }
+        .code-editor-input { min-height: 140px; }
+        .text-editor:focus, .code-editor-input:focus { border-color: var(--accent-1); box-shadow: 0 0 14px var(--accent-1-glow); }
+        .text-editor::placeholder, .code-editor-input::placeholder { color: var(--text-muted); }
+
+        .hint-label { font-size: 0.76rem; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+
+        /* ===== Explanation ===== */
+        .explanation {
+            display: none; margin-top: 16px; padding: 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.86rem; line-height: 1.6;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        .explanation.show { display: block; }
+        .explanation.correct-exp { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); color: var(--text-secondary); }
+        .explanation.wrong-exp { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); color: var(--text-secondary); }
+        .explanation.neutral-exp { background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2); color: var(--text-secondary); }
+        .explanation strong { color: var(--text-primary); }
+        .explanation .exp-title { font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .explanation code {
+            background: var(--bg-code); padding: 2px 7px; border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            padding: 10px 22px; border: none; border-radius: var(--radius-xs);
+            font-family: inherit; font-size: 0.86rem; font-weight: 700;
+            cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn:active { transform: translateY(0); }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-1), #4f46e5); color: #fff; }
+        .btn-success { background: linear-gradient(135deg, var(--accent-4), #059669); color: #fff; }
+        .btn-warning { background: linear-gradient(135deg, var(--accent-3), #d97706); color: #fff; }
+        .btn-danger { background: linear-gradient(135deg, var(--accent-5), #dc2626); color: #fff; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-ghost:hover { border-color: var(--border-hover); color: var(--text-primary); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-group { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+        /* ===== Dashboard ===== */
+        .dashboard {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 14px; margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm); padding: 16px; text-align: center;
+            transition: var(--transition);
+        }
+        .stat-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+        .stat-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 800; }
+
+        /* ===== Progress ===== */
+        .progress-bar-container { background: var(--bg-secondary); border-radius: 100px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+        .progress-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent-3), var(--accent-4)); transition: width 0.5s; width: 0%; }
+        .progress-text { font-size: 0.76rem; color: var(--text-muted); text-align: right; }
+
+        /* ===== N slider ===== */
+        .slider-container {
+            display: flex; align-items: center; gap: 16px;
+            margin: 16px 0;
+        }
+        .slider-container input[type=range] {
+            flex: 1; accent-color: var(--accent-1);
+            height: 6px;
+        }
+        .slider-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem; font-weight: 800;
+            color: var(--accent-2);
+            min-width: 80px; text-align: center;
+        }
+
+        /* ===== Result Modal ===== */
+        .result-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            z-index: 100; align-items: center; justify-content: center;
+        }
+        .result-overlay.show { display: flex; }
+        .result-modal {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            border-radius: var(--radius); padding: 48px;
+            max-width: 480px; width: 90%; text-align: center;
+            animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalIn {
+            0% { transform: scale(0.8) translateY(40px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .result-emoji { font-size: 4rem; margin-bottom: 16px; }
+        .result-score {
+            font-family: 'JetBrains Mono', monospace; font-size: 3rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-3), var(--accent-4));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin: 12px 0;
+        }
+        .result-grade {
+            display: inline-block; padding: 6px 20px; border-radius: 100px;
+            font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 16px;
+        }
+        .grade-a { background: var(--accent-4-glow); color: var(--accent-4); }
+        .grade-b { background: var(--accent-2-glow); color: var(--accent-2); }
+        .grade-c { background: var(--accent-3-glow); color: var(--accent-3); }
+        .grade-f { background: var(--accent-5-glow); color: var(--accent-5); }
+        .result-detail { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .container { padding: 20px 16px 60px; }
+            .dashboard { grid-template-columns: repeat(2, 1fr); }
+            .notation-grid { grid-template-columns: 1fr; }
+            .card, .quiz-card { padding: 24px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-pattern"></div>
+
+    <div class="container">
+
+        <!-- ===== HERO ===== -->
+        <header class="hero">
+            <div class="hero-badge">📐 Algorithm Analysis</div>
+            <h1>Phân tích Thuật toán<br>& Độ phức tạp</h1>
+            <p>Overview lý thuyết Big-O, so sánh các bậc phức tạp, và bài kiểm tra kiến thức với trắc nghiệm + tự luận</p>
+        </header>
+
+        <!-- ===== TAB NAV ===== -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')"><span>📖 Overview Lý thuyết</span></button>
+            <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')"><span>📝 Trắc nghiệm (15)</span></button>
+            <button class="tab-btn" data-tab="written" onclick="switchTab('written')"><span>✍️ Tự luận (5)</span></button>
+        </nav>
+
+        <!-- ============================================================ -->
+        <!--                    TAB 1: OVERVIEW                           -->
+        <!-- ============================================================ -->
+        <section class="tab-content active" id="tab-overview">
+
+            <!-- Tại sao cần phân tích? -->
+            <div class="section-title">
+                <div class="icon" style="background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-2-glow));">🤔</div>
+                Tại sao cần phân tích thuật toán?
+            </div>
+            <p class="section-subtitle">Hai thuật toán cùng giải một bài toán nhưng có thể chênh lệch tốc độ hàng triệu lần khi dữ liệu lớn.</p>
+
+            <div class="card">
+                <h3>🎯 Mục đích phân tích</h3>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-icon">⏱️</div>
+                        <h4>Time Complexity</h4>
+                        <p>Đo <strong>thời gian chạy</strong> (số bước thực hiện) tăng thế nào khi input lớn dần.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">💾</div>
+                        <h4>Space Complexity</h4>
+                        <p>Đo <strong>bộ nhớ</strong> cần dùng tăng thế nào khi input lớn dần.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">📏</div>
+                        <h4>Không phụ thuộc phần cứng</h4>
+                        <p>Đo bằng <strong>số bước trừu tượng</strong>, không phải giây — kết quả đúng trên mọi máy.</p>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon">📈</div>
+                        <h4>Dự đoán hiệu năng</h4>
+                        <p>Biết thuật toán có <strong>scale</strong> được không khi n = 10⁶, 10⁹...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 Ký hiệu tiệm cận -->
+            <div class="card">
+                <h3>📐 Ba ký hiệu tiệm cận (Asymptotic Notations)</h3>
+                <div class="notation-grid">
+                    <div class="notation-card" style="border-top: 3px solid var(--accent-5);">
+                        <div class="notation-symbol" style="color: var(--accent-5);">O</div>
+                        <h4>Big-O (Upper Bound)</h4>
+                        <p>Cận <strong>trên</strong> — worst case. "Chậm nhất thì cỡ này".</p>
+                        <div class="math">f(n) ≤ c·g(n), ∀ n ≥ n₀</div>
+                    </div>
+                    <div class="notation-card" style="border-top: 3px solid var(--accent-4);">
+                        <div class="notation-symbol" style="color: var(--accent-4);">Ω</div>
+                        <h4>Big-Omega (Lower Bound)</h4>
+                        <p>Cận <strong>dưới</strong> — best case. "Nhanh nhất cũng phải cỡ này".</p>
+                        <div class="math">f(n) ≥ c·g(n), ∀ n ≥ n₀</div>
+                    </div>
+                    <div class="notation-card" style="border-top: 3px solid var(--accent-2);">
+                        <div class="notation-symbol" style="color: var(--accent-2);">Θ</div>
+                        <h4>Big-Theta (Tight Bound)</h4>
+                        <p>Cận <strong>chặt</strong> — kẹp giữa. "Chính xác tăng theo tốc độ này".</p>
+                        <div class="math">c₁·g(n) ≤ f(n) ≤ c₂·g(n)</div>
+                    </div>
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.84rem; margin-top: 10px;">
+                    💡 Trong thực tế, <strong>Big-O</strong> được dùng nhiều nhất vì ta quan tâm <strong>worst case</strong> — "thuật toán này chậm nhất cỡ nào?"
+                </div>
+            </div>
+
+            <!-- Bảng các bậc phức tạp -->
+            <div class="card">
+                <h3>📊 Các bậc phức tạp phổ biến (xếp từ nhanh → chậm)</h3>
+                <div style="overflow-x: auto;">
+                    <table class="cmp-table">
+                        <thead>
+                            <tr>
+                                <th>Big-O</th>
+                                <th>Tên gọi</th>
+                                <th>n=10</th>
+                                <th>n=100</th>
+                                <th>n=1000</th>
+                                <th>Ví dụ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="big-o speed-1">O(1)</td>
+                                <td>Constant</td>
+                                <td>1</td><td>1</td><td>1</td>
+                                <td>Array access, push/pop</td>
+                            </tr>
+                            <tr>
+                                <td class="big-o speed-1">O(log n)</td>
+                                <td>Logarithmic</td>
+                                <td>≈3</td><td>≈7</td><td>≈10</td>
+                                <td>Binary Search</td>
+                            </tr>
+                            <tr>
+                                <td class="big-o speed-2">O(n)</td>
+                                <td>Linear</td>
+                                <td>10</td><td>100</td><td>1000</td>
+                                <td>Linear Search, duyệt mảng</td>
+                            </tr>
+                            <tr>
+                                <td class="big-o speed-3">O(n log n)</td>
+                                <td>Linearithmic</td>
+                                <td>≈33</td><td>≈664</td><td>≈10K</td>
+                                <td>Merge Sort, Quick Sort (avg)</td>
+                            </tr>
+                            <tr>
+                                <td class="big-o speed-4">O(n²)</td>
+                                <td>Quadratic</td>
+                                <td>100</td><td>10K</td><td>1M</td>
+                                <td>Bubble Sort, 2 vòng lặp lồng</td>
+                            </tr>
+                            <tr>
+                                <td class="big-o speed-5">O(n³)</td>
+                                <td>Cubic</td>
+                                <td>1K</td><td>1M</td><td>1B</td>
+                                <td>3 vòng lặp lồng</td>
+                            </tr>
+                            <tr>
+                                <td class="big-o speed-5">O(2ⁿ)</td>
+                                <td>Exponential</td>
+                                <td>1K</td><td>10³⁰</td><td>💥</td>
+                                <td>Brute-force subsets</td>
+                            </tr>
+                            <tr>
+                                <td class="big-o speed-6">O(n!)</td>
+                                <td>Factorial</td>
+                                <td>3.6M</td><td>💥</td><td>💥</td>
+                                <td>Brute-force permutations</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive growth demo -->
+            <div class="card">
+                <h3>🎮 So sánh tốc độ tăng — kéo slider thay đổi n</h3>
+                <div class="slider-container">
+                    <span style="color: var(--text-muted); font-size: 0.82rem;">n =</span>
+                    <input type="range" id="nSlider" min="1" max="64" value="16" oninput="updateGrowth()">
+                    <div class="slider-val" id="nValue">16</div>
+                </div>
+                <div class="growth-demo" id="growthBars">
+                    <!-- filled by JS -->
+                </div>
+            </div>
+
+            <!-- Quy tắc tính Big-O -->
+            <div class="card">
+                <h3>🔧 Quy tắc tính Big-O nhanh</h3>
+                <div class="info-grid">
+                    <div class="info-box" style="border-left: 3px solid var(--accent-1);">
+                        <h4>① Bỏ hằng số</h4>
+                        <p><code>3n + 5</code> → <strong>O(n)</strong><br>Hằng số không quan trọng khi n lớn.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--accent-2);">
+                        <h4>② Giữ bậc cao nhất</h4>
+                        <p><code>n² + 100n + 99</code> → <strong>O(n²)</strong><br>Bậc thấp hơn trở nên vô nghĩa.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--accent-3);">
+                        <h4>③ Vòng lặp lồng = nhân</h4>
+                        <p>2 vòng for lồng nhau mỗi vòng n lần → <strong>O(n²)</strong></p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--accent-4);">
+                        <h4>④ Nối tiếp = cộng → giữ max</h4>
+                        <p><code>O(n) + O(n²)</code> → <strong>O(n²)</strong><br>Đoạn chậm nhất quyết định.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--accent-5);">
+                        <h4>⑤ Chia đôi = log n</h4>
+                        <p>Mỗi bước chia đôi input → <strong>O(log n)</strong><br>VD: Binary Search.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--accent-6);">
+                        <h4>⑥ Đệ quy: dùng cây</h4>
+                        <p>Vẽ cây đệ quy, đếm tổng số node × work mỗi node. Hoặc dùng <strong>Master Theorem</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ví dụ code -->
+            <div class="card">
+                <h3>💻 Nhận diện Big-O qua code</h3>
+
+                <div class="code-block">
+                    <span class="code-lang">O(1) — Constant</span>
+                    <pre><span class="cmt">// Truy cập mảng, phép gán, so sánh</span>
+<span class="type">int</span> x <span class="op">=</span> arr[<span class="num">5</span>];           <span class="cmt">// 1 bước duy nhất</span>
+<span class="kw">return</span> stack.<span class="fn">peek</span>();       <span class="cmt">// O(1)</span></pre>
+                </div>
+
+                <div class="code-block">
+                    <span class="code-lang">O(n) — Linear</span>
+                    <pre><span class="cmt">// 1 vòng lặp chạy n lần</span>
+<span class="kw">for</span> (<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    sum <span class="op">+=</span> arr[i];            <span class="cmt">// n bước</span>
+}</pre>
+                </div>
+
+                <div class="code-block">
+                    <span class="code-lang">O(n²) — Quadratic</span>
+                    <pre><span class="cmt">// 2 vòng lặp lồng nhau, mỗi vòng n lần</span>
+<span class="kw">for</span> (<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="kw">for</span> (<span class="type">int</span> j <span class="op">=</span> <span class="num">0</span>; j <span class="op">&lt;</span> n; j<span class="op">++</span>) {
+        <span class="cmt">// n × n = n² bước</span>
+    }
+}</pre>
+                </div>
+
+                <div class="code-block">
+                    <span class="code-lang">O(log n) — Logarithmic</span>
+                    <pre><span class="cmt">// Mỗi bước chia đôi phạm vi</span>
+<span class="kw">while</span> (lo <span class="op">&lt;=</span> hi) {
+    <span class="type">int</span> mid <span class="op">=</span> (lo <span class="op">+</span> hi) <span class="op">/</span> <span class="num">2</span>;
+    <span class="kw">if</span> (arr[mid] <span class="op">==</span> target) <span class="kw">return</span> mid;
+    <span class="kw">else if</span> (arr[mid] <span class="op">&lt;</span> target) lo <span class="op">=</span> mid <span class="op">+</span> <span class="num">1</span>;
+    <span class="kw">else</span> hi <span class="op">=</span> mid <span class="op">-</span> <span class="num">1</span>;    <span class="cmt">// chia đôi → log₂ n bước</span>
+}</pre>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    TAB 2: TRẮC NGHIỆM                       -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-quiz">
+            <!-- Dashboard -->
+            <div class="dashboard">
+                <div class="stat-card">
+                    <div class="stat-label">Tổng câu</div>
+                    <div class="stat-value" style="color: var(--accent-1);">15</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Đã làm</div>
+                    <div class="stat-value" style="color: var(--accent-2);" id="answeredQ">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Đúng</div>
+                    <div class="stat-value" style="color: var(--accent-4);" id="correctQ">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Sai</div>
+                    <div class="stat-value" style="color: var(--accent-5);" id="wrongQ">0</div>
+                </div>
+            </div>
+            <div style="margin-bottom: 28px;">
+                <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
+                <div class="progress-text" id="progressText">0 / 15 câu</div>
+            </div>
+            <div id="quizContainer"></div>
+            <div class="btn-group" style="justify-content: center; margin-top: 32px;">
+                <button class="btn btn-success" onclick="showResults()">📊 Xem kết quả</button>
+                <button class="btn btn-danger" onclick="resetQuiz()">↺ Làm lại</button>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    TAB 3: TỰ LUẬN                            -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-written">
+            <div id="writtenContainer"></div>
+        </section>
+
+    </div>
+
+    <!-- Result Modal -->
+    <div class="result-overlay" id="resultModal">
+        <div class="result-modal">
+            <div class="result-emoji" id="resultEmoji">🎉</div>
+            <h3 id="resultTitle" style="font-size: 1.5rem; margin-bottom: 8px;">Kết quả</h3>
+            <div class="result-score" id="resultScore">0/15</div>
+            <div class="result-grade" id="resultGrade"></div>
+            <div class="result-detail" id="resultDetail"></div>
+            <button class="btn btn-primary" onclick="document.getElementById('resultModal').classList.remove('show')">Đóng</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        //  TAB SWITCHING
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        // ==========================================
+        //  GROWTH BARS INTERACTIVE
+        // ==========================================
+        const GROWTHS = [
+            { label: 'O(1)',       fn: n => 1,                    color: 'var(--accent-4)' },
+            { label: 'O(log n)',   fn: n => Math.log2(Math.max(n,1)),  color: '#22d3ee' },
+            { label: 'O(n)',       fn: n => n,                    color: 'var(--accent-2)' },
+            { label: 'O(n log n)', fn: n => n * Math.log2(Math.max(n,1)), color: 'var(--accent-3)' },
+            { label: 'O(n²)',     fn: n => n * n,                color: '#fb923c' },
+            { label: 'O(2ⁿ)',     fn: n => Math.pow(2, Math.min(n,30)), color: 'var(--accent-5)' },
+        ];
+
+        function updateGrowth() {
+            const n = parseInt(document.getElementById('nSlider').value);
+            document.getElementById('nValue').textContent = n;
+            const container = document.getElementById('growthBars');
+            const maxVal = Math.pow(2, Math.min(n, 20)); // cap for display
+
+            container.innerHTML = GROWTHS.map(g => {
+                const val = g.fn(n);
+                const pct = Math.min((val / maxVal) * 100, 100);
+                const displayVal = val > 1e9 ? '💥 ∞' : val > 1e6 ? (val/1e6).toFixed(1)+'M' : val > 1000 ? (val/1000).toFixed(1)+'K' : Math.round(val);
+                return `
+                    <div class="growth-row">
+                        <div class="growth-label" style="color: ${g.color};">${g.label}</div>
+                        <div class="growth-bar-track">
+                            <div class="growth-bar-fill" style="width: ${Math.max(pct, 2)}%; background: ${g.color};">
+                                ${pct > 15 ? '' : ''}
+                            </div>
+                        </div>
+                        <div class="growth-val">${displayVal}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        //  MCQ DATA — 15 câu
+        // ==========================================
+        const QUIZ_DATA = [
+            {
+                id: 1, tags: ['concept', 'easy'],
+                question: 'Big-O notation mô tả điều gì?',
+                options: [
+                    'Thời gian chạy chính xác tính bằng giây',
+                    'Cận trên (upper bound) — worst-case của thuật toán',
+                    'Cận dưới (lower bound) — best-case',
+                    'Tốc độ trung bình'
+                ],
+                correct: 1,
+                explanation: '<strong>Big-O</strong> mô tả <strong>cận trên</strong> — worst-case. Nó cho biết thuật toán chậm nhất sẽ tăng cỡ nào khi input lớn dần. Ví dụ O(n²) nghĩa là worst-case tăng tỉ lệ với n².'
+            },
+            {
+                id: 2, tags: ['concept', 'easy'],
+                question: 'Big-Ω (Omega) mô tả điều gì?',
+                options: [
+                    'Cận trên (upper bound)',
+                    'Cận dưới (lower bound) — best-case',
+                    'Cận chặt (tight bound)',
+                    'Trung bình'
+                ],
+                correct: 1,
+                explanation: '<strong>Big-Ω</strong> mô tả <strong>cận dưới</strong> — best-case. Ví dụ: Linear Search có Ω(1) vì best-case phần tử ở đầu mảng, chỉ cần 1 lần so sánh.'
+            },
+            {
+                id: 3, tags: ['bigo', 'easy'],
+                question: '<code>T(n) = 5n + 100</code> thuộc Big-O nào?',
+                options: ['O(1)', 'O(n)', 'O(n²)', 'O(100)'],
+                correct: 1,
+                explanation: 'Bỏ hằng số (5, 100) → chỉ còn <strong>n</strong>. Quy tắc: bỏ hệ số và hằng cộng. <code>5n + 100</code> → <strong>O(n)</strong>.'
+            },
+            {
+                id: 4, tags: ['bigo', 'medium'],
+                question: '<code>T(n) = 3n² + 7n + 42</code> thuộc Big-O nào?',
+                options: ['O(n)', 'O(n² + n)', 'O(n²)', 'O(42)'],
+                correct: 2,
+                explanation: 'Giữ bậc cao nhất: n² >> 7n >> 42 khi n lớn. Bỏ hệ số 3 → <strong>O(n²)</strong>.'
+            },
+            {
+                id: 5, tags: ['code', 'easy'],
+                question: 'Đoạn code sau có Big-O là gì?',
+                code: `int sum = 0;
+for (int i = 0; i < n; i++) {
+    sum += arr[i];
+}`,
+                options: ['O(1)', 'O(n)', 'O(n²)', 'O(log n)'],
+                correct: 1,
+                explanation: '1 vòng lặp chạy n lần, mỗi bước O(1) → tổng <strong>O(n)</strong>.'
+            },
+            {
+                id: 6, tags: ['code', 'medium'],
+                question: 'Đoạn code sau có Big-O là gì?',
+                code: `for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+        count++;
+    }
+}`,
+                options: ['O(n)', 'O(2n)', 'O(n²)', 'O(n log n)'],
+                correct: 2,
+                explanation: '2 vòng lặp lồng nhau, mỗi vòng n lần → n × n = <strong>O(n²)</strong>. Quy tắc: vòng lặp lồng = nhân.'
+            },
+            {
+                id: 7, tags: ['code', 'medium'],
+                question: 'Đoạn code sau có Big-O là gì?',
+                code: `for (int i = 0; i < n; i++) {
+    // O(n)
+}
+for (int j = 0; j < n; j++) {
+    for (int k = 0; k < n; k++) {
+        // O(n²)
+    }
+}`,
+                options: ['O(n³)', 'O(n² + n)', 'O(n²)', 'O(2n²)'],
+                correct: 2,
+                explanation: 'Nối tiếp: O(n) + O(n²) = O(n² + n). Giữ bậc cao nhất → <strong>O(n²)</strong>.'
+            },
+            {
+                id: 8, tags: ['code', 'hard'],
+                question: 'Đoạn code sau có Big-O là gì?',
+                code: `int i = n;
+while (i > 1) {
+    i = i / 2;
+}`,
+                options: ['O(n)', 'O(n/2)', 'O(log n)', 'O(√n)'],
+                correct: 2,
+                explanation: 'Mỗi bước chia i cho 2. Từ n → n/2 → n/4 → ... → 1. Cần <strong>log₂(n)</strong> bước → <strong>O(log n)</strong>.'
+            },
+            {
+                id: 9, tags: ['code', 'hard'],
+                question: 'Đoạn code sau có Big-O là gì?',
+                code: `for (int i = 0; i < n; i++) {
+    for (int j = i; j < n; j++) {
+        // ...
+    }
+}`,
+                options: ['O(n)', 'O(n log n)', 'O(n²)', 'O(n²/2)'],
+                correct: 2,
+                explanation: 'Vòng trong chạy: n + (n-1) + (n-2) + ... + 1 = n(n+1)/2 = n²/2 + n/2. Bỏ hệ số → <strong>O(n²)</strong>. Dù j bắt đầu từ i, bậc vẫn là n².'
+            },
+            {
+                id: 10, tags: ['bigo', 'medium'],
+                question: 'Sắp xếp từ nhanh → chậm: O(n), O(1), O(n²), O(log n), O(n log n)',
+                options: [
+                    'O(1), O(log n), O(n), O(n log n), O(n²)',
+                    'O(1), O(n), O(log n), O(n log n), O(n²)',
+                    'O(log n), O(1), O(n), O(n²), O(n log n)',
+                    'O(n²), O(n log n), O(n), O(log n), O(1)'
+                ],
+                correct: 0,
+                explanation: 'Thứ tự: <strong>O(1) < O(log n) < O(n) < O(n log n) < O(n²)</strong>. Hằng số nhanh nhất, bậc hai chậm nhất trong nhóm này.'
+            },
+            {
+                id: 11, tags: ['concept', 'medium'],
+                question: 'Thuật toán nào có Time Complexity O(n log n) trong trường hợp trung bình?',
+                options: [
+                    'Bubble Sort',
+                    'Selection Sort',
+                    'Merge Sort / Quick Sort',
+                    'Linear Search'
+                ],
+                correct: 2,
+                explanation: '<strong>Merge Sort</strong> luôn O(n log n). <strong>Quick Sort</strong> trung bình O(n log n), worst-case O(n²). Bubble Sort và Selection Sort đều O(n²).'
+            },
+            {
+                id: 12, tags: ['concept', 'medium'],
+                question: '"Amortized O(1)" nghĩa là gì?',
+                options: [
+                    'Luôn chạy đúng 1 bước',
+                    'Trung bình là O(1), nhưng thỉnh thoảng có thể O(n)',
+                    'Best-case là O(1)',
+                    'Không bao giờ chạy quá 1 bước'
+                ],
+                correct: 1,
+                explanation: '<strong>Amortized O(1)</strong>: phần lớn thao tác O(1), nhưng đôi khi phải thực hiện thao tác tốn O(n) (ví dụ resize mảng). Trải đều chi phí thì trung bình vẫn O(1) mỗi thao tác.'
+            },
+            {
+                id: 13, tags: ['bigo', 'hard'],
+                question: 'T(n) = T(n/2) + O(1) là hệ thức đệ quy của thuật toán nào, và có Big-O là gì?',
+                options: [
+                    'Merge Sort — O(n log n)',
+                    'Binary Search — O(log n)',
+                    'Linear Search — O(n)',
+                    'Quick Sort — O(n²)'
+                ],
+                correct: 1,
+                explanation: 'T(n/2) = chia đôi mỗi bước, O(1) = mỗi bước chỉ so sánh 1 lần → <strong>Binary Search — O(log n)</strong>. Master Theorem: a=1, b=2, k=0 → O(log n).'
+            },
+            {
+                id: 14, tags: ['code', 'hard'],
+                question: 'Đoạn code sau có Big-O là gì?',
+                code: `for (int i = 1; i < n; i *= 2) {
+    for (int j = 0; j < n; j++) {
+        // ...
+    }
+}`,
+                options: ['O(n²)', 'O(n log n)', 'O(n)', 'O(log n · log n)'],
+                correct: 1,
+                explanation: 'Vòng ngoài: i nhân đôi mỗi bước → chạy log₂(n) lần. Vòng trong: chạy n lần. Tổng: <strong>log(n) × n = O(n log n)</strong>.'
+            },
+            {
+                id: 15, tags: ['concept', 'hard'],
+                question: 'Tại sao <strong>không</strong> nên dùng Big-O duy nhất để đánh giá thuật toán?',
+                options: [
+                    'Vì Big-O luôn sai',
+                    'Vì Big-O chỉ mô tả worst-case, bỏ qua hệ số, best/avg case, và constant factors',
+                    'Vì Big-O quá phức tạp để tính',
+                    'Vì Big-O chỉ áp dụng cho sorting'
+                ],
+                correct: 1,
+                explanation: 'Big-O bỏ hệ số (2n vs 1000n đều O(n)) và chỉ xét worst-case. Thuật toán O(n²) với hệ số nhỏ có thể nhanh hơn O(n log n) với hệ số lớn khi n nhỏ. Cần kết hợp <strong>Big-Ω, Big-Θ, benchmarking thực tế</strong>.'
+            }
+        ];
+
+        // ==========================================
+        //  WRITTEN DATA — 5 câu
+        // ==========================================
+        const WRITTEN_DATA = [
+            {
+                id: 16, tags: ['code', 'medium'], type: 'code',
+                question: 'Phân tích Big-O cho đoạn code sau và giải thích từng bước:',
+                code: `public static int mystery(int n) {\n    int count = 0;\n    for (int i = 1; i <= n; i++) {\n        for (int j = 1; j <= i; j++) {\n            count++;\n        }\n    }\n    return count;\n}`,
+                placeholder: 'Phân tích Big-O và giải thích...',
+                sampleAnswer: `Vòng ngoài: i chạy từ 1 đến n (n lần)
+Vòng trong: j chạy từ 1 đến i
+- Khi i=1: j chạy 1 lần
+- Khi i=2: j chạy 2 lần
+- ...
+- Khi i=n: j chạy n lần
+
+Tổng số bước = 1 + 2 + 3 + ... + n = n(n+1)/2 = n²/2 + n/2
+
+Bỏ hệ số 1/2 và bậc thấp n/2 → Big-O = O(n²)`,
+                explanation: 'Dù vòng trong không phải luôn chạy n lần, tổng chuỗi 1+2+...+n = n(n+1)/2 vẫn có bậc n² → O(n²).'
+            },
+            {
+                id: 17, tags: ['concept', 'medium'], type: 'text',
+                question: 'Giải thích sự khác nhau giữa <strong>Big-O</strong>, <strong>Big-Ω</strong>, và <strong>Big-Θ</strong>. Cho ví dụ cụ thể với Linear Search.',
+                placeholder: 'Giải thích và cho ví dụ...',
+                sampleAnswer: `Big-O (cận trên / worst-case): Mô tả tốc độ tăng tối đa.
+Big-Ω (cận dưới / best-case): Mô tả tốc độ tăng tối thiểu.
+Big-Θ (cận chặt / tight): Khi Big-O = Big-Ω.
+
+Ví dụ Linear Search trên mảng n phần tử:
+- Big-O: O(n) → worst-case phần tử ở cuối hoặc không có
+- Big-Ω: Ω(1) → best-case phần tử ở đầu mảng
+- Big-Θ: Không có Θ duy nhất vì O ≠ Ω
+
+Ví dụ Merge Sort:
+- Big-O: O(n log n), Big-Ω: Ω(n log n) → Big-Θ: Θ(n log n)
+  (best = worst = average đều n log n)`,
+                explanation: 'Linear Search là ví dụ hay vì best ≠ worst. Merge Sort thì best = worst nên có Θ(n log n).'
+            },
+            {
+                id: 18, tags: ['code', 'hard'], type: 'code',
+                question: 'Viết 3 hàm Java với Big-O lần lượt là O(1), O(n), O(n²). Mỗi hàm nhận tham số <code>int[] arr</code>.',
+                placeholder: `// O(1)\npublic static int first(int[] arr) {\n    \n}\n\n// O(n)\npublic static int sumAll(int[] arr) {\n    \n}\n\n// O(n²)\npublic static void printPairs(int[] arr) {\n    \n}`,
+                sampleAnswer: `// O(1) — Constant: truy cập 1 phần tử, không phụ thuộc n
+public static int first(int[] arr) {
+    return arr[0];
+}
+
+// O(n) — Linear: duyệt toàn bộ mảng 1 lần
+public static int sumAll(int[] arr) {
+    int sum = 0;
+    for (int x : arr) sum += x;
+    return sum;
+}
+
+// O(n²) — Quadratic: 2 vòng lặp lồng
+public static void printPairs(int[] arr) {
+    for (int i = 0; i < arr.length; i++)
+        for (int j = i+1; j < arr.length; j++)
+            System.out.println(arr[i] + "," + arr[j]);
+}`,
+                explanation: 'O(1): không có vòng lặp phụ thuộc n. O(n): 1 vòng lặp. O(n²): 2 vòng lặp lồng nhau.'
+            },
+            {
+                id: 19, tags: ['concept', 'hard'], type: 'text',
+                question: 'Tại sao Quick Sort có worst-case O(n²) nhưng vẫn được coi là thuật toán sắp xếp tốt nhất trong thực tế? So sánh với Merge Sort.',
+                placeholder: 'Phân tích lý do...',
+                sampleAnswer: `Quick Sort vs Merge Sort:
+
+1. Average case: Cả hai đều O(n log n), nhưng Quick Sort nhanh hơn trong thực tế nhờ:
+   - Cache-friendly: Quick Sort sắp xếp in-place, dữ liệu liền kề trong bộ nhớ
+   - Constant factor nhỏ hơn (ít phép copy)
+   
+2. Space: Quick Sort O(log n) stack space, Merge Sort cần O(n) bộ nhớ phụ
+
+3. Worst-case O(n²) của Quick Sort xảy ra khi:
+   - Mảng đã sắp xếp + chọn pivot đầu/cuối
+   - Giải pháp: random pivot, median-of-three → gần như không xảy ra
+
+4. Kết luận: Quick Sort thắng nhờ constant factor nhỏ, cache-friendly, in-place. 
+   Merge Sort thắng khi cần stable sort hoặc guaranteed O(n log n).`,
+                explanation: 'Big-O giấu constant factor. Quick Sort có constant nhỏ hơn + cache-friendly → nhanh hơn thực tế dù worst-case xấu hơn.'
+            },
+            {
+                id: 20, tags: ['bigo', 'hard'], type: 'text',
+                question: 'Cho <code>T(n) = 2T(n/2) + O(n)</code>. Đây là hệ thức đệ quy của thuật toán nào? Giải bằng cây đệ quy (recursion tree) để chứng minh T(n) = O(n log n).',
+                placeholder: 'Vẽ cây đệ quy (dạng text) và phân tích...',
+                sampleAnswer: `Đây là hệ thức đệ quy của Merge Sort.
+
+Giải bằng cây đệ quy:
+Level 0: 1 bài toán size n     → work = cn
+Level 1: 2 bài toán size n/2   → work = 2·c(n/2) = cn
+Level 2: 4 bài toán size n/4   → work = 4·c(n/4) = cn
+Level 3: 8 bài toán size n/8   → work = 8·c(n/8) = cn
+...
+Level k: 2^k bài toán size n/2^k → work = cn
+
+Dừng khi n/2^k = 1 → k = log₂(n)
+
+Tổng work = cn × (số level) = cn × log₂(n) = O(n log n)
+
+Cũng có thể dùng Master Theorem:
+a = 2, b = 2, f(n) = O(n)
+log_b(a) = log₂(2) = 1
+f(n) = Θ(n^1) → Case 2 → T(n) = Θ(n log n)`,
+                explanation: 'Mỗi level của cây đệ quy tổng work = cn. Có log₂(n) levels → tổng = O(n log n). Master Theorem cho kết quả tương tự.'
+            }
+        ];
+
+        // ==========================================
+        //  QUIZ STATE
+        // ==========================================
+        let quizAnswers = {};
+        let correctCount = 0;
+        let answeredCount = 0;
+
+        // ==========================================
+        //  RENDER QUIZ
+        // ==========================================
+        function renderQuiz() {
+            const c = document.getElementById('quizContainer');
+            c.innerHTML = QUIZ_DATA.map(q => {
+                const tags = q.tags.map(t => `<span class="q-tag ${t}">${t}</span>`).join('');
+                const codeHTML = q.code ? `<div class="code-block"><span class="code-lang">Java</span><pre>${esc(q.code)}</pre></div>` : '';
+                const opts = q.options.map((o, i) => `
+                    <div class="mcq-option" data-qid="${q.id}" data-oidx="${i}" onclick="selectAnswer(${q.id}, ${i})">
+                        <div class="mcq-marker">${String.fromCharCode(65+i)}</div>
+                        <div class="mcq-text">${o}</div>
+                    </div>
+                `).join('');
+                return `
+                    <div class="quiz-card" id="q-${q.id}">
+                        <div class="q-header">
+                            <div class="q-number">${q.id}</div>
+                            <div><div class="q-meta">${tags}</div><div class="q-text">${q.question}</div></div>
+                        </div>
+                        ${codeHTML}
+                        <div class="mcq-options">${opts}</div>
+                        <div class="explanation" id="exp-${q.id}"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectAnswer(qid, oidx) {
+            if (quizAnswers[qid] !== undefined) return;
+            quizAnswers[qid] = oidx;
+            const q = QUIZ_DATA.find(x => x.id === qid);
+            const ok = oidx === q.correct;
+            const opts = document.querySelectorAll(`[data-qid="${qid}"]`);
+            opts.forEach(o => {
+                const idx = parseInt(o.dataset.oidx);
+                o.classList.add('disabled');
+                if (idx === q.correct) o.classList.add('correct');
+                if (idx === oidx && !ok) o.classList.add('wrong');
+                if (idx === oidx) o.classList.add('selected');
+            });
+            const card = document.getElementById(`q-${qid}`);
+            card.classList.add(ok ? 'answered-correct' : 'answered-wrong');
+            if (!ok) card.style.animation = 'shake 0.4s ease-out';
+            const exp = document.getElementById(`exp-${qid}`);
+            exp.className = `explanation show ${ok ? 'correct-exp' : 'wrong-exp'}`;
+            exp.innerHTML = `<div class="exp-title">${ok ? '✅ Chính xác!' : '❌ Sai rồi!'}</div>${q.explanation}`;
+            if (ok) correctCount++;
+            answeredCount++;
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('answeredQ').textContent = answeredCount;
+            document.getElementById('correctQ').textContent = correctCount;
+            document.getElementById('wrongQ').textContent = answeredCount - correctCount;
+            const pct = (answeredCount / 15) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressText').textContent = `${answeredCount} / 15 câu`;
+        }
+
+        function showResults() {
+            const pct = Math.round((correctCount / 15) * 100);
+            let emoji, title, grade, gc;
+            if (pct >= 90) { emoji='🏆'; title='Xuất sắc!'; grade='A+'; gc='grade-a'; }
+            else if (pct >= 75) { emoji='🎉'; title='Giỏi!'; grade='B+'; gc='grade-b'; }
+            else if (pct >= 50) { emoji='💪'; title='Khá!'; grade='C'; gc='grade-c'; }
+            else { emoji='📚'; title='Cần ôn thêm!'; grade='F'; gc='grade-f'; }
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultScore').textContent = `${correctCount}/15`;
+            document.getElementById('resultGrade').textContent = grade;
+            document.getElementById('resultGrade').className = `result-grade ${gc}`;
+            document.getElementById('resultDetail').innerHTML = `Đúng <strong>${correctCount}/15</strong> câu (${pct}%). Đã làm ${answeredCount}/15 câu.`;
+            document.getElementById('resultModal').classList.add('show');
+        }
+
+        function resetQuiz() {
+            if (!confirm('Làm lại từ đầu?')) return;
+            quizAnswers = {}; correctCount = 0; answeredCount = 0;
+            renderQuiz(); updateStats();
+        }
+
+        // ==========================================
+        //  RENDER WRITTEN
+        // ==========================================
+        function renderWritten() {
+            const c = document.getElementById('writtenContainer');
+            c.innerHTML = WRITTEN_DATA.map(q => {
+                const tags = q.tags.map(t => `<span class="q-tag ${t}">${t}</span>`).join('');
+                const codeHTML = q.code ? `<div class="code-block"><span class="code-lang">Java</span><pre>${esc(q.code)}</pre></div>` : '';
+                const editor = q.type === 'code'
+                    ? `<div class="hint-label">💻 Viết phân tích / code:</div><textarea class="code-editor-input" placeholder="${escAttr(q.placeholder)}" spellcheck="false"></textarea>`
+                    : `<div class="hint-label">📝 Viết câu trả lời:</div><textarea class="text-editor" placeholder="${escAttr(q.placeholder)}"></textarea>`;
+                return `
+                    <div class="quiz-card" id="q-${q.id}">
+                        <div class="q-header">
+                            <div class="q-number">${q.id}</div>
+                            <div><div class="q-meta">${tags}</div><div class="q-text">${q.question}</div></div>
+                        </div>
+                        ${codeHTML}
+                        <div style="margin-top: 16px;">${editor}</div>
+                        <div class="btn-group">
+                            <button class="btn btn-warning" onclick="toggleExp(${q.id})">💡 Xem đáp án mẫu</button>
+                        </div>
+                        <div class="explanation neutral-exp" id="exp-${q.id}">
+                            <div class="exp-title">📋 Đáp án mẫu:</div>
+                            <pre style="background: var(--bg-code); padding: 14px; border-radius: 6px; margin: 10px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7; white-space: pre-wrap; overflow-x: auto;">${esc(q.sampleAnswer)}</pre>
+                            <div style="margin-top: 10px;"><strong>💡</strong> ${q.explanation}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleExp(id) {
+            document.getElementById(`exp-${id}`).classList.toggle('show');
+        }
+
+        // ==========================================
+        //  HELPERS
+        // ==========================================
+        function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+        function escAttr(s) { return s.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
+        // Tab in code editors
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab' && e.target.classList.contains('code-editor-input')) {
+                e.preventDefault();
+                const s = e.target.selectionStart, en = e.target.selectionEnd;
+                e.target.value = e.target.value.substring(0, s) + '    ' + e.target.value.substring(en);
+                e.target.selectionStart = e.target.selectionEnd = s + 4;
+            }
+        });
+
+        // ==========================================
+        //  INIT
+        // ==========================================
+        renderQuiz();
+        renderWritten();
+        updateStats();
+        updateGrowth();
+    </script>
+
+</body>
+
+</html>
