@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack & Queue — Bài tập Kiểm tra Kiến thức</title>
+    <meta name="description" content="Bài tập trắc nghiệm và tự luận kiểm tra kiến thức về Stack và Queue">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== CSS Variables & Design System ===== */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1e2642;
+            --bg-code: #0d1117;
+            --text-primary: #e8edf5;
+            --text-secondary: #8b95a8;
+            --text-muted: #5a6478;
+            --accent-1: #6366f1;
+            --accent-1-glow: rgba(99, 102, 241, 0.3);
+            --accent-2: #06b6d4;
+            --accent-2-glow: rgba(6, 182, 212, 0.3);
+            --accent-3: #f59e0b;
+            --accent-3-glow: rgba(245, 158, 11, 0.3);
+            --accent-4: #10b981;
+            --accent-4-glow: rgba(16, 185, 129, 0.3);
+            --accent-5: #ef4444;
+            --accent-5-glow: rgba(239, 68, 68, 0.3);
+            --accent-6: #ec4899;
+            --accent-6-glow: rgba(236, 72, 153, 0.3);
+            --border: rgba(99, 102, 241, 0.15);
+            --border-hover: rgba(99, 102, 241, 0.35);
+            --glass: rgba(26, 32, 53, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --correct: #10b981;
+            --correct-glow: rgba(16, 185, 129, 0.2);
+            --wrong: #ef4444;
+            --wrong-glow: rgba(239, 68, 68, 0.2);
+        }
+
+        /* ===== Reset & Base ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== Animated Background ===== */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-1-glow) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation: floatBg 20s ease-in-out infinite;
+        }
+
+        .bg-pattern::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-2-glow) 0%, transparent 70%);
+            bottom: -150px;
+            right: -150px;
+            animation: floatBg 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatBg {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(80px, 50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-40px, -30px) scale(0.95);
+            }
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* ===== Hero Header ===== */
+        .hero {
+            text-align: center;
+            padding: 50px 0 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            border-radius: 100px;
+            background: linear-gradient(135deg, var(--accent-3-glow), var(--accent-5-glow));
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-3);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4.5vw, 3.2rem);
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #e8edf5 0%, #f59e0b 50%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== Dashboard Stats ===== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 36px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .tab-btn {
+            padding: 12px 28px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-3), var(--accent-5));
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: inherit;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            border-color: var(--accent-3);
+            color: #fff;
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.15);
+        }
+
+        .tab-btn.active::before {
+            opacity: 1;
+        }
+
+        .tab-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== Question Card ===== */
+        .q-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .q-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-3), var(--accent-5));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .q-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .q-card:hover::before {
+            opacity: 1;
+        }
+
+        .q-card.answered-correct {
+            border-color: var(--correct) !important;
+            box-shadow: 0 0 24px var(--correct-glow);
+        }
+
+        .q-card.answered-correct::before {
+            background: var(--correct) !important;
+            opacity: 1;
+        }
+
+        .q-card.answered-wrong {
+            border-color: var(--wrong) !important;
+            box-shadow: 0 0 24px var(--wrong-glow);
+        }
+
+        .q-card.answered-wrong::before {
+            background: var(--wrong) !important;
+            opacity: 1;
+        }
+
+        .q-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .q-number {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-xs);
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .q-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .q-tag {
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .q-tag.stack {
+            background: var(--accent-1-glow);
+            color: var(--accent-1);
+        }
+
+        .q-tag.queue {
+            background: var(--accent-2-glow);
+            color: var(--accent-2);
+        }
+
+        .q-tag.both {
+            background: var(--accent-6-glow);
+            color: var(--accent-6);
+        }
+
+        .q-tag.easy {
+            background: var(--accent-4-glow);
+            color: var(--accent-4);
+        }
+
+        .q-tag.medium {
+            background: var(--accent-3-glow);
+            color: var(--accent-3);
+        }
+
+        .q-tag.hard {
+            background: var(--accent-5-glow);
+            color: var(--accent-5);
+        }
+
+        .q-text {
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* ===== Code in Question ===== */
+        .q-code {
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xs);
+            padding: 18px;
+            margin: 16px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+            position: relative;
+        }
+
+        .q-code .code-lang {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kw {
+            color: #c678dd;
+        }
+
+        .type {
+            color: #e5c07b;
+        }
+
+        .fn {
+            color: #61afef;
+        }
+
+        .str {
+            color: #98c379;
+        }
+
+        .num {
+            color: #d19a66;
+        }
+
+        .cmt {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .op {
+            color: #56b6c2;
+        }
+
+        /* ===== MCQ Options ===== */
+        .mcq-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .mcq-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .mcq-option:hover:not(.disabled) {
+            border-color: var(--border-hover);
+            background: var(--bg-card-hover);
+            transform: translateX(4px);
+        }
+
+        .mcq-option.selected {
+            border-color: var(--accent-1);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .mcq-option.correct {
+            border-color: var(--correct) !important;
+            background: rgba(16, 185, 129, 0.08) !important;
+        }
+
+        .mcq-option.wrong {
+            border-color: var(--wrong) !important;
+            background: rgba(239, 68, 68, 0.08) !important;
+        }
+
+        .mcq-option.disabled {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .mcq-marker {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .mcq-option.selected .mcq-marker {
+            border-color: var(--accent-1);
+            background: var(--accent-1);
+            color: #fff;
+        }
+
+        .mcq-option.correct .mcq-marker {
+            border-color: var(--correct);
+            background: var(--correct);
+            color: #fff;
+        }
+
+        .mcq-option.wrong .mcq-marker {
+            border-color: var(--wrong);
+            background: var(--wrong);
+            color: #fff;
+        }
+
+        .mcq-text {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .mcq-option.correct .mcq-text,
+        .mcq-option.selected .mcq-text {
+            color: var(--text-primary);
+        }
+
+        /* ===== Written Answer ===== */
+        .written-area {
+            margin-top: 18px;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 160px;
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            resize: vertical;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            outline: none;
+            transition: var(--transition);
+            tab-size: 4;
+        }
+
+        .code-editor:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 16px var(--accent-1-glow);
+        }
+
+        .code-editor::placeholder {
+            color: var(--text-muted);
+        }
+
+        .text-editor {
+            width: 100%;
+            min-height: 100px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            resize: vertical;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .text-editor:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 16px var(--accent-1-glow);
+        }
+
+        .text-editor::placeholder {
+            color: var(--text-muted);
+        }
+
+        .hint-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-1), #4f46e5);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-4), #059669);
+            color: #fff;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--accent-3), #d97706);
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-5), #dc2626);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== Explanation Box ===== */
+        .explanation {
+            display: none;
+            margin-top: 18px;
+            padding: 18px;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .explanation.correct-exp {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .explanation.wrong-exp {
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .explanation.neutral-exp {
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .explanation strong {
+            color: var(--text-primary);
+        }
+
+        .explanation .exp-title {
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation code {
+            background: var(--bg-code);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* ===== Progress Bar ===== */
+        .progress-bar-container {
+            background: var(--bg-secondary);
+            border-radius: 100px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* ===== Timer ===== */
+        .timer-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-3);
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xs);
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-display.warning {
+            color: var(--accent-5);
+        }
+
+        /* ===== Result Modal ===== */
+        .result-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-overlay.show {
+            display: flex;
+        }
+
+        .result-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 48px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalIn {
+            0% {
+                transform: scale(0.8) translateY(40px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .result-title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .result-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-3), var(--accent-4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 16px 0;
+        }
+
+        .result-detail {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .result-grade {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .grade-a {
+            background: var(--accent-4-glow);
+            color: var(--accent-4);
+        }
+
+        .grade-b {
+            background: var(--accent-2-glow);
+            color: var(--accent-2);
+        }
+
+        .grade-c {
+            background: var(--accent-3-glow);
+            color: var(--accent-3);
+        }
+
+        .grade-f {
+            background: var(--accent-5-glow);
+            color: var(--accent-5);
+        }
+
+        /* ===== Back Link ===== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--accent-2);
+            transform: translateX(-4px);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-6px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(6px);
+            }
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px 60px;
+            }
+
+            .hero {
+                padding: 30px 0 20px;
+            }
+
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .q-card {
+                padding: 24px;
+            }
+
+            .q-code {
+                font-size: 0.75rem;
+                padding: 14px;
+            }
+        }
+
+        /* ===== Scroll-linked fade-in ===== */
+        .q-card {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .q-card:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .q-card:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+
+        .q-card:nth-child(3) {
+            animation-delay: 0.1s;
+        }
+
+        .q-card:nth-child(4) {
+            animation-delay: 0.15s;
+        }
+
+        .q-card:nth-child(5) {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-pattern"></div>
+
+    <div class="container" style="left: -5px; top: 1px;">
+
+        <!-- Back link -->
+        <a href="stacknqueue-visual.html" class="back-link">← Quay lại trang lý thuyết</a>
+
+        <!-- ===== HERO ===== -->
+        <header class="hero">
+            <div class="hero-badge">🧪 Exercises</div>
+            <h1>Kiểm tra Kiến thức<br>Stack &amp; Queue</h1>
+            <p>15 câu trắc nghiệm + 5 bài tự luận — hoàn thành để đánh giá mức hiểu biết của bạn!</p>
+        </header>
+
+        <!-- ===== DASHBOARD ===== -->
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">Câu hỏi</div>
+                <div class="stat-value" style="color: var(--accent-1);" id="totalQ">20</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Đã làm</div>
+                <div class="stat-value" style="color: var(--accent-2);" id="answeredQ">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Đúng (TN)</div>
+                <div class="stat-value" style="color: var(--accent-4);" id="correctQ">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Thời gian</div>
+                <div class="stat-value" style="color: var(--accent-3);" id="timerStat">00:00</div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-bar">
+            <div class="timer-display" id="timerDisplay">
+                ⏱ <span id="timerText">00:00</span>
+            </div>
+            <button class="btn btn-ghost" onclick="toggleTimer()" id="timerBtn">⏸ Tạm dừng</button>
+        </div>
+
+        <!-- ===== TAB NAV ===== -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="mcq" onclick="switchTab('mcq')"><span>📝 Trắc nghiệm
+                    (15)</span></button>
+            <button class="tab-btn" data-tab="written" onclick="switchTab('written')"><span>✍️ Tự luận
+                    (5)</span></button>
+            <button class="tab-btn" data-tab="results" onclick="switchTab('results')"><span>📊 Kết quả</span></button>
+        </nav>
+
+        <!-- Progress -->
+        <div style="margin-bottom: 32px;">
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 20 câu đã hoàn thành</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!--                    TAB 1: TRẮC NGHIỆM                       -->
+        <!-- ============================================================ -->
+        <section class="tab-content active" id="tab-mcq">
+            <!-- Questions injected by JS -->
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    TAB 2: TỰ LUẬN                           -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-written">
+            <!-- Written questions injected by JS -->
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    TAB 3: KẾT QUẢ                           -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-results">
+            <div class="q-card" style="text-align: center; padding: 48px;">
+                <div style="font-size: 3rem; margin-bottom: 16px;">📊</div>
+                <h3 style="font-size: 1.4rem; margin-bottom: 12px;">Bảng Kết quả</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Hoàn thành tất cả câu trắc nghiệm rồi nhấn "Xem kết quả" bên dưới.
+                </p>
+                <div id="resultContent"></div>
+                <div class="btn-group" style="justify-content: center;">
+                    <button class="btn btn-success" onclick="showResults()">📊 Xem kết quả Trắc nghiệm</button>
+                    <button class="btn btn-danger" onclick="resetAll()">↺ Làm lại từ đầu</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Result Modal -->
+    <div class="result-overlay" id="resultModal">
+        <div class="result-modal">
+            <div class="result-emoji" id="resultEmoji">🎉</div>
+            <div class="result-title" id="resultTitle">Kết quả</div>
+            <div class="result-score" id="resultScore">0/15</div>
+            <div class="result-grade" id="resultGrade">A+</div>
+            <div class="result-detail" id="resultDetail"></div>
+            <button class="btn btn-primary" onclick="closeModal()">Đóng</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        //  MCQ DATA — 15 câu trắc nghiệm
+        // ==========================================
+        const MCQ_DATA = [
+            // --- STACK ---
+            {
+                id: 1,
+                tags: ['stack', 'easy'],
+                question: 'Stack hoạt động theo nguyên tắc nào?',
+                options: [
+                    'FIFO — First In, First Out',
+                    'LIFO — Last In, First Out',
+                    'LILO — Last In, Last Out',
+                    'Random Access'
+                ],
+                correct: 1,
+                explanation: '<strong>LIFO (Last In, First Out)</strong> — phần tử được thêm vào <strong>sau cùng</strong> sẽ được lấy ra <strong>đầu tiên</strong>. Giống như chồng đĩa: đĩa đặt trên cùng sẽ được lấy ra trước.'
+            },
+            {
+                id: 2,
+                tags: ['stack', 'easy'],
+                question: 'Cho Stack ban đầu rỗng. Sau khi thực hiện: <code>push(10), push(20), push(30), pop()</code>, giá trị trả về của <code>pop()</code> là gì?',
+                options: ['10', '20', '30', 'Stack Underflow'],
+                correct: 2,
+                explanation: 'Push lần lượt 10, 20, 30 vào stack → stack = [10, 20, 30] (30 ở đỉnh). <code>pop()</code> lấy phần tử đỉnh = <strong>30</strong>.'
+            },
+            {
+                id: 3,
+                tags: ['stack', 'medium'],
+                question: 'Trong cài đặt Stack bằng Array, khi nào mảng được <strong>resize gấp đôi</strong>?',
+                options: [
+                    'Khi top == 0',
+                    'Khi top == data.length - 1 (mảng đầy)',
+                    'Khi top == data.length / 2',
+                    'Mỗi lần gọi push()'
+                ],
+                correct: 1,
+                explanation: 'Mảng được resize gấp đôi khi <code>top == data.length - 1</code>, tức là mảng đã đầy và không còn chỗ cho phần tử mới. Đây là chiến lược <strong>doubling</strong> giúp push amortized O(1).'
+            },
+            {
+                id: 4,
+                tags: ['stack', 'medium'],
+                question: 'Độ phức tạp của thao tác <code>push()</code> trên Stack (Array-based với dynamic resizing) là gì?',
+                options: [
+                    'O(1) — luôn luôn',
+                    'O(n) — luôn luôn',
+                    'O(1) amortized — trung bình O(1), worst-case O(n) khi resize',
+                    'O(log n)'
+                ],
+                correct: 2,
+                explanation: 'Push thường là O(1) (chỉ gán giá trị). Nhưng khi mảng đầy phải tạo mảng mới gấp đôi và copy n phần tử → O(n). Tuy nhiên resize xảy ra rất hiếm nên <strong>amortized O(1)</strong>.'
+            },
+            {
+                id: 5,
+                tags: ['stack', 'hard'],
+                question: 'Trong Stack array-based, khi nào mảng được <strong>thu nhỏ 1/2</strong>?',
+                code: `if (top > 0 && top == data.length / 4) {
+    resize(data.length / 2);
+}`,
+                options: [
+                    'Khi stack rỗng',
+                    'Khi số phần tử = 1/2 dung lượng mảng',
+                    'Khi số phần tử = 1/4 dung lượng mảng',
+                    'Không bao giờ thu nhỏ'
+                ],
+                correct: 2,
+                explanation: 'Thu nhỏ khi <code>top == data.length / 4</code>, tức chỉ sử dụng 1/4 mảng. Thu nhỏ còn 1/2 (vẫn thừa chỗ) để tránh <strong>thrashing</strong> — tình huống mảng liên tục resize-up rồi resize-down.'
+            },
+            {
+                id: 6,
+                tags: ['stack', 'medium'],
+                question: 'Cài đặt Stack bằng Linked List, <code>push()</code> thêm node mới ở đâu?',
+                options: [
+                    'Cuối linked list (tail)',
+                    'Đầu linked list (head) — node mới trở thành top',
+                    'Giữa linked list',
+                    'Vị trí ngẫu nhiên'
+                ],
+                correct: 1,
+                explanation: 'Thêm ở <strong>đầu (head)</strong> để đảm bảo O(1). Node mới trỏ next đến top cũ, rồi cập nhật top = node mới. Nếu thêm ở cuối thì phải duyệt O(n).'
+            },
+            {
+                id: 7,
+                tags: ['stack', 'hard'],
+                question: 'Ứng dụng nào <strong>KHÔNG</strong> sử dụng Stack?',
+                options: [
+                    'Kiểm tra ngoặc hợp lệ (Balanced Parentheses)',
+                    'Thuật toán BFS (Breadth-First Search)',
+                    'Chuyển Infix → Postfix',
+                    'Nút Undo (Ctrl+Z)'
+                ],
+                correct: 1,
+                explanation: '<strong>BFS dùng Queue</strong>, không phải Stack. BFS duyệt theo chiều rộng — xử lý các đỉnh ở cùng "lớp" trước. DFS mới dùng Stack.'
+            },
+            // --- QUEUE ---
+            {
+                id: 8,
+                tags: ['queue', 'easy'],
+                question: 'Queue hoạt động theo nguyên tắc nào?',
+                options: [
+                    'LIFO — Last In, First Out',
+                    'FIFO — First In, First Out',
+                    'Priority — ưu tiên cao trước',
+                    'LIFO — Last In, Last Out'
+                ],
+                correct: 1,
+                explanation: '<strong>FIFO (First In, First Out)</strong> — phần tử vào <strong>trước</strong> sẽ được lấy ra <strong>trước</strong>. Giống xếp hàng mua vé: ai đến trước phục vụ trước.'
+            },
+            {
+                id: 9,
+                tags: ['queue', 'easy'],
+                question: 'Cho Queue rỗng. Sau: <code>enqueue(5), enqueue(10), enqueue(15), dequeue()</code>, giá trị dequeue trả về là gì?',
+                options: ['15', '10', '5', 'Queue Underflow'],
+                correct: 2,
+                explanation: 'Enqueue 5, 10, 15 → queue = [5, 10, 15] (5 ở front). <code>dequeue()</code> lấy từ front = <strong>5</strong>.'
+            },
+            {
+                id: 10,
+                tags: ['queue', 'medium'],
+                question: 'Trong Queue cài đặt bằng Linked List, <code>enqueue()</code> thêm node ở đâu và <code>dequeue()</code> lấy node ở đâu?',
+                options: [
+                    'Thêm ở front, lấy ở rear',
+                    'Thêm ở rear, lấy ở front',
+                    'Cả hai đều ở front',
+                    'Cả hai đều ở rear'
+                ],
+                correct: 1,
+                explanation: '<strong>Enqueue → rear</strong> (cuối hàng), <strong>Dequeue → front</strong> (đầu hàng). Như xếp hàng: người mới vào cuối, người đầu hàng được phục vụ.'
+            },
+            {
+                id: 11,
+                tags: ['queue', 'hard'],
+                question: 'Trong Queue cài đặt bằng <strong>Circular Array</strong>, phép toán nào giúp "quấn vòng" khi rear/front vượt cuối mảng?',
+                code: `rear = (rear + 1) % data.length;`,
+                options: [
+                    'Phép chia nguyên (/)',
+                    'Phép chia dư (%) — modulo',
+                    'Phép trừ (-)',
+                    'Phép AND bitwise (&)'
+                ],
+                correct: 1,
+                explanation: 'Phép <code>%</code> (modulo) giúp khi index vượt quá cuối mảng thì quay lại đầu. Ví dụ: mảng size 10, <code>rear = 9</code> → <code>(9+1) % 10 = 0</code> → quay lại index 0.'
+            },
+            {
+                id: 12,
+                tags: ['queue', 'hard'],
+                question: 'Tại sao Queue cài bằng array thường dùng <strong>Circular Array</strong> thay vì array thẳng?',
+                options: [
+                    'Circular Array nhanh hơn',
+                    'Để tránh lãng phí ô trống phía trước sau khi dequeue',
+                    'Để hỗ trợ nhiều kiểu dữ liệu hơn',
+                    'Circular Array dùng ít bộ nhớ hơn'
+                ],
+                correct: 1,
+                explanation: 'Với array thẳng, sau mỗi <code>dequeue()</code> front dịch sang phải → các ô phía trước bị lãng phí. <strong>Circular Array</strong> dùng modulo để tái sử dụng các ô trống, không lãng phí bộ nhớ.'
+            },
+            // --- SO SÁNH ---
+            {
+                id: 13,
+                tags: ['both', 'medium'],
+                question: 'Thuật toán DFS dùng cấu trúc dữ liệu nào, BFS dùng cấu trúc nào?',
+                options: [
+                    'DFS → Queue, BFS → Stack',
+                    'DFS → Stack, BFS → Queue',
+                    'Cả hai đều dùng Stack',
+                    'Cả hai đều dùng Queue'
+                ],
+                correct: 1,
+                explanation: '<strong>DFS (Depth-First Search) → Stack</strong>: đi sâu nhất có thể, rồi quay lại (backtrack). <strong>BFS (Breadth-First Search) → Queue</strong>: duyệt hết các đỉnh kề trước, rồi mới sang lớp tiếp.'
+            },
+            {
+                id: 14,
+                tags: ['both', 'medium'],
+                question: 'So sánh ưu điểm: Array-based vs Linked-List-based cho Stack/Queue?',
+                options: [
+                    'Array luôn tốt hơn Linked List',
+                    'Linked List luôn tốt hơn Array',
+                    'Array: cache-friendly, ít overhead. Linked List: O(1) worst-case, kích thước linh hoạt',
+                    'Không có sự khác biệt'
+                ],
+                correct: 2,
+                explanation: '<strong>Array</strong>: cache-friendly (phần tử liền kề trong bộ nhớ), ít bộ nhớ overhead. <strong>Linked List</strong>: push/pop luôn O(1) worst-case (không resize), kích thước tự co giãn. Mỗi cách có trade-off riêng.'
+            },
+            {
+                id: 15,
+                tags: ['both', 'hard'],
+                question: 'Cho đoạn code sau, output cuối cùng là gì?',
+                code: `Stack s = new Stack();
+s.push(1);
+s.push(2);
+s.push(3);
+System.out.print(s.pop() + " ");
+System.out.print(s.peek() + " ");
+System.out.print(s.pop() + " ");
+System.out.print(s.size());`,
+                options: [
+                    '1 2 3 0',
+                    '3 2 2 1',
+                    '3 2 1 0',
+                    '3 3 2 1'
+                ],
+                correct: 1,
+                explanation: 'Stack: [1, 2, 3]. <code>pop()</code> → 3 (lấy đỉnh). <code>peek()</code> → 2 (xem đỉnh, không xóa). <code>pop()</code> → 2 (lấy đỉnh). <code>size()</code> → 1 (còn phần tử 1). Output: <strong>3 2 2 1</strong>.'
+            }
+        ];
+
+        // ==========================================
+        //  WRITTEN DATA — 5 câu tự luận
+        // ==========================================
+        const WRITTEN_DATA = [
+            {
+                id: 16,
+                tags: ['stack', 'medium'],
+                type: 'code',
+                question: 'Viết method <code>reverse(String s)</code> sử dụng Stack để đảo ngược chuỗi. Ví dụ: "hello" → "olleh".',
+                placeholder: `public static String reverse(String s) {\n    // Gợi ý: push từng ký tự vào stack,\n    // sau đó pop ra để xây dựng chuỗi ngược\n    \n}`,
+                sampleAnswer: `public static String reverse(String s) {
+    Stack<Character> stack = new Stack<>();
+    // Push từng ký tự vào stack
+    for (char c : s.toCharArray()) {
+        stack.push(c);
+    }
+    // Pop ra để tạo chuỗi ngược
+    StringBuilder result = new StringBuilder();
+    while (!stack.isEmpty()) {
+        result.append(stack.pop());
+    }
+    return result.toString();
+}`,
+                explanation: 'Ý tưởng: Push từng ký tự vào stack → LIFO đảm bảo ký tự cuối ra trước → chuỗi bị đảo ngược. Đây là ứng dụng kinh điển của tính chất LIFO.'
+            },
+            {
+                id: 17,
+                tags: ['stack', 'hard'],
+                type: 'code',
+                question: 'Viết method <code>isBalanced(String expr)</code> kiểm tra chuỗi ngoặc có hợp lệ không. Hỗ trợ: <code>() [] {}</code>. Ví dụ: "{[()]}" → true, "{[(])}" → false.',
+                placeholder: `public static boolean isBalanced(String expr) {\n    // Gợi ý: dùng Stack\n    // Gặp ngoặc mở → push\n    // Gặp ngoặc đóng → pop và kiểm tra cặp\n    \n}`,
+                sampleAnswer: `public static boolean isBalanced(String expr) {
+    Stack<Character> stack = new Stack<>();
+    for (char c : expr.toCharArray()) {
+        if (c == '(' || c == '[' || c == '{') {
+            stack.push(c);
+        } else if (c == ')' || c == ']' || c == '}') {
+            if (stack.isEmpty()) return false;
+            char top = stack.pop();
+            if ((c == ')' && top != '(') ||
+                (c == ']' && top != '[') ||
+                (c == '}' && top != '{'))
+                return false;
+        }
+    }
+    return stack.isEmpty();
+}`,
+                explanation: 'Gặp ngoặc mở → push vào stack. Gặp ngoặc đóng → pop đỉnh stack ra và kiểm tra xem có phải cặp tương ứng không. Cuối cùng stack phải rỗng thì mới hợp lệ.'
+            },
+            {
+                id: 18,
+                tags: ['queue', 'medium'],
+                type: 'text',
+                question: 'Giải thích tại sao trong cài đặt Queue bằng Linked List, khi <code>dequeue()</code> mà <code>front</code> trở thành <code>null</code> thì phải set <code>rear = null</code>?',
+                placeholder: 'Giải thích lý do...',
+                sampleAnswer: 'Khi front == null nghĩa là queue đã rỗng (không còn node nào). Nếu không set rear = null, rear vẫn trỏ đến node cũ đã bị xóa → rear thành "dangling pointer" → enqueue() tiếp sẽ nối vào node không tồn tại → lỗi.',
+                explanation: 'Đây là edge case quan trọng: queue có 1 phần tử → dequeue() → front = null nhưng rear vẫn trỏ node cũ. Nếu không reset rear, lần enqueue tiếp theo sẽ gán <code>rear.next = newNode</code> trên một node đã bị garbage collect → NullPointerException hoặc data corruption.'
+            },
+            {
+                id: 19,
+                tags: ['queue', 'hard'],
+                type: 'code',
+                question: 'Viết method <code>resize(int newCap)</code> cho <strong>Circular Array Queue</strong>. Phải copy phần tử theo đúng thứ tự từ front → rear.',
+                placeholder: `private void resize(int newCap) {\n    // Gợi ý: tạo mảng mới, copy theo thứ tự\n    // từ front, dùng (front + i) % data.length\n    // Reset front = 0, rear = count\n    \n}`,
+                sampleAnswer: `private void resize(int newCap) {
+    int[] newData = new int[newCap];
+    for (int i = 0; i < count; i++) {
+        newData[i] = data[(front + i) % data.length];
+    }
+    data = newData;
+    front = 0;
+    rear = count;
+}`,
+                explanation: 'Khó nhất là copy đúng thứ tự khi mảng bị "quấn vòng" (rear < front). Dùng <code>(front + i) % data.length</code> để tính index đúng cho từng phần tử, bất kể front/rear ở đâu. Sau copy, reset front = 0, rear = count.'
+            },
+            {
+                id: 20,
+                tags: ['both', 'hard'],
+                type: 'text',
+                question: 'So sánh ưu/nhược điểm của cài đặt bằng <strong>Array</strong> vs <strong>Linked List</strong> cho Stack và Queue. Khi nào nên chọn cách nào?',
+                placeholder: 'Phân tích ưu/nhược điểm và trường hợp sử dụng...',
+                sampleAnswer: `Array-based:
+• Ưu: Cache-friendly (phần tử liền kề), ít bộ nhớ overhead (không cần pointer), truy cập ngẫu nhiên O(1).
+• Nhược: Push/enqueue worst-case O(n) khi resize, có thể lãng phí bộ nhớ nếu mảng quá lớn.
+• Dùng khi: Biết trước kích thước tối đa, cần hiệu năng cao, ít thay đổi kích thước.
+
+Linked-List-based:
+• Ưu: Push/pop/enqueue/dequeue luôn O(1) worst-case, kích thước linh hoạt tự co giãn.
+• Nhược: Mỗi node cần thêm bộ nhớ cho pointer (4-8 bytes), không cache-friendly (node phân tán trong RAM).
+• Dùng khi: Kích thước biến đổi nhiều, cần đảm bảo O(1) mọi lúc (real-time systems).`,
+                explanation: 'Không có cách nào "tốt hơn" tuyệt đối — mỗi cách có trade-off riêng. Trong thực tế, Java ArrayList (array-based) được dùng nhiều hơn nhờ cache-friendly. Nhưng LinkedList phù hợp khi cần O(1) guaranteed.'
+            }
+        ];
+
+        // ==========================================
+        //  STATE
+        // ==========================================
+        let mcqAnswers = {};   // { questionId: selectedIndex }
+        let writtenAnswers = {}; // { questionId: text }
+        let writtenRevealed = {}; // { questionId: true/false }
+        let correctCount = 0;
+        let answeredCount = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let timerRunning = true;
+
+        // ==========================================
+        //  RENDER MCQ
+        // ==========================================
+        function renderMCQ() {
+            const container = document.getElementById('tab-mcq');
+            container.innerHTML = MCQ_DATA.map((q, qi) => {
+                const tagsHTML = q.tags.map(t => `<span class="q-tag ${t}">${t}</span>`).join('');
+                const codeHTML = q.code ? `<div class="q-code"><span class="code-lang">Java</span>${escapeHtml(q.code)}</div>` : '';
+                const optionsHTML = q.options.map((opt, oi) => `
+                    <div class="mcq-option" data-qid="${q.id}" data-oidx="${oi}" onclick="selectMCQ(${q.id}, ${oi})">
+                        <div class="mcq-marker">${String.fromCharCode(65 + oi)}</div>
+                        <div class="mcq-text">${opt}</div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="q-card" id="q-${q.id}">
+                        <div class="q-header">
+                            <div class="q-number">${q.id}</div>
+                            <div>
+                                <div class="q-meta">${tagsHTML}</div>
+                                <div class="q-text">${q.question}</div>
+                            </div>
+                        </div>
+                        ${codeHTML}
+                        <div class="mcq-options" id="opts-${q.id}">
+                            ${optionsHTML}
+                        </div>
+                        <div class="explanation" id="exp-${q.id}"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectMCQ(qid, oidx) {
+            if (mcqAnswers[qid] !== undefined) return; // Already answered
+
+            mcqAnswers[qid] = oidx;
+            const q = MCQ_DATA.find(x => x.id === qid);
+            const isCorrect = oidx === q.correct;
+
+            // Mark options
+            const opts = document.querySelectorAll(`[data-qid="${qid}"]`);
+            opts.forEach(opt => {
+                const idx = parseInt(opt.dataset.oidx);
+                opt.classList.add('disabled');
+                if (idx === q.correct) opt.classList.add('correct');
+                if (idx === oidx && !isCorrect) opt.classList.add('wrong');
+                if (idx === oidx) opt.classList.add('selected');
+            });
+
+            // Card state
+            const card = document.getElementById(`q-${qid}`);
+            card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+            if (!isCorrect) card.style.animation = 'shake 0.4s ease-out';
+
+            // Explanation
+            const expEl = document.getElementById(`exp-${qid}`);
+            expEl.className = `explanation show ${isCorrect ? 'correct-exp' : 'wrong-exp'}`;
+            expEl.innerHTML = `
+                <div class="exp-title">${isCorrect ? '✅ Chính xác!' : '❌ Sai rồi!'}</div>
+                ${q.explanation}
+            `;
+
+            // Update stats
+            if (isCorrect) correctCount++;
+            answeredCount++;
+            updateStats();
+        }
+
+        // ==========================================
+        //  RENDER WRITTEN
+        // ==========================================
+        function renderWritten() {
+            const container = document.getElementById('tab-written');
+            container.innerHTML = WRITTEN_DATA.map((q, qi) => {
+                const tagsHTML = q.tags.map(t => `<span class="q-tag ${t}">${t}</span>`).join('');
+                const editorHTML = q.type === 'code'
+                    ? `<div class="hint-label">💻 Viết code Java:</div>
+                       <textarea class="code-editor" id="answer-${q.id}" placeholder="${escapeAttr(q.placeholder)}" oninput="saveWritten(${q.id})" spellcheck="false"></textarea>`
+                    : `<div class="hint-label">📝 Viết câu trả lời:</div>
+                       <textarea class="text-editor" id="answer-${q.id}" placeholder="${escapeAttr(q.placeholder)}" oninput="saveWritten(${q.id})"></textarea>`;
+
+                return `
+                    <div class="q-card" id="q-${q.id}">
+                        <div class="q-header">
+                            <div class="q-number">${q.id}</div>
+                            <div>
+                                <div class="q-meta">${tagsHTML}</div>
+                                <div class="q-text">${q.question}</div>
+                            </div>
+                        </div>
+                        <div class="written-area">
+                            ${editorHTML}
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-warning" onclick="toggleAnswer(${q.id})">
+                                💡 Xem đáp án mẫu
+                            </button>
+                        </div>
+                        <div class="explanation neutral-exp" id="exp-${q.id}">
+                            <div class="exp-title">📋 Đáp án mẫu:</div>
+                            <pre style="background: var(--bg-code); padding: 14px; border-radius: 6px; margin: 10px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7; white-space: pre-wrap; overflow-x: auto;">${escapeHtml(q.sampleAnswer)}</pre>
+                            <div style="margin-top: 12px;"><strong>💡 Giải thích:</strong> ${q.explanation}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveWritten(qid) {
+            const el = document.getElementById(`answer-${qid}`);
+            writtenAnswers[qid] = el.value;
+            if (el.value.trim().length > 0 && !writtenRevealed[`counted_${qid}`]) {
+                writtenRevealed[`counted_${qid}`] = true;
+                answeredCount++;
+                updateStats();
+            }
+        }
+
+        function toggleAnswer(qid) {
+            const expEl = document.getElementById(`exp-${qid}`);
+            expEl.classList.toggle('show');
+            writtenRevealed[qid] = true;
+        }
+
+        // ==========================================
+        //  STATS & PROGRESS
+        // ==========================================
+        function updateStats() {
+            document.getElementById('answeredQ').textContent = answeredCount;
+            document.getElementById('correctQ').textContent = correctCount;
+            const pct = (answeredCount / 20) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressText').textContent = `${answeredCount} / 20 câu đã hoàn thành`;
+        }
+
+        // ==========================================
+        //  TIMER
+        // ==========================================
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (!timerRunning) return;
+                timerSeconds++;
+                const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                const s = String(timerSeconds % 60).padStart(2, '0');
+                const timeStr = `${m}:${s}`;
+                document.getElementById('timerText').textContent = timeStr;
+                document.getElementById('timerStat').textContent = timeStr;
+
+                if (timerSeconds >= 1800) {
+                    document.getElementById('timerDisplay').classList.add('warning');
+                }
+            }, 1000);
+        }
+
+        function toggleTimer() {
+            timerRunning = !timerRunning;
+            const btn = document.getElementById('timerBtn');
+            btn.textContent = timerRunning ? '⏸ Tạm dừng' : '▶ Tiếp tục';
+        }
+
+        // ==========================================
+        //  RESULTS
+        // ==========================================
+        function showResults() {
+            const total = 15;
+            const pct = Math.round((correctCount / total) * 100);
+
+            let emoji, title, grade, gradeClass;
+            if (pct >= 90) { emoji = '🏆'; title = 'Xuất sắc!'; grade = 'A+'; gradeClass = 'grade-a'; }
+            else if (pct >= 75) { emoji = '🎉'; title = 'Giỏi lắm!'; grade = 'B+'; gradeClass = 'grade-b'; }
+            else if (pct >= 50) { emoji = '💪'; title = 'Khá tốt!'; grade = 'C'; gradeClass = 'grade-c'; }
+            else { emoji = '📚'; title = 'Cần ôn thêm!'; grade = 'F'; gradeClass = 'grade-f'; }
+
+            const mcqDone = Object.keys(mcqAnswers).length;
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultScore').textContent = `${correctCount}/${total}`;
+            document.getElementById('resultGrade').textContent = grade;
+            document.getElementById('resultGrade').className = `result-grade ${gradeClass}`;
+            document.getElementById('resultDetail').innerHTML = `
+                Bạn trả lời đúng <strong>${correctCount}/${total}</strong> câu trắc nghiệm (${pct}%).<br>
+                Đã làm ${mcqDone}/15 câu TN và ${Object.keys(writtenAnswers).filter(k => writtenAnswers[k].trim()).length}/5 câu tự luận.<br>
+                Thời gian: <strong>${document.getElementById('timerText').textContent}</strong>
+            `;
+            document.getElementById('resultModal').classList.add('show');
+
+            // Also update result tab
+            document.getElementById('resultContent').innerHTML = `
+                <div style="font-size: 4rem; margin-bottom: 12px;">${emoji}</div>
+                <div style="font-size: 2.4rem; font-weight: 900; font-family: 'JetBrains Mono', monospace;
+                    background: linear-gradient(135deg, var(--accent-3), var(--accent-4));
+                    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                    background-clip: text; margin: 12px 0;">${correctCount}/${total}</div>
+                <div class="result-grade ${gradeClass}" style="margin-bottom: 16px;">${grade}</div>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    ${pct}% — ${title}<br>
+                    Thời gian: ${document.getElementById('timerText').textContent}
+                </p>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.remove('show');
+        }
+
+        function resetAll() {
+            if (!confirm('Bạn có chắc muốn làm lại từ đầu? Tất cả câu trả lời sẽ bị xóa.')) return;
+            mcqAnswers = {};
+            writtenAnswers = {};
+            writtenRevealed = {};
+            correctCount = 0;
+            answeredCount = 0;
+            timerSeconds = 0;
+            timerRunning = true;
+            document.getElementById('timerDisplay').classList.remove('warning');
+            document.getElementById('timerBtn').textContent = '⏸ Tạm dừng';
+            document.getElementById('resultContent').innerHTML = '';
+
+            renderMCQ();
+            renderWritten();
+            updateStats();
+            switchTab('mcq');
+        }
+
+        // ==========================================
+        //  TAB SWITCHING
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        // ==========================================
+        //  HELPERS
+        // ==========================================
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+        function escapeAttr(str) {
+            return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // Tab key in code editors
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab' && e.target.classList.contains('code-editor')) {
+                e.preventDefault();
+                const start = e.target.selectionStart;
+                const end = e.target.selectionEnd;
+                e.target.value = e.target.value.substring(0, start) + '    ' + e.target.value.substring(end);
+                e.target.selectionStart = e.target.selectionEnd = start + 4;
+            }
+        });
+
+        // ==========================================
+        //  INIT
+        // ==========================================
+        renderMCQ();
+        renderWritten();
+        updateStats();
+        startTimer();
+    </script>
+
+</body>
+
+</html>
