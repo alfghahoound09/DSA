@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementary Sorts — Visual Overview & Code Tutorial</title>
+    <meta name="description"
+        content="Học Selection Sort, Insertion Sort, Shellsort và Knuth Shuffle với animation trực quan và code Java từng bước">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== Design System ===== */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1e2642;
+            --bg-code: #0d1117;
+            --text-primary: #e8edf5;
+            --text-secondary: #8b95a8;
+            --text-muted: #5a6478;
+            --accent-1: #6366f1;
+            --accent-1-glow: rgba(99, 102, 241, 0.3);
+            --accent-2: #06b6d4;
+            --accent-2-glow: rgba(6, 182, 212, 0.3);
+            --accent-3: #f59e0b;
+            --accent-3-glow: rgba(245, 158, 11, 0.3);
+            --accent-4: #10b981;
+            --accent-4-glow: rgba(16, 185, 129, 0.3);
+            --accent-5: #ef4444;
+            --accent-5-glow: rgba(239, 68, 68, 0.3);
+            --accent-6: #ec4899;
+            --accent-6-glow: rgba(236, 72, 153, 0.3);
+            --accent-7: #a855f7;
+            --accent-7-glow: rgba(168, 85, 247, 0.3);
+            --border: rgba(99, 102, 241, 0.15);
+            --border-hover: rgba(99, 102, 241, 0.35);
+            --glass: rgba(26, 32, 53, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            --sel-color: #ef4444;
+            --sel-glow: rgba(239, 68, 68, 0.3);
+            --ins-color: #10b981;
+            --ins-glow: rgba(16, 185, 129, 0.3);
+            --shell-color: #6366f1;
+            --shell-glow: rgba(99, 102, 241, 0.3);
+            --shuf-color: #f59e0b;
+            --shuf-glow: rgba(245, 158, 11, 0.3);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== Animated BG ===== */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-1-glow) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation: floatBg 20s ease-in-out infinite;
+        }
+
+        .bg-pattern::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-6-glow) 0%, transparent 70%);
+            bottom: -150px;
+            right: -150px;
+            animation: floatBg 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatBg {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(80px, 50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-40px, -30px) scale(0.95);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* ===== Hero ===== */
+        .hero {
+            text-align: center;
+            padding: 50px 0 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            border-radius: 100px;
+            background: linear-gradient(135deg, var(--accent-1-glow), var(--accent-6-glow));
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-6);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #e8edf5 0%, #ef4444 30%, #10b981 60%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Nav ===== */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 42px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: inherit;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .tab-btn.active::before {
+            opacity: 1;
+        }
+
+        .tab-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-btn[data-tab="selection"]::before {
+            background: linear-gradient(135deg, var(--sel-color), #dc2626);
+        }
+
+        .tab-btn[data-tab="selection"].active {
+            border-color: var(--sel-color);
+        }
+
+        .tab-btn[data-tab="insertion"]::before {
+            background: linear-gradient(135deg, var(--ins-color), #059669);
+        }
+
+        .tab-btn[data-tab="insertion"].active {
+            border-color: var(--ins-color);
+        }
+
+        .tab-btn[data-tab="shell"]::before {
+            background: linear-gradient(135deg, var(--shell-color), #4f46e5);
+        }
+
+        .tab-btn[data-tab="shell"].active {
+            border-color: var(--shell-color);
+        }
+
+        .tab-btn[data-tab="shuffle"]::before {
+            background: linear-gradient(135deg, var(--shuf-color), #d97706);
+        }
+
+        .tab-btn[data-tab="shuffle"].active {
+            border-color: var(--shuf-color);
+        }
+
+        .tab-btn[data-tab="compare"]::before {
+            background: linear-gradient(135deg, var(--accent-7), #7c3aed);
+        }
+
+        .tab-btn[data-tab="compare"].active {
+            border-color: var(--accent-7);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== Cards ===== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .card-sel::before {
+            background: linear-gradient(90deg, var(--sel-color), #fb923c);
+        }
+
+        .card-ins::before {
+            background: linear-gradient(90deg, var(--ins-color), #22d3ee);
+        }
+
+        .card-shell::before {
+            background: linear-gradient(90deg, var(--shell-color), var(--accent-2));
+        }
+
+        .card-shuf::before {
+            background: linear-gradient(90deg, var(--shuf-color), var(--accent-6));
+        }
+
+        /* ===== Idea Box ===== */
+        .idea-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.06));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .idea-box .idea-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 8px;
+        }
+
+        .idea-box .idea-text {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* ===== Visualizer ===== */
+        .viz-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            margin: 20px 0;
+        }
+
+        .viz-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 220px;
+            padding: 0 8px;
+        }
+
+        .viz-bar {
+            flex: 1;
+            max-width: 52px;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .viz-bar .bar-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            padding-top: 6px;
+            opacity: 0.9;
+        }
+
+        .viz-bar.comparing {
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
+        }
+
+        .viz-bar.sorted {
+            opacity: 1;
+        }
+
+        .viz-bar.active-swap {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+        }
+
+        .viz-bar.minimum {
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
+        }
+
+        .viz-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .viz-step-info {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            min-height: 48px;
+            line-height: 1.6;
+        }
+
+        .viz-step-info strong {
+            color: var(--text-primary);
+        }
+
+        .viz-step-info code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-code);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-family: inherit;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-sel {
+            background: linear-gradient(135deg, var(--sel-color), #dc2626);
+            color: #fff;
+        }
+
+        .btn-ins {
+            background: linear-gradient(135deg, var(--ins-color), #059669);
+            color: #fff;
+        }
+
+        .btn-shell {
+            background: linear-gradient(135deg, var(--shell-color), #4f46e5);
+            color: #fff;
+        }
+
+        .btn-shuf {
+            background: linear-gradient(135deg, var(--shuf-color), #d97706);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-sm {
+            padding: 7px 16px;
+            font-size: 0.78rem;
+        }
+
+        /* ===== Speed Control ===== */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .speed-control input[type="range"] {
+            width: 80px;
+            accent-color: var(--accent-1);
+        }
+
+        /* ===== Code Block ===== */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.9;
+            position: relative;
+            counter-reset: line;
+        }
+
+        .code-block .code-lang {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-line {
+            display: block;
+            padding: 0 4px;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+
+        .code-line.highlight {
+            background: rgba(245, 158, 11, 0.12);
+            border-left: 3px solid var(--accent-3);
+            padding-left: 10px;
+        }
+
+        .kw {
+            color: #c678dd;
+        }
+
+        .type {
+            color: #e5c07b;
+        }
+
+        .fn {
+            color: #61afef;
+        }
+
+        .str {
+            color: #98c379;
+        }
+
+        .num {
+            color: #d19a66;
+        }
+
+        .cmt {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .op {
+            color: #56b6c2;
+        }
+
+        /* ===== Trace Table ===== */
+        .trace-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px 0;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            font-size: 0.85rem;
+        }
+
+        .trace-table th,
+        .trace-table td {
+            padding: 10px 14px;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .trace-table th {
+            background: var(--bg-secondary);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .trace-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .trace-table tr:hover td {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .trace-table .sorted-cell {
+            color: var(--accent-4);
+            font-weight: 700;
+        }
+
+        .trace-table .swap-cell {
+            color: var(--sel-color);
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .trace-table .active-cell {
+            color: var(--accent-3);
+            font-weight: 700;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        /* ===== Comparison Table ===== */
+        .cmp-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .cmp-table th,
+        .cmp-table td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .cmp-table th {
+            background: var(--bg-secondary);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .cmp-table td {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .cmp-table tr:hover td {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .cmp-table .big-o {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        /* ===== Info Grid ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .info-box:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .info-box .info-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .info-box h4 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .info-box p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===== Analogy ===== */
+        .analogy-card {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.06), rgba(168, 85, 247, 0.06));
+            border: 1px solid rgba(236, 72, 153, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+
+        .analogy-card .label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-6);
+            margin-bottom: 8px;
+        }
+
+        .analogy-card p {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ===== Tags ===== */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .tag-sel {
+            background: var(--accent-5-glow);
+            color: var(--accent-5);
+        }
+
+        .tag-ins {
+            background: var(--accent-4-glow);
+            color: var(--accent-4);
+        }
+
+        .tag-shell {
+            background: var(--accent-1-glow);
+            color: var(--accent-1);
+        }
+
+        .tag-stable {
+            background: var(--accent-2-glow);
+            color: var(--accent-2);
+        }
+
+        .tag-unstable {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        /* ===== Race Bars ===== */
+        .race-container {
+            margin: 20px 0;
+        }
+
+        .race-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .race-label {
+            width: 130px;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .race-track {
+            flex: 1;
+            height: 32px;
+            background: var(--bg-secondary);
+            border-radius: 100px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .race-fill {
+            height: 100%;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes swapGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 24px rgba(245, 158, 11, 0.6);
+            }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px 60px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .viz-bars {
+                height: 160px;
+            }
+
+            .race-label {
+                width: 100px;
+                font-size: 0.78rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+    <div class="container">
+
+        <!-- ===== HERO ===== -->
+        <header class="hero">
+            <div class="hero-badge">📊 Algorithms 2.1</div>
+            <h1>Elementary Sorts<br>Visual Overview & Code</h1>
+            <p>Học Selection Sort, Insertion Sort, Shellsort & Knuth Shuffle bằng animation trực quan, trace từng
+                bước, kèm code Java đầy đủ</p>
+        </header>
+
+        <!-- ===== TAB NAV ===== -->
+        <nav class="tab-nav" id="mainNav">
+            <button class="tab-btn active" data-tab="selection" onclick="switchTab('selection')"><span>🔴 Selection
+                    Sort</span></button>
+            <button class="tab-btn" data-tab="insertion" onclick="switchTab('insertion')"><span>🟢 Insertion
+                    Sort</span></button>
+            <button class="tab-btn" data-tab="shell" onclick="switchTab('shell')"><span>🔵
+                    Shellsort</span></button>
+            <button class="tab-btn" data-tab="shuffle" onclick="switchTab('shuffle')"><span>🟡 Knuth
+                    Shuffle</span></button>
+            <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')"><span>🆚 So
+                    sánh</span></button>
+        </nav>
+
+        <!-- ============================================================ -->
+        <!--                    SELECTION SORT                             -->
+        <!-- ============================================================ -->
+        <section class="tab-content active" id="tab-selection">
+            <div class="card card-sel">
+                <h3>🔴 Selection Sort — Ý tưởng cốt lõi</h3>
+                <div class="idea-box">
+                    <div class="idea-label">💡 Ý TƯỞNG 1 CÂU</div>
+                    <div class="idea-text">Mỗi vòng lặp, <strong>tìm phần tử nhỏ nhất</strong> trong phần chưa sắp,
+                        rồi <strong>đổi chỗ</strong> nó với phần tử đầu tiên của phần chưa sắp.</div>
+                </div>
+                <div class="analogy-card">
+                    <div class="label">🎴 Ví von thực tế</div>
+                    <p>Giống như bạn có 1 đống bài lộn xộn. Bạn <strong>nhìn qua toàn bộ</strong> để tìm quân nhỏ nhất,
+                        rút nó ra đặt vào đầu. Rồi lại nhìn qua phần còn lại, tìm quân nhỏ nhất tiếp theo, đặt vào vị
+                        trí thứ 2... Cứ thế cho đến hết.</p>
+                </div>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="card card-sel">
+                <h3>🎮 Animation — Selection Sort</h3>
+                <div class="viz-container">
+                    <div class="viz-bars" id="sel-viz-bars"></div>
+                    <div class="viz-step-info" id="sel-step-info">Nhấn <strong>Bước tiếp</strong> để bắt đầu</div>
+                    <div class="viz-controls">
+                        <button class="btn btn-sel btn-sm" id="sel-step-btn" onclick="selStep()">▶ Bước tiếp</button>
+                        <button class="btn btn-sel btn-sm" id="sel-auto-btn" onclick="selAuto()">⏩ Tự chạy</button>
+                        <button class="btn btn-ghost btn-sm" onclick="selReset()">↻ Reset</button>
+                        <div class="speed-control">
+                            <span>Tốc độ:</span>
+                            <input type="range" min="100" max="1000" value="500" id="sel-speed">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trace -->
+            <div class="card card-sel">
+                <h3>📋 Trace từng bước — Mảng [7, 10, 5, 3, 8, 4, 2, 9, 6]</h3>
+                <div style="overflow-x:auto">
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>Bước</th>
+                                <th>Tìm min</th>
+                                <th>Swap</th>
+                                <th>Mảng sau swap</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0</td>
+                                <td class="active-cell">min = 2 (idx 6)</td>
+                                <td class="swap-cell">a[0]↔a[6]</td>
+                                <td><span class="sorted-cell">2</span> 10 5 3 8 4 7 9 6</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td class="active-cell">min = 3 (idx 3)</td>
+                                <td class="swap-cell">a[1]↔a[3]</td>
+                                <td><span class="sorted-cell">2 3</span> 5 10 8 4 7 9 6</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td class="active-cell">min = 4 (idx 5)</td>
+                                <td class="swap-cell">a[2]↔a[5]</td>
+                                <td><span class="sorted-cell">2 3 4</span> 10 8 5 7 9 6</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td class="active-cell">min = 5 (idx 5)</td>
+                                <td class="swap-cell">a[3]↔a[5]</td>
+                                <td><span class="sorted-cell">2 3 4 5</span> 8 10 7 9 6</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td class="active-cell">min = 6 (idx 8)</td>
+                                <td class="swap-cell">a[4]↔a[8]</td>
+                                <td><span class="sorted-cell">2 3 4 5 6</span> 10 7 9 8</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td class="active-cell">min = 7 (idx 6)</td>
+                                <td class="swap-cell">a[5]↔a[6]</td>
+                                <td><span class="sorted-cell">2 3 4 5 6 7</span> 10 9 8</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td class="active-cell">min = 8 (idx 8)</td>
+                                <td class="swap-cell">a[6]↔a[8]</td>
+                                <td><span class="sorted-cell">2 3 4 5 6 7 8</span> 10 9</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td class="active-cell">min = 9 (idx 8)</td>
+                                <td class="swap-cell">a[7]↔a[8]</td>
+                                <td><span class="sorted-cell">2 3 4 5 6 7 8 9 10</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="card card-sel">
+                <h3>💻 Code Java — Selection Sort</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">public class</span> <span class="type">Selection</span> {</span>
+<span class="code-line">    <span class="kw">public static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a) {</span>
+<span class="code-line">        <span class="type">int</span> N = a.length;</span>
+<span class="code-line highlight">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i < N; i++) {           <span class="cmt">// duyệt từng vị trí</span></span>
+<span class="code-line highlight">            <span class="type">int</span> min = i;                           <span class="cmt">// giả sử a[i] nhỏ nhất</span></span>
+<span class="code-line highlight">            <span class="kw">for</span> (<span class="type">int</span> j = i+<span class="num">1</span>; j < N; j++)        <span class="cmt">// tìm min thực sự</span></span>
+<span class="code-line highlight">                <span class="kw">if</span> (<span class="fn">less</span>(a[j], a[min])) min = j;</span>
+<span class="code-line highlight">            <span class="fn">exch</span>(a, i, min);                       <span class="cmt">// đổi chỗ a[i] ↔ a[min]</span></span>
+<span class="code-line">        }</span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="kw">private static boolean</span> <span class="fn">less</span>(<span class="type">Comparable</span> v, <span class="type">Comparable</span> w) {</span>
+<span class="code-line">        <span class="kw">return</span> v.<span class="fn">compareTo</span>(w) < <span class="num">0</span>;</span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="kw">private static void</span> <span class="fn">exch</span>(<span class="type">Comparable</span>[] a, <span class="type">int</span> i, <span class="type">int</span> j) {</span>
+<span class="code-line">        <span class="type">Comparable</span> temp = a[i]; a[i] = a[j]; a[j] = temp;</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span></pre>
+                </div>
+                <div class="info-grid" style="margin-top:16px">
+                    <div class="info-box" style="border-left: 3px solid var(--sel-color)">
+                        <h4>⏱️ Compares</h4>
+                        <p><strong>~N²/2</strong> phép so sánh. Luôn quét hết phần còn lại.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--sel-color)">
+                        <h4>🔄 Swaps</h4>
+                        <p>Chỉ <strong>N lần swap</strong> — ít nhất trong các sort cơ bản!</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--sel-color)">
+                        <h4>⚠️ Không Adaptive</h4>
+                        <p>Input đã sắp hay chưa <strong>đều chạy ~N²/2</strong> comparisons.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    INSERTION SORT                             -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-insertion">
+            <div class="card card-ins">
+                <h3>🟢 Insertion Sort — Ý tưởng cốt lõi</h3>
+                <div class="idea-box">
+                    <div class="idea-label">💡 Ý TƯỞNG 1 CÂU</div>
+                    <div class="idea-text">Giống cách bạn <strong>sắp bài trên tay</strong>: lấy từng lá bài mới, rồi
+                        <strong>đẩy nó sang trái</strong> cho đến khi nó nằm đúng vị trí trong phần đã sắp.
+                    </div>
+                </div>
+                <div class="analogy-card">
+                    <div class="label">🃏 Ví von thực tế</div>
+                    <p>Khi chơi bài, tay trái bạn cầm các lá đã sắp. Tay phải rút 1 lá mới, rồi <strong>chen vào đúng
+                            vị trí</strong> giữa các lá bên tay trái. Nếu lá mới nhỏ hơn lá bên trái nó → đổi chỗ, cứ
+                        lùi dần cho đến khi đúng chỗ hoặc hết bên trái → dừng.</p>
+                </div>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="card card-ins">
+                <h3>🎮 Animation — Insertion Sort</h3>
+                <div class="viz-container">
+                    <div class="viz-bars" id="ins-viz-bars"></div>
+                    <div class="viz-step-info" id="ins-step-info">Nhấn <strong>Bước tiếp</strong> để bắt đầu</div>
+                    <div class="viz-controls">
+                        <button class="btn btn-ins btn-sm" id="ins-step-btn" onclick="insStep()">▶ Bước tiếp</button>
+                        <button class="btn btn-ins btn-sm" id="ins-auto-btn" onclick="insAuto()">⏩ Tự chạy</button>
+                        <button class="btn btn-ghost btn-sm" onclick="insReset()">↻ Reset</button>
+                        <div class="speed-control">
+                            <span>Tốc độ:</span>
+                            <input type="range" min="100" max="1000" value="500" id="ins-speed">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trace -->
+            <div class="card card-ins">
+                <h3>📋 Trace từng bước — Mảng [7, 10, 5, 3, 8]</h3>
+                <div style="overflow-x:auto">
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>i</th>
+                                <th>Xét phần tử</th>
+                                <th>Hành động</th>
+                                <th>Mảng kết quả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td class="active-cell">10</td>
+                                <td>10 > 7 → <span style="color:var(--accent-4)">DỪNG</span></td>
+                                <td><span class="sorted-cell">7 10</span> 5 3 8</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td class="active-cell">5</td>
+                                <td class="swap-cell">5&lt;10 swap, 5&lt;7 swap</td>
+                                <td><span class="sorted-cell">5 7 10</span> 3 8</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td class="active-cell">3</td>
+                                <td class="swap-cell">3&lt;10 swap, 3&lt;7 swap, 3&lt;5 swap</td>
+                                <td><span class="sorted-cell">3 5 7 10</span> 8</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td class="active-cell">8</td>
+                                <td class="swap-cell">8&lt;10 swap, 8>7 → <span
+                                        style="color:var(--accent-4)">DỪNG</span></td>
+                                <td><span class="sorted-cell">3 5 7 8 10</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="analogy-card" style="margin-top:16px">
+                    <div class="label">⚡ Điểm mấu chốt — DỪNG SỚM</div>
+                    <p>Khi gặp phần tử bên trái ≤ mình → <strong>dừng ngay</strong> (else break). Đây là lý do
+                        Insertion Sort rất nhanh trên dữ liệu <strong>gần sắp</strong> (nearly sorted)!</p>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="card card-ins">
+                <h3>💻 Code Java — Insertion Sort</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">public class</span> <span class="type">Insertion</span> {</span>
+<span class="code-line">    <span class="kw">public static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a) {</span>
+<span class="code-line">        <span class="type">int</span> N = a.length;</span>
+<span class="code-line highlight">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i < N; i++)                   <span class="cmt">// duyệt từng phần tử</span></span>
+<span class="code-line highlight">            <span class="kw">for</span> (<span class="type">int</span> j = i; j > <span class="num">0</span>; j--)                 <span class="cmt">// đi ngược về trái</span></span>
+<span class="code-line highlight">                <span class="kw">if</span> (<span class="fn">less</span>(a[j], a[j-<span class="num">1</span>]))             <span class="cmt">// nếu a[j] < a[j-1]</span></span>
+<span class="code-line highlight">                    <span class="fn">exch</span>(a, j, j-<span class="num">1</span>);                <span class="cmt">// đổi chỗ, tiếp tục lùi</span></span>
+<span class="code-line highlight">                <span class="kw">else break</span>;                            <span class="cmt">// ĐÃ ĐÚNG CHỖ → dừng sớm!</span></span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span></pre>
+                </div>
+                <div class="info-grid" style="margin-top:16px">
+                    <div class="info-box" style="border-left: 3px solid var(--ins-color)">
+                        <h4>🏆 Best case: ~N</h4>
+                        <p>Input đã sắp → mỗi phần tử chỉ cần 1 compare → <strong>O(N)</strong></p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--ins-color)">
+                        <h4>💀 Worst case: ~N²/2</h4>
+                        <p>Input sắp ngược → mỗi phần tử phải swap đến đầu mảng</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--ins-color)">
+                        <h4>✅ Stable</h4>
+                        <p>Giữ nguyên thứ tự tương đối của các phần tử bằng nhau — quan trọng trong thực tế!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    SHELLSORT                                  -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-shell">
+            <div class="card card-shell">
+                <h3>🔵 Shellsort — Ý tưởng cốt lõi</h3>
+                <div class="idea-box">
+                    <div class="idea-label">💡 Ý TƯỞNG 1 CÂU</div>
+                    <div class="idea-text">Insertion Sort nhưng so sánh phần tử <strong>cách nhau h vị trí</strong>
+                        (thay vì 1). Giảm dần h cho đến 1 → mảng sắp xong.</div>
+                </div>
+                <div class="analogy-card">
+                    <div class="label">🏃 Tại sao nhanh hơn?</div>
+                    <p>Insertion Sort yếu vì: phần tử nhỏ ở cuối mảng phải nhích <strong>từng ô 1</strong> để về đầu →
+                        rất chậm. Shellsort cho phần tử <strong>nhảy vọt h ô</strong> cùng lúc. Khi h giảm dần, mảng
+                        đã "gần sắp" → lúc h=1 (Insertion Sort thường), chỉ cần vài swap nữa!</p>
+                </div>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="card card-shell">
+                <h3>🎮 Animation — Shellsort</h3>
+                <div class="viz-container">
+                    <div class="viz-bars" id="shell-viz-bars"></div>
+                    <div class="viz-step-info" id="shell-step-info">Nhấn <strong>Bước tiếp</strong> để bắt đầu. Dãy h:
+                        <code>..., 13, 4, 1</code> (Knuth 3x+1)
+                    </div>
+                    <div class="viz-controls">
+                        <button class="btn btn-shell btn-sm" id="shell-step-btn" onclick="shellStep()">▶ Bước
+                            tiếp</button>
+                        <button class="btn btn-shell btn-sm" id="shell-auto-btn" onclick="shellAuto()">⏩ Tự
+                            chạy</button>
+                        <button class="btn btn-ghost btn-sm" onclick="shellReset()">↻ Reset</button>
+                        <div class="speed-control">
+                            <span>Tốc độ:</span>
+                            <input type="range" min="50" max="500" value="200" id="shell-speed">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trace -->
+            <div class="card card-shell">
+                <h3>📋 Trace tổng quát — "SHELLSORTEXAMPLE"</h3>
+                <div style="overflow-x:auto">
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>Giai đoạn</th>
+                                <th>h</th>
+                                <th>Kết quả</th>
+                                <th>Ý nghĩa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Input</td>
+                                <td>—</td>
+                                <td style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;letter-spacing:2px">S
+                                    H E L L S O R T E X A M P L E</td>
+                                <td>Mảng ban đầu lộn xộn</td>
+                            </tr>
+                            <tr>
+                                <td class="active-cell">13-sort</td>
+                                <td class="swap-cell">13</td>
+                                <td style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;letter-spacing:2px">P
+                                    H E L L S O R T E X A M S L E</td>
+                                <td>So sánh cặp cách 13 ô</td>
+                            </tr>
+                            <tr>
+                                <td class="active-cell">4-sort</td>
+                                <td class="swap-cell">4</td>
+                                <td style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;letter-spacing:2px">L
+                                    E E A M H L E P S O L T S X R</td>
+                                <td>4 chuỗi con xen kẽ → sắp riêng</td>
+                            </tr>
+                            <tr>
+                                <td class="active-cell">1-sort</td>
+                                <td class="swap-cell">1</td>
+                                <td
+                                    style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;letter-spacing:2px;color:var(--accent-4)">
+                                    A E E E H L L L M O P R S S T X</td>
+                                <td>Insertion Sort → ít swap!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="card card-shell">
+                <h3>💻 Code Java — Shellsort</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">public class</span> <span class="type">Shell</span> {</span>
+<span class="code-line">    <span class="kw">public static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a) {</span>
+<span class="code-line">        <span class="type">int</span> N = a.length;</span>
+<span class="code-line"></span>
+<span class="code-line highlight">        <span class="type">int</span> h = <span class="num">1</span>;</span>
+<span class="code-line highlight">        <span class="kw">while</span> (h < N/<span class="num">3</span>) h = <span class="num">3</span>*h + <span class="num">1</span>;    <span class="cmt">// Knuth: 1, 4, 13, 40, 121, ...</span></span>
+<span class="code-line"></span>
+<span class="code-line highlight">        <span class="kw">while</span> (h >= <span class="num">1</span>) {                    <span class="cmt">// giảm dần h</span></span>
+<span class="code-line highlight">            <span class="kw">for</span> (<span class="type">int</span> i = h; i < N; i++) {   <span class="cmt">// h-sort = Insertion Sort bước h</span></span>
+<span class="code-line highlight">                <span class="kw">for</span> (<span class="type">int</span> j = i; j >= h && <span class="fn">less</span>(a[j], a[j-h]); j -= h)</span>
+<span class="code-line highlight">                    <span class="fn">exch</span>(a, j, j-h);</span>
+<span class="code-line highlight">            }</span>
+<span class="code-line highlight">            h = h / <span class="num">3</span>;                    <span class="cmt">// ..., 40 → 13 → 4 → 1</span></span>
+<span class="code-line">        }</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span></pre>
+                </div>
+                <div class="info-grid" style="margin-top:16px">
+                    <div class="info-box" style="border-left: 3px solid var(--shell-color)">
+                        <h4>📊 Complexity</h4>
+                        <p>~<strong>O(N^{3/2})</strong> với Knuth sequence — tốt hơn N² rất nhiều!</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--shell-color)">
+                        <h4>🌍 Thực tế</h4>
+                        <p>Dùng trong <strong>Linux kernel</strong>, bzip2, uClibc — code rất ngắn mà hiệu quả.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--shell-color)">
+                        <h4>❓ Bài toán mở</h4>
+                        <p>Dãy h tối ưu <strong>vẫn chưa ai tìm được</strong> — vẫn là open problem!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    KNUTH SHUFFLE                              -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-shuffle">
+            <div class="card card-shuf">
+                <h3>🟡 Knuth Shuffle — Ý tưởng cốt lõi</h3>
+                <div class="idea-box">
+                    <div class="idea-label">💡 Ý TƯỞNG 1 CÂU</div>
+                    <div class="idea-text">Duyệt từ trái sang phải, tại vị trí <code>i</code> chọn vị trí ngẫu nhiên
+                        <code>r</code> trong <code>[0, i]</code>, rồi <strong>đổi chỗ</strong> <code>a[i]</code> và
+                        <code>a[r]</code>. Mọi hoán vị đều có <strong>xác suất bằng nhau</strong>.
+                    </div>
+                </div>
+                <div class="analogy-card">
+                    <div class="label">⚠️ Lỗi cực kỳ phổ biến</div>
+                    <p>Nếu chọn <code>r</code> trong <strong>toàn bộ [0, N-1]</strong> thay vì [0, i] → kết quả
+                        <strong>KHÔNG đều</strong>! Slide nhắc đến vụ kiện online poker vì dùng shuffle sai, gây thiệt
+                        hại hàng triệu đô.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="card card-shuf">
+                <h3>🎮 Animation — Knuth Shuffle</h3>
+                <div class="viz-container">
+                    <div class="viz-bars" id="shuf-viz-bars"></div>
+                    <div class="viz-step-info" id="shuf-step-info">Nhấn <strong>Bước tiếp</strong> để bắt đầu</div>
+                    <div class="viz-controls">
+                        <button class="btn btn-shuf btn-sm" id="shuf-step-btn" onclick="shufStep()">▶ Bước
+                            tiếp</button>
+                        <button class="btn btn-shuf btn-sm" id="shuf-auto-btn" onclick="shufAuto()">⏩ Tự
+                            chạy</button>
+                        <button class="btn btn-ghost btn-sm" onclick="shufReset()">↻ Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="card card-shuf">
+                <h3>💻 Code Java — Knuth Shuffle</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">public static void</span> <span class="fn">shuffle</span>(<span class="type">Object</span>[] a) {</span>
+<span class="code-line">    <span class="type">int</span> N = a.length;</span>
+<span class="code-line highlight">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i < N; i++) {</span>
+<span class="code-line highlight">        <span class="type">int</span> r = StdRandom.<span class="fn">uniformInt</span>(i + <span class="num">1</span>);  <span class="cmt">// random [0, i] ← quan trọng!</span></span>
+<span class="code-line highlight">        <span class="fn">exch</span>(a, i, r);</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span></pre>
+                </div>
+                <div class="info-grid" style="margin-top:16px">
+                    <div class="info-box" style="border-left: 3px solid var(--shuf-color)">
+                        <h4>⏱️ O(N)</h4>
+                        <p>Chỉ duyệt 1 lần, mỗi phần tử swap 1 lần → <strong>tuyến tính</strong>.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--shuf-color)">
+                        <h4>🎯 Uniform</h4>
+                        <p>Mọi N! hoán vị đều có xác suất <strong>1/N!</strong> — chứng minh được bằng quy nạp.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    SO SÁNH                                    -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-compare">
+            <div class="card">
+                <h3>🆚 Bảng so sánh tổng hợp</h3>
+                <div style="overflow-x:auto">
+                    <table class="cmp-table">
+                        <thead>
+                            <tr>
+                                <th>Thuật toán</th>
+                                <th>Best</th>
+                                <th>Average</th>
+                                <th>Worst</th>
+                                <th>Stable?</th>
+                                <th>Adaptive?</th>
+                                <th>Space</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag tag-sel">Selection</span></td>
+                                <td class="big-o" style="color:var(--accent-5)">N²/2</td>
+                                <td class="big-o" style="color:var(--accent-5)">N²/2</td>
+                                <td class="big-o" style="color:var(--accent-5)">N²/2</td>
+                                <td style="color:var(--accent-5)">❌</td>
+                                <td style="color:var(--accent-5)">❌</td>
+                                <td class="big-o" style="color:var(--accent-4)">O(1)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-ins">Insertion</span></td>
+                                <td class="big-o" style="color:var(--accent-4)">N</td>
+                                <td class="big-o" style="color:var(--accent-3)">N²/4</td>
+                                <td class="big-o" style="color:var(--accent-5)">N²/2</td>
+                                <td style="color:var(--accent-4)">✅</td>
+                                <td style="color:var(--accent-4)">✅</td>
+                                <td class="big-o" style="color:var(--accent-4)">O(1)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-shell">Shellsort</span></td>
+                                <td class="big-o" style="color:var(--accent-4)">N log N</td>
+                                <td class="big-o" style="color:var(--accent-3)">~N^{3/2}</td>
+                                <td class="big-o" style="color:var(--accent-3)">~N^{3/2}</td>
+                                <td style="color:var(--accent-5)">❌</td>
+                                <td style="color:var(--accent-4)">✅</td>
+                                <td class="big-o" style="color:var(--accent-4)">O(1)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Race visualization -->
+            <div class="card">
+                <h3>🏁 So sánh số phép toán (N = <span id="race-n-val">100</span>)</h3>
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+                    <span style="color:var(--text-muted);font-size:0.85rem">N =</span>
+                    <input type="range" min="10" max="500" value="100" id="race-n-slider" oninput="updateRace()"
+                        style="flex:1;accent-color:var(--accent-1)">
+                </div>
+                <div class="race-container" id="race-container"></div>
+            </div>
+
+            <!-- Key takeaways -->
+            <div class="card">
+                <h3>🎯 Khi nào dùng cái nào?</h3>
+                <div class="info-grid">
+                    <div class="info-box" style="border-left: 3px solid var(--sel-color)">
+                        <div class="info-icon">🔴</div>
+                        <h4>Selection Sort</h4>
+                        <p>Khi muốn <strong>ít swap nhất</strong> (vd: swap rất tốn kém). Hoặc dùng cho mảng rất nhỏ.
+                        </p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--ins-color)">
+                        <div class="info-icon">🟢</div>
+                        <h4>Insertion Sort</h4>
+                        <p>Khi dữ liệu <strong>gần sắp</strong> hoặc <strong>mảng nhỏ</strong>. Nhanh nhất trong
+                            elementary sorts cho trường hợp này.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--shell-color)">
+                        <div class="info-icon">🔵</div>
+                        <h4>Shellsort</h4>
+                        <p>Khi cần <strong>code ngắn mà nhanh</strong>. Bước trung gian trước khi học Merge/Quick Sort.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!--                    JAVASCRIPT                                 -->
+    <!-- ============================================================ -->
+    <script>
+        // ===== Tab System =====
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+        }
+
+        // ===== Utility =====
+        function randArray(n, lo, hi) {
+            const arr = [];
+            const used = new Set();
+            while (arr.length < n) {
+                const v = Math.floor(Math.random() * (hi - lo + 1)) + lo;
+                if (!used.has(v)) { arr.push(v); used.add(v); }
+            }
+            return arr;
+        }
+
+        // ===== SELECTION SORT VISUALIZER =====
+        let selArr, selI, selJ, selMin, selDone, selPhase, selAutoTimer;
+        const SEL_COLORS = { default: '#4b5563', sorted: '#10b981', comparing: '#f59e0b', minimum: '#ef4444', swap: '#ec4899' };
+
+        function selRender() {
+            const container = document.getElementById('sel-viz-bars');
+            const maxVal = Math.max(...selArr);
+            container.innerHTML = selArr.map((v, idx) => {
+                let color = SEL_COLORS.default;
+                if (idx < selI && selDone) color = SEL_COLORS.sorted;
+                else if (selDone && selPhase === 'done') color = SEL_COLORS.sorted;
+                else if (idx < selI) color = SEL_COLORS.sorted;
+                else if (idx === selMin && selPhase === 'finding') color = SEL_COLORS.minimum;
+                else if (idx === selJ && selPhase === 'finding') color = SEL_COLORS.comparing;
+                else if ((idx === selI || idx === selMin) && selPhase === 'swap') color = SEL_COLORS.swap;
+                const h = (v / maxVal) * 100;
+                return `<div class="viz-bar" style="height:${h}%;background:${color}"><span class="bar-val">${v}</span></div>`;
+            }).join('');
+        }
+
+        function selReset() {
+            clearInterval(selAutoTimer);
+            selArr = randArray(12, 1, 50);
+            selI = 0; selJ = 0; selMin = 0; selDone = false; selPhase = 'start';
+            selRender();
+            document.getElementById('sel-step-info').innerHTML = 'Nhấn <strong>Bước tiếp</strong> để bắt đầu';
+            document.getElementById('sel-step-btn').disabled = false;
+            document.getElementById('sel-auto-btn').disabled = false;
+        }
+
+        function selStep() {
+            if (selDone) return;
+            const info = document.getElementById('sel-step-info');
+
+            if (selPhase === 'start' || selPhase === 'swap') {
+                if (selPhase === 'swap') selI++;
+                if (selI >= selArr.length) { selPhase = 'done'; selDone = true; selRender(); info.innerHTML = '✅ <strong>Sắp xếp hoàn tất!</strong> Mảng đã được sắp tăng dần.'; document.getElementById('sel-step-btn').disabled = true; return; }
+                selMin = selI; selJ = selI + 1; selPhase = 'finding';
+                info.innerHTML = `Bước <strong>${selI}</strong>: Bắt đầu tìm min trong phần chưa sắp [${selI}..${selArr.length - 1}]. <code>min = ${selArr[selMin]}</code> (idx ${selMin})`;
+                selRender();
+                return;
+            }
+
+            if (selPhase === 'finding') {
+                if (selJ < selArr.length) {
+                    if (selArr[selJ] < selArr[selMin]) {
+                        selMin = selJ;
+                        info.innerHTML = `So sánh: <code>a[${selJ}]=${selArr[selJ]}</code> < <code>a[${selMin}]</code> → cập nhật <code>min = ${selArr[selMin]}</code> (idx ${selMin})`;
+                    } else {
+                        info.innerHTML = `So sánh: <code>a[${selJ}]=${selArr[selJ]}</code> ≥ <code>a[min]=${selArr[selMin]}</code> → giữ nguyên min`;
+                    }
+                    selJ++;
+                    selRender();
+                } else {
+                    // Found min, do swap
+                    info.innerHTML = `Tìm xong! Min = <code>${selArr[selMin]}</code>. Đổi chỗ <code>a[${selI}]=${selArr[selI]}</code> ↔ <code>a[${selMin}]=${selArr[selMin]}</code>`;
+                    const temp = selArr[selI]; selArr[selI] = selArr[selMin]; selArr[selMin] = temp;
+                    selPhase = 'swap';
+                    selRender();
+                }
+            }
+        }
+
+        function selAuto() {
+            if (selDone) return;
+            const speed = 1100 - document.getElementById('sel-speed').value;
+            document.getElementById('sel-auto-btn').disabled = true;
+            selAutoTimer = setInterval(() => {
+                if (selDone) { clearInterval(selAutoTimer); return; }
+                selStep();
+            }, speed);
+        }
+
+        // ===== INSERTION SORT VISUALIZER =====
+        let insArr, insI, insJ, insDone, insPhase, insAutoTimer;
+        const INS_COLORS = { default: '#4b5563', sorted: '#10b981', current: '#f59e0b', swapping: '#ef4444' };
+
+        function insRender() {
+            const container = document.getElementById('ins-viz-bars');
+            const maxVal = Math.max(...insArr);
+            container.innerHTML = insArr.map((v, idx) => {
+                let color = INS_COLORS.default;
+                if (insDone) color = INS_COLORS.sorted;
+                else if (idx < insI && insPhase !== 'swapping') color = INS_COLORS.sorted;
+                else if (idx === insJ && insPhase === 'swapping') color = INS_COLORS.swapping;
+                else if (idx === insI && insPhase === 'start-i') color = INS_COLORS.current;
+                else if (idx <= insI && idx < insJ) color = INS_COLORS.sorted;
+                const h = (v / maxVal) * 100;
+                return `<div class="viz-bar" style="height:${h}%;background:${color}"><span class="bar-val">${v}</span></div>`;
+            }).join('');
+        }
+
+        function insReset() {
+            clearInterval(insAutoTimer);
+            insArr = randArray(12, 1, 50);
+            insI = 1; insJ = 1; insDone = false; insPhase = 'start-i';
+            insRender();
+            document.getElementById('ins-step-info').innerHTML = 'Nhấn <strong>Bước tiếp</strong> để bắt đầu';
+            document.getElementById('ins-step-btn').disabled = false;
+            document.getElementById('ins-auto-btn').disabled = false;
+        }
+
+        function insStep() {
+            if (insDone) return;
+            const info = document.getElementById('ins-step-info');
+
+            if (insPhase === 'start-i') {
+                insJ = insI;
+                insPhase = 'swapping';
+                info.innerHTML = `i=<strong>${insI}</strong>: Xét phần tử <code>a[${insI}]=${insArr[insI]}</code>, bắt đầu lùi về trái`;
+                insRender();
+                return;
+            }
+
+            if (insPhase === 'swapping') {
+                if (insJ > 0 && insArr[insJ] < insArr[insJ - 1]) {
+                    info.innerHTML = `<code>a[${insJ}]=${insArr[insJ]}</code> < <code>a[${insJ - 1}]=${insArr[insJ - 1]}</code> → <strong>swap!</strong>`;
+                    const temp = insArr[insJ]; insArr[insJ] = insArr[insJ - 1]; insArr[insJ - 1] = temp;
+                    insJ--;
+                    insRender();
+                } else {
+                    if (insJ > 0) {
+                        info.innerHTML = `<code>a[${insJ}]=${insArr[insJ]}</code> ≥ <code>a[${insJ - 1}]=${insArr[insJ - 1]}</code> → <strong style="color:var(--accent-4)">DỪNG SỚM!</strong> Đã đúng chỗ.`;
+                    } else {
+                        info.innerHTML = `Đã lùi đến đầu mảng → <strong style="color:var(--accent-4)">DỪNG</strong>`;
+                    }
+                    insI++;
+                    if (insI >= insArr.length) {
+                        insDone = true;
+                        insRender();
+                        info.innerHTML = '✅ <strong>Sắp xếp hoàn tất!</strong>';
+                        document.getElementById('ins-step-btn').disabled = true;
+                        return;
+                    }
+                    insPhase = 'start-i';
+                    insRender();
+                }
+            }
+        }
+
+        function insAuto() {
+            if (insDone) return;
+            const speed = 1100 - document.getElementById('ins-speed').value;
+            document.getElementById('ins-auto-btn').disabled = true;
+            insAutoTimer = setInterval(() => {
+                if (insDone) { clearInterval(insAutoTimer); return; }
+                insStep();
+            }, speed);
+        }
+
+        // ===== SHELLSORT VISUALIZER =====
+        let shellArr, shellSteps, shellStepIdx, shellDone, shellAutoTimer;
+
+        function shellPrecompute(arr) {
+            const steps = [];
+            const a = [...arr];
+            const N = a.length;
+            let h = 1;
+            while (h < Math.floor(N / 3)) h = 3 * h + 1;
+
+            while (h >= 1) {
+                steps.push({ type: 'h-change', h, arr: [...a] });
+                for (let i = h; i < N; i++) {
+                    let j = i;
+                    while (j >= h && a[j] < a[j - h]) {
+                        steps.push({ type: 'compare', h, i, j, jh: j - h, arr: [...a] });
+                        const temp = a[j]; a[j] = a[j - h]; a[j - h] = temp;
+                        steps.push({ type: 'swap', h, i, j, jh: j - h, arr: [...a] });
+                        j -= h;
+                    }
+                    if (j >= h) {
+                        steps.push({ type: 'stop', h, i, j, jh: j - h, arr: [...a] });
+                    }
+                }
+                h = Math.floor(h / 3);
+            }
+            steps.push({ type: 'done', arr: [...a] });
+            return steps;
+        }
+
+        function shellRender() {
+            const container = document.getElementById('shell-viz-bars');
+            const step = shellSteps[shellStepIdx] || { arr: shellArr, type: 'start' };
+            const arr = step.arr;
+            const maxVal = Math.max(...arr);
+            container.innerHTML = arr.map((v, idx) => {
+                let color = '#4b5563';
+                if (step.type === 'done') color = '#10b981';
+                else if (step.type === 'compare' && (idx === step.j || idx === step.jh)) color = '#f59e0b';
+                else if (step.type === 'swap' && (idx === step.j || idx === step.jh)) color = '#ec4899';
+                else if (step.type === 'h-change') color = '#6366f1';
+                const h = (v / maxVal) * 100;
+                return `<div class="viz-bar" style="height:${h}%;background:${color}"><span class="bar-val">${v}</span></div>`;
+            }).join('');
+        }
+
+        function shellReset() {
+            clearInterval(shellAutoTimer);
+            shellArr = randArray(16, 1, 60);
+            shellSteps = shellPrecompute(shellArr);
+            shellStepIdx = 0; shellDone = false;
+            shellRender();
+            document.getElementById('shell-step-info').innerHTML = 'Nhấn <strong>Bước tiếp</strong> để bắt đầu. Dãy h: <code>..., 13, 4, 1</code>';
+            document.getElementById('shell-step-btn').disabled = false;
+            document.getElementById('shell-auto-btn').disabled = false;
+        }
+
+        function shellStep() {
+            if (shellDone || shellStepIdx >= shellSteps.length) { shellDone = true; document.getElementById('shell-step-btn').disabled = true; return; }
+            const step = shellSteps[shellStepIdx];
+            const info = document.getElementById('shell-step-info');
+
+            if (step.type === 'h-change') info.innerHTML = `🔄 Chuyển sang <strong>h = ${step.h}</strong>-sort (Insertion Sort bước ${step.h})`;
+            else if (step.type === 'compare') info.innerHTML = `So sánh: <code>a[${step.j}]=${step.arr[step.j]}</code> vs <code>a[${step.jh}]=${step.arr[step.jh]}</code> (h=${step.h})`;
+            else if (step.type === 'swap') info.innerHTML = `<strong>Swap!</strong> <code>a[${step.j}]</code> ↔ <code>a[${step.jh}]</code> (h=${step.h})`;
+            else if (step.type === 'stop') info.innerHTML = `<span style="color:var(--accent-4)">Dừng</span> — <code>a[${step.j}]=${step.arr[step.j]}</code> ≥ <code>a[${step.jh}]=${step.arr[step.jh]}</code>`;
+            else if (step.type === 'done') info.innerHTML = '✅ <strong>Sắp xếp hoàn tất!</strong>';
+
+            shellRender();
+            shellStepIdx++;
+            if (shellStepIdx >= shellSteps.length) shellDone = true;
+        }
+
+        function shellAuto() {
+            if (shellDone) return;
+            const speed = 550 - document.getElementById('shell-speed').value;
+            document.getElementById('shell-auto-btn').disabled = true;
+            shellAutoTimer = setInterval(() => {
+                if (shellDone) { clearInterval(shellAutoTimer); return; }
+                shellStep();
+            }, Math.max(speed, 30));
+        }
+
+        // ===== KNUTH SHUFFLE VISUALIZER =====
+        let shufArr, shufI, shufDone, shufAutoTimer;
+        const SHUF_N = 12;
+
+        function shufRender(highlight1 = -1, highlight2 = -1) {
+            const container = document.getElementById('shuf-viz-bars');
+            const maxVal = Math.max(...shufArr);
+            container.innerHTML = shufArr.map((v, idx) => {
+                let color = '#4b5563';
+                if (shufDone) color = '#f59e0b';
+                else if (idx < shufI) color = '#10b981';
+                else if (idx === highlight1 || idx === highlight2) color = '#ec4899';
+                const h = (v / maxVal) * 100;
+                return `<div class="viz-bar" style="height:${h}%;background:${color}"><span class="bar-val">${v}</span></div>`;
+            }).join('');
+        }
+
+        function shufReset() {
+            clearInterval(shufAutoTimer);
+            shufArr = Array.from({ length: SHUF_N }, (_, i) => i + 1);
+            shufI = 0; shufDone = false;
+            shufRender();
+            document.getElementById('shuf-step-info').innerHTML = 'Mảng sắp sẵn [1..12]. Nhấn <strong>Bước tiếp</strong> để xáo trộn';
+            document.getElementById('shuf-step-btn').disabled = false;
+            document.getElementById('shuf-auto-btn').disabled = false;
+        }
+
+        function shufStep() {
+            if (shufDone) return;
+            const info = document.getElementById('shuf-step-info');
+            const r = Math.floor(Math.random() * (shufI + 1));
+            info.innerHTML = `i=<strong>${shufI}</strong>: random r = <code>${r}</code> trong [0, ${shufI}]. Đổi chỗ <code>a[${shufI}]=${shufArr[shufI]}</code> ↔ <code>a[${r}]=${shufArr[r]}</code>`;
+            const temp = shufArr[shufI]; shufArr[shufI] = shufArr[r]; shufArr[r] = temp;
+            shufI++;
+            shufRender(shufI - 1, r);
+            if (shufI >= shufArr.length) {
+                shufDone = true;
+                info.innerHTML = '🎲 <strong>Xáo trộn hoàn tất!</strong> Đây là 1 hoán vị ngẫu nhiên đều (uniform random permutation).';
+                document.getElementById('shuf-step-btn').disabled = true;
+                shufRender();
+            }
+        }
+
+        function shufAuto() {
+            if (shufDone) return;
+            document.getElementById('shuf-auto-btn').disabled = true;
+            shufAutoTimer = setInterval(() => {
+                if (shufDone) { clearInterval(shufAutoTimer); return; }
+                shufStep();
+            }, 400);
+        }
+
+        // ===== RACE / COMPARISON =====
+        function updateRace() {
+            const n = parseInt(document.getElementById('race-n-slider').value);
+            document.getElementById('race-n-val').textContent = n;
+            const selOps = Math.round(n * n / 2);
+            const insAvg = Math.round(n * n / 4);
+            const insBest = n;
+            const shellOps = Math.round(Math.pow(n, 1.5));
+            const maxOps = selOps;
+
+            const data = [
+                { label: 'Selection Sort', ops: selOps, color: 'linear-gradient(90deg, #ef4444, #f87171)', desc: 'N²/2' },
+                { label: 'Insertion (avg)', ops: insAvg, color: 'linear-gradient(90deg, #f59e0b, #fbbf24)', desc: 'N²/4' },
+                { label: 'Insertion (best)', ops: insBest, color: 'linear-gradient(90deg, #10b981, #34d399)', desc: 'N' },
+                { label: 'Shellsort', ops: shellOps, color: 'linear-gradient(90deg, #6366f1, #818cf8)', desc: '~N^3/2' },
+            ];
+
+            const container = document.getElementById('race-container');
+            container.innerHTML = data.map(d => {
+                const pct = Math.max((d.ops / maxOps) * 100, 3);
+                return `<div class="race-row">
+                    <div class="race-label">${d.label}</div>
+                    <div class="race-track">
+                        <div class="race-fill" style="width:${pct}%;background:${d.color}">${d.ops.toLocaleString()}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ===== INIT =====
+        selReset();
+        insReset();
+        shellReset();
+        shufReset();
+        updateRace();
+    </script>
+</body>
+
+</html>
