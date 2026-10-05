@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elementary Sorts — Visual Overview & Code Tutorial</title>
+    <title>Sorting Algorithms — Visual Overview & Code Tutorial</title>
     <meta name="description"
-        content="Học Selection Sort, Insertion Sort, Shellsort và Knuth Shuffle với animation trực quan và code Java từng bước">
+        content="Học Selection Sort, Insertion Sort, Shellsort, Merge Sort, Quick Sort và Knuth Shuffle với animation trực quan và code Java từng bước">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
         rel="stylesheet">
@@ -54,6 +54,11 @@
             --shell-glow: rgba(99, 102, 241, 0.3);
             --shuf-color: #f59e0b;
             --shuf-glow: rgba(245, 158, 11, 0.3);
+
+            --merge-color: #06b6d4;
+            --merge-glow: rgba(6, 182, 212, 0.3);
+            --quick-color: #f97316;
+            --quick-glow: rgba(249, 115, 22, 0.3);
         }
 
         *,
@@ -262,6 +267,22 @@
             border-color: var(--shuf-color);
         }
 
+        .tab-btn[data-tab="mergesort"]::before {
+            background: linear-gradient(135deg, var(--merge-color), #0891b2);
+        }
+
+        .tab-btn[data-tab="mergesort"].active {
+            border-color: var(--merge-color);
+        }
+
+        .tab-btn[data-tab="quicksort"]::before {
+            background: linear-gradient(135deg, var(--quick-color), #ea580c);
+        }
+
+        .tab-btn[data-tab="quicksort"].active {
+            border-color: var(--quick-color);
+        }
+
         .tab-btn[data-tab="compare"]::before {
             background: linear-gradient(135deg, var(--accent-7), #7c3aed);
         }
@@ -332,6 +353,14 @@
 
         .card-shuf::before {
             background: linear-gradient(90deg, var(--shuf-color), var(--accent-6));
+        }
+
+        .card-merge::before {
+            background: linear-gradient(90deg, var(--merge-color), #22d3ee);
+        }
+
+        .card-quick::before {
+            background: linear-gradient(90deg, var(--quick-color), #fb923c);
         }
 
         /* ===== Idea Box ===== */
@@ -494,6 +523,16 @@
 
         .btn-shuf {
             background: linear-gradient(135deg, var(--shuf-color), #d97706);
+            color: #fff;
+        }
+
+        .btn-merge {
+            background: linear-gradient(135deg, var(--merge-color), #0891b2);
+            color: #fff;
+        }
+
+        .btn-quick {
+            background: linear-gradient(135deg, var(--quick-color), #ea580c);
             color: #fff;
         }
 
@@ -789,6 +828,16 @@
             color: #f87171;
         }
 
+        .tag-merge {
+            background: var(--merge-glow);
+            color: var(--merge-color);
+        }
+
+        .tag-quick {
+            background: var(--quick-glow);
+            color: var(--quick-color);
+        }
+
         /* ===== Race Bars ===== */
         .race-container {
             margin: 20px 0;
@@ -902,8 +951,9 @@
         <!-- ===== HERO ===== -->
         <header class="hero">
             <div class="hero-badge">📊 Algorithms 2.1</div>
-            <h1>Elementary Sorts<br>Visual Overview & Code</h1>
-            <p>Học Selection Sort, Insertion Sort, Shellsort & Knuth Shuffle bằng animation trực quan, trace từng
+            <h1>Sorting Algorithms<br>Visual Overview & Code</h1>
+            <p>Học Selection Sort, Insertion Sort, Shellsort, Merge Sort, Quick Sort & Knuth Shuffle bằng animation trực
+                quan, trace từng
                 bước, kèm code Java đầy đủ</p>
         </header>
 
@@ -917,6 +967,11 @@
                     Shellsort</span></button>
             <button class="tab-btn" data-tab="shuffle" onclick="switchTab('shuffle')"><span>🟡 Knuth
                     Shuffle</span></button>
+            <button class="tab-btn" data-tab="mergesort" onclick="switchTab('mergesort')"
+                style="left: 0.0773239px;"><span>🔷 Merge
+                    Sort</span></button>
+            <button class="tab-btn" data-tab="quicksort" onclick="switchTab('quicksort')"><span>🟠 Quick
+                    Sort</span></button>
             <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')"><span>🆚 So
                     sánh</span></button>
         </nav>
@@ -1384,6 +1439,447 @@
         </section>
 
         <!-- ============================================================ -->
+        <!--                    MERGE SORT                                 -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-mergesort">
+            <div class="card card-merge">
+                <h3>🔷 Merge Sort — Ý tưởng cốt lõi</h3>
+                <div class="idea-box">
+                    <div class="idea-label">💡 Ý TƯỞNG 1 CÂU</div>
+                    <div class="idea-text"><strong>Chia đôi</strong> mảng thành 2 nửa, sắp xếp đệ quy từng nửa, rồi
+                        <strong>trộn (merge)</strong> hai nửa đã sắp lại thành một mảng sắp.
+                    </div>
+                </div>
+                <div class="analogy-card">
+                    <div class="label">🃏 Ví von thực tế</div>
+                    <p>Giống như bạn có 2 chồng bài <strong>đã sắp sẵn</strong>. Bạn lấy lá nhỏ nhất ở đầu mỗi chồng,
+                        so sánh, đặt lá nhỏ hơn xuống bàn. Cứ thế cho đến hết cả 2 chồng → chồng mới trên bàn cũng đã
+                        sắp!</p>
+                </div>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="card card-merge">
+                <h3>🎮 Animation — Merge Sort</h3>
+                <div class="viz-container">
+                    <div class="viz-bars" id="merge-viz-bars"></div>
+                    <div class="viz-step-info" id="merge-step-info">Nhấn <strong>Bước tiếp</strong> để bắt đầu</div>
+                    <div class="viz-controls">
+                        <button class="btn btn-merge btn-sm" id="merge-step-btn" onclick="mergeStep()">▶ Bước
+                            tiếp</button>
+                        <button class="btn btn-merge btn-sm" id="merge-auto-btn" onclick="mergeAuto()">⏩ Tự
+                            chạy</button>
+                        <button class="btn btn-ghost btn-sm" onclick="mergeReset()">↻ Reset</button>
+                        <div class="speed-control">
+                            <span>Tốc độ:</span>
+                            <input type="range" min="50" max="500" value="200" id="merge-speed">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trace -->
+            <div class="card card-merge">
+                <h3>📋 Trace từng bước — Mảng [38, 27, 43, 3, 9, 82, 10]</h3>
+                <div style="overflow-x:auto">
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>Bước</th>
+                                <th>Hành động</th>
+                                <th>Mảng con</th>
+                                <th>Kết quả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td class="active-cell">Chia</td>
+                                <td>[38, 27, 43, 3] | [9, 82, 10]</td>
+                                <td>Chia đôi thành 2 nửa</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td class="active-cell">Chia</td>
+                                <td>[38, 27] | [43, 3]</td>
+                                <td>Tiếp tục chia nửa trái</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td class="swap-cell">Merge</td>
+                                <td>[38] + [27]</td>
+                                <td><span class="sorted-cell">27, 38</span></td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td class="swap-cell">Merge</td>
+                                <td>[43] + [3]</td>
+                                <td><span class="sorted-cell">3, 43</span></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td class="swap-cell">Merge</td>
+                                <td>[27, 38] + [3, 43]</td>
+                                <td><span class="sorted-cell">3, 27, 38, 43</span></td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td class="swap-cell">Merge</td>
+                                <td>[9] + [82, 10] → [9] + [10, 82]</td>
+                                <td><span class="sorted-cell">9, 10, 82</span></td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td class="swap-cell">Merge</td>
+                                <td>[3, 27, 38, 43] + [9, 10, 82]</td>
+                                <td><span class="sorted-cell">3, 9, 10, 27, 38, 43, 82</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="card card-merge">
+                <h3>💻 Code Java — Merge Sort</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">public class</span> <span class="type">Merge</span> {</span>
+<span class="code-line">    <span class="kw">private static</span> <span class="type">Comparable</span>[] aux;       <span class="cmt">// mảng phụ cho merge</span></span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="kw">public static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a) {</span>
+<span class="code-line">        aux = <span class="kw">new</span> <span class="type">Comparable</span>[a.length];</span>
+<span class="code-line">        <span class="fn">sort</span>(a, <span class="num">0</span>, a.length - <span class="num">1</span>);</span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line highlight">    <span class="kw">private static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a, <span class="type">int</span> lo, <span class="type">int</span> hi) {</span>
+<span class="code-line highlight">        <span class="kw">if</span> (hi &lt;= lo) <span class="kw">return</span>;            <span class="cmt">// base case</span></span>
+<span class="code-line highlight">        <span class="type">int</span> mid = lo + (hi - lo) / <span class="num">2</span>;</span>
+<span class="code-line highlight">        <span class="fn">sort</span>(a, lo, mid);                  <span class="cmt">// sắp nửa trái</span></span>
+<span class="code-line highlight">        <span class="fn">sort</span>(a, mid + <span class="num">1</span>, hi);              <span class="cmt">// sắp nửa phải</span></span>
+<span class="code-line highlight">        <span class="fn">merge</span>(a, lo, mid, hi);             <span class="cmt">// trộn 2 nửa đã sắp</span></span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line highlight">    <span class="kw">private static void</span> <span class="fn">merge</span>(<span class="type">Comparable</span>[] a, <span class="type">int</span> lo, <span class="type">int</span> mid, <span class="type">int</span> hi) {</span>
+<span class="code-line highlight">        <span class="kw">for</span> (<span class="type">int</span> k = lo; k &lt;= hi; k++)    <span class="cmt">// copy sang mảng phụ</span></span>
+<span class="code-line highlight">            aux[k] = a[k];</span>
+<span class="code-line highlight">        <span class="type">int</span> i = lo, j = mid + <span class="num">1</span>;</span>
+<span class="code-line highlight">        <span class="kw">for</span> (<span class="type">int</span> k = lo; k &lt;= hi; k++) {</span>
+<span class="code-line highlight">            <span class="kw">if</span>      (i &gt; mid)              a[k] = aux[j++]; <span class="cmt">// hết nửa trái</span></span>
+<span class="code-line highlight">            <span class="kw">else if</span> (j &gt; hi)               a[k] = aux[i++]; <span class="cmt">// hết nửa phải</span></span>
+<span class="code-line highlight">            <span class="kw">else if</span> (<span class="fn">less</span>(aux[j], aux[i]))  a[k] = aux[j++]; <span class="cmt">// phải &lt; trái</span></span>
+<span class="code-line highlight">            <span class="kw">else</span>                           a[k] = aux[i++]; <span class="cmt">// trái ≤ phải</span></span>
+<span class="code-line">        }</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span></pre>
+                </div>
+                <div class="info-grid" style="margin-top:16px">
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <h4>⏱️ O(N log N)</h4>
+                        <p><strong>Luôn là N log N</strong> — best, average, worst đều giống nhau. Đảm bảo hiệu suất.
+                        </p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <h4>✅ Stable</h4>
+                        <p>Giữ nguyên thứ tự tương đối các phần tử bằng nhau — <strong>Java dùng cho Object
+                                sort</strong>!</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <h4>💾 Space: O(N)</h4>
+                        <p>Cần mảng phụ <code>aux[]</code> kích thước N — <strong>không in-place</strong>. Đây là nhược
+                            điểm chính.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Các cải đặt -->
+            <div class="card card-merge">
+                <h3>🔧 Các cải đặt (Improvements) — Merge Sort</h3>
+                <div class="info-grid">
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <div class="info-icon">🔄</div>
+                        <h4>Top-Down (đệ quy)</h4>
+                        <p>Chia đôi đệ quy → merge ngược lên. Cách <strong>tiêu chuẩn</strong>, dễ hiểu, dễ cài đặt.
+                            Gọi <code>sort(a, lo, hi)</code> rồi chia tại <code>mid</code>.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <div class="info-icon">⬆️</div>
+                        <h4>Bottom-Up (không đệ quy)</h4>
+                        <p>Merge các cặp kích thước 1, rồi 2, rồi 4, 8... Không cần đệ quy, <strong>dùng vòng
+                                lặp</strong>. Phù hợp linked list.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <div class="info-icon">⚡</div>
+                        <h4>Cutoff to Insertion Sort</h4>
+                        <p>Khi mảng con nhỏ (≤ 7~15 phần tử), chuyển sang <strong>Insertion Sort</strong> vì overhead đệ
+                            quy quá tốn cho mảng nhỏ.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <div class="info-icon">🧪</div>
+                        <h4>Test if already sorted</h4>
+                        <p>Nếu <code>a[mid] ≤ a[mid+1]</code> → 2 nửa đã sắp, <strong>bỏ qua merge</strong>. Tiết kiệm
+                            thời gian cho dữ liệu gần sắp.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <div class="info-icon">🔀</div>
+                        <h4>Eliminate copy (switcheroo)</h4>
+                        <p>Luân phiên vai trò <code>a[]</code> và <code>aux[]</code> giữa các tầng đệ quy → <strong>bỏ
+                                bước copy</strong> vào aux. Nhanh hơn ~20%.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <div class="info-icon">🧠</div>
+                        <h4>Natural Merge Sort</h4>
+                        <p>Tìm các <strong>run</strong> (đoạn đã sắp sẵn) trong dữ liệu, rồi merge các run. Rất nhanh
+                            trên dữ liệu gần sắp — cơ sở của <strong>Timsort</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Bottom-Up Code -->
+                <h3 style="margin-top: 28px">💻 Code Java — Bottom-Up Merge Sort</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">public class</span> <span class="type">MergeBU</span> {</span>
+<span class="code-line">    <span class="kw">private static</span> <span class="type">Comparable</span>[] aux;</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="kw">public static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a) {</span>
+<span class="code-line">        <span class="type">int</span> N = a.length;</span>
+<span class="code-line">        aux = <span class="kw">new</span> <span class="type">Comparable</span>[N];</span>
+<span class="code-line highlight">        <span class="kw">for</span> (<span class="type">int</span> sz = <span class="num">1</span>; sz &lt; N; sz = sz+sz)      <span class="cmt">// sz: 1, 2, 4, 8, ...</span></span>
+<span class="code-line highlight">            <span class="kw">for</span> (<span class="type">int</span> lo = <span class="num">0</span>; lo &lt; N-sz; lo += sz+sz) <span class="cmt">// merge cặp kích thước sz</span></span>
+<span class="code-line highlight">                <span class="fn">merge</span>(a, lo, lo+sz-<span class="num">1</span>, Math.<span class="fn">min</span>(lo+sz+sz-<span class="num">1</span>, N-<span class="num">1</span>));</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!--                    QUICK SORT                                 -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-quicksort">
+            <div class="card card-quick">
+                <h3>🟠 Quick Sort — Ý tưởng cốt lõi</h3>
+                <div class="idea-box">
+                    <div class="idea-label">💡 Ý TƯỞNG 1 CÂU</div>
+                    <div class="idea-text">Chọn 1 phần tử làm <strong>pivot</strong>, rồi <strong>phân hoạch
+                            (partition)</strong> mảng: mọi phần tử nhỏ hơn pivot nằm bên trái, lớn hơn nằm bên phải.
+                        Lặp lại đệ quy cho từng phần.
+                    </div>
+                </div>
+                <div class="analogy-card">
+                    <div class="label">🎴 Ví von thực tế</div>
+                    <p>Giống như bạn chọn 1 lá bài <strong>chốt</strong>, rồi chia đống còn lại thành 2 nhóm: nhóm nhỏ
+                        hơn chốt (bên trái) và nhóm lớn hơn chốt (bên phải). Lá chốt đã đúng vị trí. Rồi lặp lại cho
+                        mỗi nhóm — cuối cùng tất cả đều đúng chỗ!</p>
+                </div>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="card card-quick">
+                <h3>🎮 Animation — Quick Sort</h3>
+                <div class="viz-container">
+                    <div class="viz-bars" id="quick-viz-bars"></div>
+                    <div class="viz-step-info" id="quick-step-info">Nhấn <strong>Bước tiếp</strong> để bắt đầu</div>
+                    <div class="viz-controls">
+                        <button class="btn btn-quick btn-sm" id="quick-step-btn" onclick="quickStep()">▶ Bước
+                            tiếp</button>
+                        <button class="btn btn-quick btn-sm" id="quick-auto-btn" onclick="quickAuto()">⏩ Tự
+                            chạy</button>
+                        <button class="btn btn-ghost btn-sm" onclick="quickReset()">↻ Reset</button>
+                        <div class="speed-control">
+                            <span>Tốc độ:</span>
+                            <input type="range" min="50" max="500" value="200" id="quick-speed">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trace -->
+            <div class="card card-quick">
+                <h3>📋 Trace từng bước — Mảng [5, 3, 8, 4, 2, 7, 1, 6]</h3>
+                <div style="overflow-x:auto">
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>Bước</th>
+                                <th>Pivot</th>
+                                <th>Partition</th>
+                                <th>Kết quả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td class="active-cell">5</td>
+                                <td class="swap-cell">Partition [0..7]</td>
+                                <td>[<span style="color:var(--accent-2)">1 3 4 2</span>] <span
+                                        class="sorted-cell">5</span> [<span style="color:var(--accent-3)">7 8 6</span>]
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td class="active-cell">1</td>
+                                <td class="swap-cell">Partition [0..3]</td>
+                                <td><span class="sorted-cell">1</span> [<span style="color:var(--accent-3)">3 4
+                                        2</span>] <span class="sorted-cell">5</span> [7 8 6]</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td class="active-cell">3</td>
+                                <td class="swap-cell">Partition [1..3]</td>
+                                <td><span class="sorted-cell">1</span> [<span style="color:var(--accent-2)">2</span>]
+                                    <span class="sorted-cell">3</span> [<span style="color:var(--accent-3)">4</span>]
+                                    <span class="sorted-cell">5</span> [7 8 6]</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td class="active-cell">7</td>
+                                <td class="swap-cell">Partition [5..7]</td>
+                                <td><span class="sorted-cell">1 2 3 4 5</span> [<span
+                                        style="color:var(--accent-2)">6</span>] <span class="sorted-cell">7</span>
+                                    [<span style="color:var(--accent-3)">8</span>]</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>—</td>
+                                <td>Done</td>
+                                <td><span class="sorted-cell">1 2 3 4 5 6 7 8</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="analogy-card" style="margin-top:16px">
+                    <div class="label">⚡ Điểm mấu chốt — PARTITION</div>
+                    <p>Partition là trái tim của Quick Sort: dùng 2 con trỏ <code>i</code> (trái→phải) và <code>j</code>
+                        (phải→trái) quét tìm cặp <strong>sai vị trí</strong> rồi swap. Khi <code>i</code> vượt
+                        <code>j</code> → dừng, swap pivot vào đúng chỗ.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="card card-quick">
+                <h3>💻 Code Java — Quick Sort</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">public class</span> <span class="type">Quick</span> {</span>
+<span class="code-line">    <span class="kw">public static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a) {</span>
+<span class="code-line">        StdRandom.<span class="fn">shuffle</span>(a);           <span class="cmt">// shuffle trước để đảm bảo hiệu suất</span></span>
+<span class="code-line">        <span class="fn">sort</span>(a, <span class="num">0</span>, a.length - <span class="num">1</span>);</span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line highlight">    <span class="kw">private static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a, <span class="type">int</span> lo, <span class="type">int</span> hi) {</span>
+<span class="code-line highlight">        <span class="kw">if</span> (hi &lt;= lo) <span class="kw">return</span>;</span>
+<span class="code-line highlight">        <span class="type">int</span> j = <span class="fn">partition</span>(a, lo, hi);  <span class="cmt">// partition: a[j] đúng chỗ</span></span>
+<span class="code-line highlight">        <span class="fn">sort</span>(a, lo, j - <span class="num">1</span>);            <span class="cmt">// sắp nửa trái</span></span>
+<span class="code-line highlight">        <span class="fn">sort</span>(a, j + <span class="num">1</span>, hi);            <span class="cmt">// sắp nửa phải</span></span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line highlight">    <span class="kw">private static int</span> <span class="fn">partition</span>(<span class="type">Comparable</span>[] a, <span class="type">int</span> lo, <span class="type">int</span> hi) {</span>
+<span class="code-line highlight">        <span class="type">int</span> i = lo, j = hi + <span class="num">1</span>;</span>
+<span class="code-line highlight">        <span class="kw">while</span> (<span class="kw">true</span>) {</span>
+<span class="code-line highlight">            <span class="kw">while</span> (<span class="fn">less</span>(a[++i], a[lo]))  <span class="cmt">// tìm a[i] ≥ pivot từ trái</span></span>
+<span class="code-line highlight">                <span class="kw">if</span> (i == hi) <span class="kw">break</span>;</span>
+<span class="code-line highlight">            <span class="kw">while</span> (<span class="fn">less</span>(a[lo], a[--j]))  <span class="cmt">// tìm a[j] ≤ pivot từ phải</span></span>
+<span class="code-line highlight">                <span class="kw">if</span> (j == lo) <span class="kw">break</span>;</span>
+<span class="code-line highlight">            <span class="kw">if</span> (i &gt;= j) <span class="kw">break</span>;           <span class="cmt">// con trỏ giao nhau → dừng</span></span>
+<span class="code-line highlight">            <span class="fn">exch</span>(a, i, j);                <span class="cmt">// swap cặp sai vị trí</span></span>
+<span class="code-line highlight">        }</span>
+<span class="code-line highlight">        <span class="fn">exch</span>(a, lo, j);                   <span class="cmt">// đưa pivot vào đúng chỗ</span></span>
+<span class="code-line highlight">        <span class="kw">return</span> j;</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span></pre>
+                </div>
+                <div class="info-grid" style="margin-top:16px">
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <h4>⏱️ Average: ~2N ln N</h4>
+                        <p>Trung bình <strong>~1.39 N lg N</strong> comparisons. Nhanh hơn Merge Sort ~39% so sánh nhưng
+                            thực tế nhanh hơn nhờ cache.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <h4>💀 Worst: N²/2</h4>
+                        <p>Khi mảng đã sắp + không shuffle → mỗi partition chỉ giảm 1 phần tử. <strong>Shuffle
+                                trước</strong> để tránh!</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <h4>📦 In-place</h4>
+                        <p>Chỉ cần <strong>O(log N) stack</strong> cho đệ quy. Không cần mảng phụ — ưu thế so với Merge
+                            Sort!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Các cải đặt -->
+            <div class="card card-quick">
+                <h3>🔧 Các cải đặt (Improvements) — Quick Sort</h3>
+                <div class="info-grid">
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <div class="info-icon">🔀</div>
+                        <h4>Random Shuffle</h4>
+                        <p><strong>Shuffle mảng trước khi sort</strong> — tránh worst case N². Đây là bước cực kỳ quan
+                            trọng, đảm bảo xác suất O(N log N).</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <div class="info-icon">⚡</div>
+                        <h4>Cutoff to Insertion Sort</h4>
+                        <p>Khi subarray ≤ 10 phần tử, <strong>chuyển sang Insertion Sort</strong> vì overhead đệ quy
+                            không đáng cho mảng nhỏ. Cải thiện ~20%.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <div class="info-icon">📊</div>
+                        <h4>Median-of-Three</h4>
+                        <p>Chọn pivot là <strong>trung vị của 3 phần tử</strong> (đầu, giữa, cuối) thay vì phần tử
+                            đầu. Partition cân bằng hơn → giảm ~14% comparisons.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <div class="info-icon">🎯</div>
+                        <h4>3-Way Partitioning (Dijkstra)</h4>
+                        <p>Chia thành 3 phần: <strong>&lt; pivot, = pivot, &gt; pivot</strong>. Cực nhanh khi có nhiều
+                            phần tử trùng — complexity <strong>N log N → tuyến tính</strong> cho nhiều duplicates!</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <div class="info-icon">🔄</div>
+                        <h4>Dual-Pivot (Java default)</h4>
+                        <p>Chọn <strong>2 pivot</strong>, chia mảng thành 3 phần. Java 7+ dùng cho
+                            <code>Arrays.sort()</code>
+                            với primitive types. Nhanh hơn ~10% nhờ cache.</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <div class="info-icon">🏗️</div>
+                        <h4>Tail Recursion Elimination</h4>
+                        <p>Đệ quy phần nhỏ hơn, <strong>lặp phần lớn hơn</strong> → stack depth luôn O(log N), tránh
+                            stack overflow cho mảng cực lớn.</p>
+                    </div>
+                </div>
+
+                <!-- 3-Way Code -->
+                <h3 style="margin-top: 28px">💻 Code Java — 3-Way Quick Sort (Dijkstra)</h3>
+                <div class="code-block">
+                    <span class="code-lang">Java</span>
+                    <pre>
+<span class="code-line"><span class="kw">private static void</span> <span class="fn">sort</span>(<span class="type">Comparable</span>[] a, <span class="type">int</span> lo, <span class="type">int</span> hi) {</span>
+<span class="code-line">    <span class="kw">if</span> (hi &lt;= lo) <span class="kw">return</span>;</span>
+<span class="code-line highlight">    <span class="type">int</span> lt = lo, gt = hi;</span>
+<span class="code-line highlight">    <span class="type">Comparable</span> v = a[lo];              <span class="cmt">// pivot</span></span>
+<span class="code-line highlight">    <span class="type">int</span> i = lo + <span class="num">1</span>;</span>
+<span class="code-line highlight">    <span class="kw">while</span> (i &lt;= gt) {</span>
+<span class="code-line highlight">        <span class="type">int</span> cmp = a[i].<span class="fn">compareTo</span>(v);</span>
+<span class="code-line highlight">        <span class="kw">if</span>      (cmp &lt; <span class="num">0</span>) <span class="fn">exch</span>(a, lt++, i++); <span class="cmt">// a[i] &lt; v → đưa sang trái</span></span>
+<span class="code-line highlight">        <span class="kw">else if</span> (cmp &gt; <span class="num">0</span>) <span class="fn">exch</span>(a, i, gt--);   <span class="cmt">// a[i] &gt; v → đưa sang phải</span></span>
+<span class="code-line highlight">        <span class="kw">else</span>              i++;               <span class="cmt">// a[i] == v → giữ nguyên</span></span>
+<span class="code-line">    }</span>
+<span class="code-line">    <span class="cmt">// a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]</span></span>
+<span class="code-line">    <span class="fn">sort</span>(a, lo, lt - <span class="num">1</span>);</span>
+<span class="code-line">    <span class="fn">sort</span>(a, gt + <span class="num">1</span>, hi);</span>
+<span class="code-line">}</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
         <!--                    SO SÁNH                                    -->
         <!-- ============================================================ -->
         <section class="tab-content" id="tab-compare">
@@ -1430,6 +1926,24 @@
                                 <td style="color:var(--accent-4)">✅</td>
                                 <td class="big-o" style="color:var(--accent-4)">O(1)</td>
                             </tr>
+                            <tr>
+                                <td><span class="tag tag-merge">Merge Sort</span></td>
+                                <td class="big-o" style="color:var(--accent-4)">N log N</td>
+                                <td class="big-o" style="color:var(--accent-4)">N log N</td>
+                                <td class="big-o" style="color:var(--accent-4)">N log N</td>
+                                <td style="color:var(--accent-4)">✅</td>
+                                <td style="color:var(--accent-5)">❌</td>
+                                <td class="big-o" style="color:var(--accent-3)">O(N)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-quick">Quick Sort</span></td>
+                                <td class="big-o" style="color:var(--accent-4)">N log N</td>
+                                <td class="big-o" style="color:var(--accent-4)">~1.39N lg N</td>
+                                <td class="big-o" style="color:var(--accent-5)">N²/2</td>
+                                <td style="color:var(--accent-5)">❌</td>
+                                <td style="color:var(--accent-5)">❌</td>
+                                <td class="big-o" style="color:var(--accent-4)">O(log N)</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -1467,6 +1981,18 @@
                         <h4>Shellsort</h4>
                         <p>Khi cần <strong>code ngắn mà nhanh</strong>. Bước trung gian trước khi học Merge/Quick Sort.
                         </p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--merge-color)">
+                        <div class="info-icon">🔷</div>
+                        <h4>Merge Sort</h4>
+                        <p>Khi cần <strong>đảm bảo O(N log N)</strong> mọi trường hợp, cần <strong>stable</strong>, hoặc
+                            sort <strong>Object</strong> (Java mặc định).</p>
+                    </div>
+                    <div class="info-box" style="border-left: 3px solid var(--quick-color)">
+                        <div class="info-icon">🟠</div>
+                        <h4>Quick Sort</h4>
+                        <p>Khi cần <strong>nhanh nhất thực tế</strong>, in-place, ít bộ nhớ. Sort
+                            <strong>primitive</strong> (Java dùng dual-pivot QS).</p>
                     </div>
                 </div>
             </div>
@@ -1782,6 +2308,183 @@
             }, 400);
         }
 
+        // ===== MERGE SORT VISUALIZER =====
+        let mergeArr, mergeSteps, mergeStepIdx, mergeDone, mergeAutoTimer;
+
+        function mergePrecompute(arr) {
+            const steps = [];
+            const a = [...arr];
+            function msort(lo, hi) {
+                if (hi <= lo) return;
+                const mid = lo + Math.floor((hi - lo) / 2);
+                steps.push({ type: 'split', lo, mid, hi, arr: [...a], desc: `Chia [${lo}..${hi}] → [${lo}..${mid}] và [${mid + 1}..${hi}]` });
+                msort(lo, mid);
+                msort(mid + 1, hi);
+                // merge
+                const aux = [...a];
+                let i = lo, j = mid + 1;
+                steps.push({ type: 'merge-start', lo, mid, hi, arr: [...a], desc: `Bắt đầu trộn [${lo}..${mid}] + [${mid + 1}..${hi}]` });
+                for (let k = lo; k <= hi; k++) {
+                    if (i > mid) { a[k] = aux[j++]; }
+                    else if (j > hi) { a[k] = aux[i++]; }
+                    else if (aux[j] < aux[i]) { a[k] = aux[j++]; }
+                    else { a[k] = aux[i++]; }
+                }
+                steps.push({ type: 'merge-done', lo, mid, hi, arr: [...a], desc: `Trộn xong [${lo}..${hi}] → [${a.slice(lo, hi + 1).join(', ')}]` });
+            }
+            msort(0, a.length - 1);
+            steps.push({ type: 'done', arr: [...a], desc: 'Sắp xếp hoàn tất!' });
+            return steps;
+        }
+
+        function mergeRender() {
+            const container = document.getElementById('merge-viz-bars');
+            const step = mergeSteps[mergeStepIdx] || { arr: mergeArr, type: 'start' };
+            const arr = step.arr;
+            const maxVal = Math.max(...arr);
+            container.innerHTML = arr.map((v, idx) => {
+                let color = '#4b5563';
+                if (step.type === 'done') color = '#06b6d4';
+                else if (step.type === 'split' && idx >= step.lo && idx <= step.hi) {
+                    color = idx <= step.mid ? '#22d3ee' : '#a855f7';
+                }
+                else if (step.type === 'merge-start' && idx >= step.lo && idx <= step.hi) {
+                    color = idx <= step.mid ? '#22d3ee' : '#a855f7';
+                }
+                else if (step.type === 'merge-done' && idx >= step.lo && idx <= step.hi) {
+                    color = '#06b6d4';
+                }
+                const h = (v / maxVal) * 100;
+                return `<div class="viz-bar" style="height:${h}%;background:${color}"><span class="bar-val">${v}</span></div>`;
+            }).join('');
+        }
+
+        function mergeReset() {
+            clearInterval(mergeAutoTimer);
+            mergeArr = randArray(12, 1, 50);
+            mergeSteps = mergePrecompute(mergeArr);
+            mergeStepIdx = 0; mergeDone = false;
+            mergeRender();
+            document.getElementById('merge-step-info').innerHTML = 'Nhấn <strong>Bước tiếp</strong> để bắt đầu';
+            document.getElementById('merge-step-btn').disabled = false;
+            document.getElementById('merge-auto-btn').disabled = false;
+        }
+
+        function mergeStep() {
+            if (mergeDone || mergeStepIdx >= mergeSteps.length) { mergeDone = true; document.getElementById('merge-step-btn').disabled = true; return; }
+            const step = mergeSteps[mergeStepIdx];
+            const info = document.getElementById('merge-step-info');
+
+            if (step.type === 'split') info.innerHTML = `✂️ ${step.desc}`;
+            else if (step.type === 'merge-start') info.innerHTML = `🔀 ${step.desc}`;
+            else if (step.type === 'merge-done') info.innerHTML = `✅ ${step.desc}`;
+            else if (step.type === 'done') info.innerHTML = '✅ <strong>Sắp xếp hoàn tất!</strong>';
+
+            mergeRender();
+            mergeStepIdx++;
+            if (mergeStepIdx >= mergeSteps.length) mergeDone = true;
+        }
+
+        function mergeAuto() {
+            if (mergeDone) return;
+            const speed = 550 - document.getElementById('merge-speed').value;
+            document.getElementById('merge-auto-btn').disabled = true;
+            mergeAutoTimer = setInterval(() => {
+                if (mergeDone) { clearInterval(mergeAutoTimer); return; }
+                mergeStep();
+            }, Math.max(speed, 30));
+        }
+
+        // ===== QUICK SORT VISUALIZER =====
+        let quickArr, quickSteps, quickStepIdx, quickDone, quickAutoTimer;
+
+        function quickPrecompute(arr) {
+            const steps = [];
+            const a = [...arr];
+            function qsort(lo, hi) {
+                if (hi <= lo) return;
+                // partition
+                const pivotVal = a[lo];
+                steps.push({ type: 'pivot', lo, hi, pivotIdx: lo, pivotVal, arr: [...a], desc: `Chọn pivot = ${pivotVal} tại [${lo}]. Partition [${lo}..${hi}]` });
+                let i = lo, j = hi + 1;
+                while (true) {
+                    while (a[++i] < a[lo]) if (i === hi) break;
+                    while (a[lo] < a[--j]) if (j === lo) break;
+                    if (i >= j) break;
+                    steps.push({ type: 'swap', lo, hi, i, j, arr: [...a], desc: `Swap a[${i}]=${a[i]} ↔ a[${j}]=${a[j]}` });
+                    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+                }
+                steps.push({ type: 'place-pivot', lo, hi, j, pivotVal, arr: [...a], desc: `Đặt pivot ${pivotVal} vào vị trí ${j}: swap a[${lo}] ↔ a[${j}]` });
+                const tmp = a[lo]; a[lo] = a[j]; a[j] = tmp;
+                steps.push({ type: 'partitioned', lo, hi, pivotIdx: j, pivotVal, arr: [...a], desc: `Pivot ${pivotVal} đúng chỗ tại [${j}]` });
+
+                qsort(lo, j - 1);
+                qsort(j + 1, hi);
+            }
+            qsort(0, a.length - 1);
+            steps.push({ type: 'done', arr: [...a], desc: 'Sắp xếp hoàn tất!' });
+            return steps;
+        }
+
+        function quickRender() {
+            const container = document.getElementById('quick-viz-bars');
+            const step = quickSteps[quickStepIdx] || { arr: quickArr, type: 'start' };
+            const arr = step.arr;
+            const maxVal = Math.max(...arr);
+            container.innerHTML = arr.map((v, idx) => {
+                let color = '#4b5563';
+                if (step.type === 'done') color = '#f97316';
+                else if (step.type === 'pivot' && idx === step.pivotIdx) color = '#f97316';
+                else if (step.type === 'pivot' && idx >= step.lo && idx <= step.hi) color = '#fdba74';
+                else if (step.type === 'swap' && (idx === step.i || idx === step.j)) color = '#ec4899';
+                else if (step.type === 'swap' && idx >= step.lo && idx <= step.hi) color = '#fdba74';
+                else if (step.type === 'place-pivot' && idx === step.j) color = '#f97316';
+                else if (step.type === 'place-pivot' && idx >= step.lo && idx <= step.hi) color = '#fdba74';
+                else if (step.type === 'partitioned' && idx === step.pivotIdx) color = '#10b981';
+                else if (step.type === 'partitioned' && idx >= step.lo && idx < step.pivotIdx) color = '#22d3ee';
+                else if (step.type === 'partitioned' && idx > step.pivotIdx && idx <= step.hi) color = '#a855f7';
+                const h = (v / maxVal) * 100;
+                return `<div class="viz-bar" style="height:${h}%;background:${color}"><span class="bar-val">${v}</span></div>`;
+            }).join('');
+        }
+
+        function quickReset() {
+            clearInterval(quickAutoTimer);
+            quickArr = randArray(12, 1, 50);
+            quickSteps = quickPrecompute(quickArr);
+            quickStepIdx = 0; quickDone = false;
+            quickRender();
+            document.getElementById('quick-step-info').innerHTML = 'Nhấn <strong>Bước tiếp</strong> để bắt đầu';
+            document.getElementById('quick-step-btn').disabled = false;
+            document.getElementById('quick-auto-btn').disabled = false;
+        }
+
+        function quickStep() {
+            if (quickDone || quickStepIdx >= quickSteps.length) { quickDone = true; document.getElementById('quick-step-btn').disabled = true; return; }
+            const step = quickSteps[quickStepIdx];
+            const info = document.getElementById('quick-step-info');
+
+            if (step.type === 'pivot') info.innerHTML = `🎯 ${step.desc}`;
+            else if (step.type === 'swap') info.innerHTML = `🔄 ${step.desc}`;
+            else if (step.type === 'place-pivot') info.innerHTML = `📌 ${step.desc}`;
+            else if (step.type === 'partitioned') info.innerHTML = `✅ ${step.desc}`;
+            else if (step.type === 'done') info.innerHTML = '✅ <strong>Sắp xếp hoàn tất!</strong>';
+
+            quickRender();
+            quickStepIdx++;
+            if (quickStepIdx >= quickSteps.length) quickDone = true;
+        }
+
+        function quickAuto() {
+            if (quickDone) return;
+            const speed = 550 - document.getElementById('quick-speed').value;
+            document.getElementById('quick-auto-btn').disabled = true;
+            quickAutoTimer = setInterval(() => {
+                if (quickDone) { clearInterval(quickAutoTimer); return; }
+                quickStep();
+            }, Math.max(speed, 30));
+        }
+
         // ===== RACE / COMPARISON =====
         function updateRace() {
             const n = parseInt(document.getElementById('race-n-slider').value);
@@ -1790,13 +2493,17 @@
             const insAvg = Math.round(n * n / 4);
             const insBest = n;
             const shellOps = Math.round(Math.pow(n, 1.5));
+            const mergeOps = Math.round(n * Math.log2(n));
+            const quickOps = Math.round(1.39 * n * Math.log2(n));
             const maxOps = selOps;
 
             const data = [
                 { label: 'Selection Sort', ops: selOps, color: 'linear-gradient(90deg, #ef4444, #f87171)', desc: 'N²/2' },
                 { label: 'Insertion (avg)', ops: insAvg, color: 'linear-gradient(90deg, #f59e0b, #fbbf24)', desc: 'N²/4' },
-                { label: 'Insertion (best)', ops: insBest, color: 'linear-gradient(90deg, #10b981, #34d399)', desc: 'N' },
                 { label: 'Shellsort', ops: shellOps, color: 'linear-gradient(90deg, #6366f1, #818cf8)', desc: '~N^3/2' },
+                { label: 'Quick Sort (avg)', ops: quickOps, color: 'linear-gradient(90deg, #f97316, #fb923c)', desc: '~1.39N lg N' },
+                { label: 'Merge Sort', ops: mergeOps, color: 'linear-gradient(90deg, #06b6d4, #22d3ee)', desc: 'N log N' },
+                { label: 'Insertion (best)', ops: insBest, color: 'linear-gradient(90deg, #10b981, #34d399)', desc: 'N' },
             ];
 
             const container = document.getElementById('race-container');
@@ -1816,6 +2523,8 @@
         insReset();
         shellReset();
         shufReset();
+        mergeReset();
+        quickReset();
         updateRace();
     </script>
 </body>
