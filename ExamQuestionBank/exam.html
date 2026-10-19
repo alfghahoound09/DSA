@@ -598,7 +598,8 @@
             sort: { name: 'Elementary Sorts', desc: 'Selection, Insertion, Merge, Quick' },
             stack: { name: 'Stack', desc: 'LIFO, postfix, ứng dụng' },
             queue: { name: 'Queue', desc: 'FIFO, circular, BFS' },
-            pq: { name: 'Priority Queue', desc: 'Binary heap, swim/sink' }
+            pq: { name: 'Priority Queue', desc: 'Binary heap, swim/sink' },
+            merge: { name: 'Mergesort & Quicksort', desc: 'Partition, cutoff, 3-way, quick select' }
         };
         const BANK = [];
         const S = (t, q, o, c, e, code) => BANK.push({ topic: t, q, opts: o, correct: c, exp: e || '', code: code || '' });
@@ -647,7 +648,53 @@
         S('queue', 'Gọi dequeue() trên queue rỗng gây ra?', ['Queue Overflow', 'Queue Underflow', 'Trả về phần tử cuối', 'Không có gì'], 1, 'Underflow.');
         S('queue', 'Cài queue bằng 2 stack: dequeue amortized có độ phức tạp?', ['O(n)', 'O(log n)', 'O(1)', 'O(n²)'], 2, 'Mỗi phần tử chỉ bị chuyển 1 lần giữa 2 stack.');
 
+        /* ---- Bổ sung: Complexity / Sorts / Stack / Queue ---- */
+        S('cx', 'Thuật toán có T(n) = 2T(n/2) + n (như Mergesort) thuộc lớp nào?', ['O(n)', 'O(n log n)', 'O(n²)', 'O(log n)'], 1, 'Cây đệ quy có lg n mức, mỗi mức tốn n.');
+        S('cx', 'Hai vòng for lồng nhau, vòng trong chạy j từ 0 đến i−1 (i = 0..n−1). Tổng số lần lặp của vòng trong xấp xỉ?', ['n', 'n log n', 'n²/2', '2ⁿ'], 2, '0 + 1 + … + (n−1) = n(n−1)/2 → O(n²).');
+        S('cx', 'Phát biểu nào đúng về trường hợp tốt nhất / trung bình / xấu nhất?', ['Big-O chỉ dùng cho trường hợp tốt nhất', 'Mỗi trường hợp có thể phân tích bằng O, Ω, Θ riêng', 'Trường hợp trung bình luôn bằng xấu nhất', 'Ω chỉ dùng cho trường hợp xấu nhất'], 1, 'Ký hiệu tiệm cận độc lập với việc chọn trường hợp đầu vào.');
+        S('cx', 'Thuật toán A chạy 100n bước, thuật toán B chạy n² bước. Với n đủ lớn thì?', ['A chậm hơn B', 'A nhanh hơn B', 'Bằng nhau', 'Không so sánh được'], 1, 'n² tăng nhanh hơn 100n khi n > 100.');
+        S('cx', 'Chi phí truy cập phần tử a[i] của mảng và duyệt tới nút thứ i của linked list lần lượt là?', ['O(1) và O(1)', 'O(1) và O(i)', 'O(i) và O(1)', 'O(log n) và O(n)'], 1, 'Mảng truy cập ngẫu nhiên; linked list phải duyệt từ head.');
+        S('cx', 'Tổng 1 + 2 + 4 + … + 2^k (k = lg n) có bậc tăng trưởng?', ['O(log n)', 'O(n)', 'O(n log n)', 'O(n²)'], 1, 'Tổng cấp số nhân = 2^(k+1) − 1 ≈ 2n.');
+        S('sort', 'Số nghịch thế (inversions) của mảng [3, 1, 2] là?', ['1', '2', '3', '0'], 1, 'Các cặp (3,1) và (3,2).');
+        S('sort', 'Mảng có đúng n(n−1)/2 nghịch thế thì mảng đó như thế nào?', ['Đã sắp xếp tăng dần', 'Sắp xếp giảm dần hoàn toàn', 'Toàn phần tử bằng nhau', 'Ngẫu nhiên'], 1, 'Mọi cặp đều ngược thứ tự.');
+        S('sort', 'Sau lượt đầu tiên (i=0) của Selection Sort trên [4, 2, 7, 1, 5], mảng là?', ['[1, 2, 7, 4, 5]', '[2, 4, 7, 1, 5]', '[1, 4, 7, 2, 5]', '[4, 2, 1, 7, 5]'], 0, 'Min = 1 ở chỉ số 3, hoán đổi với a[0].');
+        S('sort', 'Cho mảng 5 khoá bằng nhau. Số lần hoán đổi của Insertion Sort là?', ['0', '4', '10', '5'], 0, 'a[j] < a[j−1] không bao giờ đúng với khoá bằng nhau.');
+        S('sort', 'Một thuật toán sắp xếp được gọi là ổn định (stable) khi?', ['Chạy nhanh với mọi đầu vào', 'Giữ nguyên thứ tự tương đối của các khoá bằng nhau', 'Không dùng bộ nhớ phụ', 'Không dùng đệ quy'], 1, 'Ví dụ sắp theo cột 2 rồi cột 1 vẫn giữ thứ tự cột 2 cho các dòng bằng nhau.');
+        S('sort', 'Sắp xếp tại chỗ (in-place) nghĩa là?', ['Dùng O(1) hoặc rất ít bộ nhớ phụ (≤ O(log n))', 'Không so sánh khoá', 'Luôn ổn định', 'Chỉ sắp xếp mảng đã có thứ tự'], 0, 'Selection, Insertion, Quicksort (stack đệ quy) là in-place; Mergesort thì không.');
+        S('stack', 'Kích thước tối đa của stack khi kiểm tra ngoặc cân bằng chuỗi "((()))" là?', ['1', '3', '6', '0'], 1, 'Ba ngoặc mở liên tiếp được push trước khi gặp ngoặc đóng.');
+        S('stack', 'Duyệt linked list chỉ có head, hàm append(data) chèn vào cuối có độ phức tạp?', ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'], 2, 'Phải duyệt đến nút cuối vì không có con trỏ tail.');
+        S('stack', 'Kiểm tra chuỗi palindrome bằng stack: ý tưởng đúng là?', ['Push nửa đầu, rồi pop so sánh với nửa sau', 'Push toàn bộ rồi pop một lần', 'Chỉ so sánh ký tự đầu và cuối', 'Sắp xếp chuỗi rồi so sánh'], 0, 'LIFO đảo ngược thứ tự nên pop cho ký tự đối xứng.');
+        S('stack', 'Đoạn code sau xoá nút đầu tiên chứa data trong linked list. Thiếu bước nào khi xoá nút đầu danh sách?', ['Cập nhật first = first.next', 'Duyệt hết danh sách', 'Đảo ngược danh sách', 'Cập nhật last'], 0, 'Nếu nút cần xoá là first thì phải dời first sang nút kế tiếp.', 'public void deleteFirst(String data) {\n    if (first == null) return;\n    if (first.data.equals(data)) { /* ??? */ return; }\n    Node p = first;\n    while (p.next != null && !p.next.data.equals(data)) p = p.next;\n    if (p.next != null) p.next = p.next.next;\n}');
+        S('queue', 'Queue bằng linked list: khi dequeue làm queue rỗng, cần làm gì với tail?', ['Giữ nguyên', 'Gán tail = null', 'Gán tail = head.next', 'Tăng size'], 1, 'Tránh tail trỏ vào nút đã bị xoá.');
+        S('queue', 'Circular queue capacity C, head = 3, size = 4. Chỉ số ghi của enqueue kế tiếp (không resize) là?', ['(3 + 4) % C', '3', '4', '(C − 1)'], 0, 'tail = (head + size) % C.');
+        S('queue', 'Cấu trúc nào phù hợp lập lịch tiến trình theo thứ tự đến trước phục vụ trước?', ['Stack', 'Queue', 'Min-Heap luôn', 'Cây AVL'], 1, 'FIFO.');
+        S('queue', 'Trong Java, hàng đợi ưu tiên PriorityQueue mặc định là?', ['Max-heap', 'Min-heap (phần tử nhỏ nhất ra trước)', 'FIFO thuần', 'Stack'], 1, 'Mặc định theo thứ tự tự nhiên: nhỏ nhất ở đỉnh.');
+
+        /* ---- Mergesort & Quicksort ---- */
+        S('merge', 'Recurrence của Mergesort top-down là?', ['T(n) = T(n−1) + n', 'T(n) = 2T(n/2) + n', 'T(n) = T(n/2) + 1', 'T(n) = 2T(n−1)'], 1, 'Chia đôi, giải 2 nửa rồi trộn tuyến tính → O(n log n).');
+        S('merge', 'Mergesort thực hiện tối đa xấp xỉ bao nhiêu phép so sánh?', ['n', 'n lg n', 'n²', 'lg n'], 1, 'Có lg n mức, mỗi mức trộn ≤ n so sánh.');
+        S('merge', 'Mergesort có tại chỗ (in-place) không, và có ổn định không?', ['In-place, ổn định', 'Không in-place (cần O(n) phụ), ổn định', 'In-place, không ổn định', 'Không in-place, không ổn định'], 1, 'Cần mảng phụ; khi bằng nhau lấy từ nửa trái trước nên ổn định.');
+        S('merge', 'Quicksort cơ bản có ổn định không và có tại chỗ không?', ['Ổn định, in-place', 'Không ổn định, in-place', 'Ổn định, cần O(n) phụ', 'Không ổn định, cần O(n) phụ'], 1, 'Partition hoán đổi xa nên mất ổn định; chỉ dùng stack đệ quy O(log n) trung bình.');
+        S('merge', 'Số phép so sánh trung bình của Quicksort xấp xỉ?', ['~ 1.39 n lg n', '~ n²', '~ n', '~ 0.5 n'], 0, 'Khoảng 39% nhiều hơn Mergesort, nhưng ít di chuyển dữ liệu hơn.');
+        S('merge', 'Quicksort chọn pivot là phần tử đầu, mảng đã sắp xếp sẵn và không shuffle, thời gian là?', ['O(n)', 'O(n log n)', 'O(n²)', 'O(log n)'], 2, 'Mỗi lần partition chỉ loại được 1 phần tử.');
+        S('merge', 'Vai trò của bước shuffle trước Quicksort là?', ['Đảm bảo ổn định', 'Làm xác suất rơi vào trường hợp xấu nhất O(n²) cực nhỏ', 'Giảm bộ nhớ phụ', 'Để dùng được 3-way'], 1, 'Pivot trở nên ngẫu nhiên so với thứ tự đầu vào.');
+        S('merge', 'CUTOFF trong Mergesort/Quicksort nghĩa là?', ['Dùng Insertion Sort khi mảng con nhỏ (≈ 10 phần tử)', 'Dừng chương trình khi quá thời gian', 'Bỏ các khoá trùng', 'Chọn pivot ở giữa'], 0, 'Insertion Sort nhanh hơn trên mảng nhỏ do ít overhead đệ quy.');
+        S('merge', '3-way Quicksort đặc biệt hiệu quả khi?', ['Mảng đã sắp xếp', 'Có rất nhiều khoá trùng nhau', 'Mảng nhỏ hơn 10 phần tử', 'Các khoá đều khác nhau'], 1, 'Chia thành <, =, > pivot nên các khoá bằng pivot không phải xử lý lại.');
+        S('merge', 'Quick-select tìm phần tử nhỏ thứ k có thời gian trung bình?', ['O(log n)', 'O(n)', 'O(n log n)', 'O(n²)'], 1, 'Chỉ đệ quy vào một phía sau mỗi partition.');
+        S('merge', 'Mảng gần như đã sắp xếp, thuật toán nào dưới đây thường nhanh nhất?', ['Selection Sort', 'Insertion Sort', 'Quicksort không shuffle', 'Mergesort luôn thua'], 1, 'Insertion Sort ~ O(n + số nghịch thế).');
+        S('merge', 'Bộ nhớ phụ của Mergesort so với Quicksort (trung bình) là?', ['O(1) và O(n)', 'O(n) và O(log n)', 'O(log n) và O(n)', 'O(n) và O(n)'], 1, 'Mergesort cần mảng phụ n; Quicksort chỉ cần stack đệ quy.');
+        S('merge', 'Sau partition, phần tử pivot nằm ở đâu?', ['Luôn ở đầu mảng', 'Ở vị trí cuối cùng của nó trong mảng đã sắp xếp', 'Ở giữa mảng', 'Ở cuối mảng'], 1, 'Trái ≤ pivot ≤ phải nên pivot đã đúng chỗ.');
+        S('merge', 'Mergesort bottom-up khác top-down ở điểm nào?', ['Dùng vòng lặp trộn các đoạn kích thước 1, 2, 4, … không cần đệ quy', 'Có độ phức tạp O(n²)', 'Không cần mảng phụ', 'Không ổn định'], 0, 'Cùng O(n log n).');
+
         /* ---- Priority Queue ---- */
+        S('pq', 'Xây heap từ n khoá bằng sink từ dưới lên (bottom-up) tốn?', ['O(n)', 'O(n log n)', 'O(log n)', 'O(n²)'], 0, 'Phần lớn nút ở gần lá nên sink rẻ; tổng ~ 2n.');
+        S('pq', 'Heap sort có ổn định và có tại chỗ không?', ['Ổn định, in-place', 'Không ổn định, in-place', 'Ổn định, không in-place', 'Không ổn định, không in-place'], 1, 'Hoán đổi gốc với cuối làm mất thứ tự các khoá bằng nhau.');
+        S('pq', 'Dùng MinPQ để sắp xếp n khoá: n lần insert rồi n lần delMin có tổng thời gian?', ['Θ(n)', 'Θ(n log n)', 'Θ(n²)', 'Θ(log n)'], 1, '2n thao tác, mỗi thao tác O(log n).');
+        S('pq', 'Bài Jesse and Cookies: cần lấy hai số nhỏ nhất liên tục và chèn lại tổng mới. Cấu trúc phù hợp là?', ['Stack', 'Queue', 'Min priority queue', 'Mảng không sắp xếp'], 2, 'Min-PQ lấy min và chèn đều O(log n).');
+        S('pq', 'Trong heap tối đa 9 nút (chỉ số 1..9), nút k = 7 có những con nào?', ['14 và 15 (không tồn tại)', '7 và 8', '13 và 14', '3 và 4'], 0, 'Con của 7 là 14 và 15, đều > 9 nên 7 là nút lá.');
+        S('pq', 'Với PriorityQueue của Java, muốn ưu tiên sinh viên có CGPA cao hơn ta cần?', ['Cung cấp Comparator phù hợp', 'Dùng Stack', 'Sắp xếp mảng trước', 'Không thể làm được'], 0, 'Truyền Comparator vào constructor để đổi thứ tự ưu tiên.');
+        S('pq', 'Khi swim(k) được gọi sau khi tăng khoá ở nút k, số phép so sánh tối đa là?', ['O(1)', 'Bằng chiều cao của nút k (≤ lg n)', 'n', 'n²'], 1, 'Mỗi lần so sánh với cha rồi lên một mức.');
+        S('pq', 'Hàm delMax() của max-heap thực hiện thứ tự nào đúng?', ['Hoán đổi gốc với phần tử cuối, giảm size, sink(1)', 'Xoá gốc rồi swim các con', 'Sắp xếp lại toàn mảng', 'Hoán đổi gốc với phần tử giữa'], 0, 'Sink đẩy phần tử mới ở gốc xuống đúng vị trí.');
         S('pq', 'Max-PQ: thao tác delMax() trả về phần tử nào?', ['Phần tử vào đầu tiên', 'Phần tử vào cuối cùng', 'Phần tử có khoá lớn nhất', 'Phần tử có khoá nhỏ nhất'], 2, 'Luôn lấy phần tử lớn nhất.');
         S('pq', 'Binary heap là loại cây nào?', ['Cây nhị phân tìm kiếm', 'Cây nhị phân hoàn chỉnh (complete) thoả điều kiện heap', 'Cây AVL', 'Cây có đúng 1 nhánh'], 1, 'Complete binary tree + parent ≥ children (max-heap).');
         S('pq', 'Với heap lưu từ chỉ số 1, cha của nút k là?', ['k − 1', 'k / 2', '2k', '2k + 1'], 1, 'Con của k là 2k và 2k+1.');
@@ -756,7 +803,71 @@
             const m = mk(r, '[' + L(good) + ']', ['[' + L(vals) + ']', '[' + L(vals.slice().sort((x, y) => y - x)) + ']', '[' + L(mn.slice(1)) + ']', '[' + L(sw) + ']'], () => '[' + L(shuffle(r, vals)) + ']');
             return { topic: 'pq', q: `Chèn lần lượt các khoá ${L(vals)} vào một max-heap rỗng (lưu mảng từ chỉ số 1, dùng swim). Mảng heap cuối cùng (từ chỉ số 1) là?`, code: '', opts: m.opts, correct: m.correct, exp: 'Mỗi khoá mới đặt ở cuối rồi swim lên trong khi lớn hơn cha (k/2).\nKết quả: [' + L(good) + ']' };
         }
-        const GENERATORS = { cx: [genLoop], sort: [genSort, genInversions], stack: [genStack, genPostfix], queue: [genQueue], pq: [genHeap] };
+        function genBinSearch(r) {
+            const arr = pickDistinct(r, ri(r, 8, 11), 1, 60).sort((x, y) => x - y), t = arr[ri(r, 0, arr.length - 1)];
+            let lo = 0, hi = arr.length - 1, c = 0; const tr = [];
+            while (lo <= hi) { const mid = (lo + hi) >> 1; c++; tr.push(arr[mid]); if (arr[mid] === t) break; if (arr[mid] < t) lo = mid + 1; else hi = mid - 1; }
+            const m = mk(r, String(c), [String(c + 1), String(c + 2), String(Math.max(1, c - 1))], () => String(ri(r, 1, 6)));
+            return { topic: 'cx', q: `Binary search (mid = ⌊(lo+hi)/2⌋) tìm khoá ${t} trong mảng đã sắp xếp [${L(arr)}]. Số lần xét a[mid] (so sánh với khoá) cho đến khi tìm thấy là?`, code: '', opts: m.opts, correct: m.correct, exp: 'Các phần tử mid được xét lần lượt: ' + L(tr) + ' → ' + c + ' lần.' };
+        }
+        function genDoubling(r) {
+            const T = [['O(1)', 1], ['O(n)', 2], ['O(n²)', 4], ['O(n³)', 8]]; const [c, f] = T[ri(r, 0, 3)];
+            const txt = x => x === 1 ? 'Không đổi' : 'Gấp ' + x + ' lần';
+            const m = mk(r, txt(f), [1, 2, 4, 8, 16].map(txt), () => txt(16));
+            return { topic: 'cx', q: `Một thuật toán có thời gian chạy ${c}. Khi kích thước đầu vào n tăng gấp đôi thì thời gian chạy xấp xỉ?`, code: '', opts: m.opts, correct: m.correct, exp: `Thay n bằng 2n trong ${c} → ${txt(f).toLowerCase()}.` };
+        }
+        function genBracket(r) {
+            const op = '([{', cl = ')]}', p = ri(r, 4, 6); let s = '', st = [], mx = 0, opened = 0;
+            while (opened < p || st.length) {
+                if (opened < p && (!st.length || r() < .55)) { const x = ri(r, 0, 2); st.push(x); s += op[x]; opened++; mx = Math.max(mx, st.length); }
+                else s += cl[st.pop()];
+            }
+            const m = mk(r, String(mx), [String(mx + 1), String(Math.max(1, mx - 1)), String(p), String(mx + 2)], () => String(ri(r, 1, 7)));
+            return { topic: 'stack', q: 'Dùng stack kiểm tra chuỗi ngoặc cân bằng (push ngoặc mở, pop khi gặp ngoặc đóng). Kích thước lớn nhất mà stack đạt được khi xử lý chuỗi sau là?', code: s, opts: m.opts, correct: m.correct, exp: 'Theo dõi số ngoặc mở chưa đóng; giá trị lớn nhất là ' + mx };
+        }
+        function genCircular(r) {
+            const C = ri(r, 5, 9), h = ri(r, 0, C - 1), s = ri(r, 1, C - 2), e = ri(r, 1, C - s), d = ri(r, 0, s + e - 1);
+            const nh = (h + d) % C, ns = s + e - d, tail = (nh + ns) % C;
+            const m = mk(r, String(tail), [String((tail + 1) % C), String((tail + C - 1) % C), String(nh), String(ns % C)], () => String(ri(r, 0, C - 1)));
+            return { topic: 'queue', q: `Circular array queue dung lượng ${C}: ban đầu head = ${h}, size = ${s}. Thực hiện ${e} lần enqueue rồi ${d} lần dequeue (không resize). Lần enqueue tiếp theo sẽ ghi vào chỉ số mảng nào?`, code: '', opts: m.opts, correct: m.correct, exp: `head = (${h}+${d}) % ${C} = ${nh}; size = ${s}+${e}−${d} = ${ns}; tail = (head+size) % ${C} = ${tail}` };
+        }
+        function genHeapIdx(r) {
+            const k = ri(r, 3, 15), kind = ri(r, 0, 2);
+            const ans = kind === 0 ? k >> 1 : kind === 1 ? 2 * k : 2 * k + 1;
+            const nm = ['cha', 'con trái', 'con phải'][kind];
+            const m = mk(r, String(ans), [String(k - 1), String(k + 1), String(2 * k), String(2 * k + 1), String(k >> 1)], () => String(ri(r, 1, 31)));
+            return { topic: 'pq', q: `Binary heap lưu trong mảng bắt đầu từ chỉ số 1. Chỉ số của ${nm} nút k = ${k} là?`, code: '', opts: m.opts, correct: m.correct, exp: 'Cha = ⌊k/2⌋; con trái = 2k; con phải = 2k+1. Đáp án: ' + ans };
+        }
+        function genDelMax(r) {
+            const vals = pickDistinct(r, 7, 1, 50), h = [null];
+            for (const v of vals) { h.push(v); let k = h.length - 1; while (k > 1 && h[k >> 1] < h[k]) { [h[k >> 1], h[k]] = [h[k], h[k >> 1]]; k >>= 1; } }
+            const before = h.slice(1), g = h.slice();
+            let n = g.length - 1;[g[1], g[n]] = [g[n], g[1]]; const mx = g.pop(); n--;
+            const noSink = g.slice(1);
+            let k = 1; while (2 * k <= n) { let j = 2 * k; if (j < n && g[j] < g[j + 1]) j++; if (g[k] >= g[j]) break;[g[k], g[j]] = [g[j], g[k]]; k = j; }
+            const good = g.slice(1);
+            const m = mk(r, '[' + L(good) + ']', ['[' + L(noSink) + ']', '[' + L(before.slice(1)) + ']', '[' + L(good.slice().sort((x, y) => y - x)) + ']'], () => '[' + L(shuffle(r, good)) + ']');
+            return { topic: 'pq', q: `Cho max-heap (mảng từ chỉ số 1): [${L(before)}]. Sau một lần delMax() (hoán đổi gốc với phần tử cuối, xoá, rồi sink), mảng heap là?`, code: '', opts: m.opts, correct: m.correct, exp: `delMax trả về ${mx}. Đặt phần tử cuối lên gốc rồi sink: [${L(good)}]` };
+        }
+        function genMergeCmp(r) {
+            const all = pickDistinct(r, 8, 1, 40), A = all.slice(0, 4).sort((x, y) => x - y), B = all.slice(4).sort((x, y) => x - y);
+            let i = 0, j = 0, c = 0; while (i < A.length && j < B.length) { c++; if (A[i] <= B[j]) i++; else j++; }
+            const m = mk(r, String(c), [String(c + 1), String(Math.max(1, c - 1)), '8', '7', '4'], () => String(ri(r, 1, 8)));
+            return { topic: 'merge', q: `Bước merge của Mergesort trộn hai mảng con đã sắp xếp A = [${L(A)}] và B = [${L(B)}] vào mảng phụ. Số phép so sánh giữa các phần tử của A và B (đến khi một mảng cạn) là?`, code: '', opts: m.opts, correct: m.correct, exp: 'Mỗi phép so sánh đẩy một phần tử ra mảng kết quả cho đến khi một mảng hết: ' + c + ' phép.' };
+        }
+        function genQuickPart(r) {
+            const arr = pickDistinct(r, 7, 1, 40), a = arr.slice(), v = a[0]; let i = 0, j = a.length;
+            while (true) { while (a[++i] < v) if (i === a.length - 1) break; while (v < a[--j]) if (j === 0) break; if (i >= j) break;[a[i], a[j]] = [a[j], a[i]]; }
+            [a[0], a[j]] = [a[j], a[0]];
+            const m = mk(r, String(j), [String(Math.min(6, j + 1)), String(Math.max(0, j - 1)), '0', '3'], () => String(ri(r, 0, 6)));
+            return { topic: 'merge', q: `Quicksort (partition kiểu Sedgewick: pivot = phần tử đầu, i quét từ trái, j quét từ phải) trên mảng [${L(arr)}]. Sau khi partition lần đầu, pivot = ${v} nằm ở chỉ số nào (đánh số từ 0)?`, code: '', opts: m.opts, correct: m.correct, exp: 'Chỉ số pivot = số phần tử nhỏ hơn pivot = ' + j + '.\nMảng sau partition: [' + L(a) + ']' };
+        }
+        function genMergeCalls(r) {
+            const n = ri(r, 5, 17);
+            const m = mk(r, String(n - 1), [String(n), String(n - 2), String(n >> 1), String(Math.ceil(Math.log2(n)))], () => String(ri(r, 2, 18)));
+            return { topic: 'merge', q: `Mergesort top-down (không dùng cutoff) sắp xếp mảng ${n} phần tử, hàm merge() được gọi tổng cộng bao nhiêu lần?`, code: '', opts: m.opts, correct: m.correct, exp: 'Mỗi lần merge giảm số đoạn đi 1: từ n đoạn độ dài 1 về 1 đoạn → n − 1 = ' + (n - 1) + ' lần.' };
+        }
+        const GENERATORS = { cx: [genLoop, genBinSearch, genDoubling], sort: [genSort, genInversions], stack: [genStack, genPostfix, genBracket], queue: [genQueue, genCircular], pq: [genHeap, genHeapIdx, genDelMax], merge: [genMergeCmp, genQuickPart, genMergeCalls] };
 
         /* =====================================================================
            SINH ĐỀ
@@ -783,6 +894,34 @@
         ES('pq', 'Giải thích swim và sink trong binary heap. Viết code Java.', 'swim(k): while(k>1 && less(k/2,k)){exch(k/2,k); k=k/2;}\nsink(k): while(2k<=n){ j=2k; if(j<n&&less(j,j+1)) j++; if(!less(k,j)) break; exch(k,j); k=j;}\nCả hai O(log n).');
         ES('pq', 'Chèn lần lượt 10, 4, 15, 20, 8, 30 vào max-heap rỗng. Vẽ/ghi mảng heap sau mỗi lần chèn.', '[10]\n[10,4]\n[15,4,10]\n[20,15,10,4]\n[20,15,10,4,8]\n[30,15,20,4,8,10]');
         ES('pq', 'Trình bày heap sort: các bước, độ phức tạp, ưu và nhược điểm.', 'B1: xây heap bottom-up bằng sink (O(n)). B2: lặp hoán đổi gốc với phần tử cuối, giảm kích thước, sink(1).\nO(n log n) mọi trường hợp, in-place. Nhược: không ổn định, cache kém.');
+
+        /* ---- Tự luận bổ sung ---- */
+        ES('cx', 'Tính tổng chi phí của đoạn code sau theo n và rút ra Big-O. Giải thích vì sao tổng 1+2+…+(n−1) là bậc hai.', 'Số lần c++ = 0+1+…+(n−1) = n(n−1)/2 ≈ n²/2 → O(n²).', 'for (int i = 0; i < n; i++)\n    for (int j = 0; j < i; j++)\n        c++;');
+        ES('cx', 'Chứng minh 3n² + 5n + 2 = O(n²) bằng định nghĩa (tìm c và n0).', 'Với n ≥ 1: 3n² + 5n + 2 ≤ 3n² + 5n² + 2n² = 10n². Chọn c = 10, n0 = 1 → T(n) = O(n²).');
+        ES('cx', 'Thuật toán A có T(n) = 100n, thuật toán B có T(n) = n². Với n nào B bắt đầu chậm hơn A? Bài học rút ra?', 'n² > 100n ⇔ n > 100. Khi n nhỏ B có thể nhanh hơn; khi n lớn A thắng. Big-O quan tâm hành vi khi n → ∞, hằng số vẫn quan trọng với n nhỏ.');
+        ES('cx', 'Phân tích độ phức tạp trường hợp tốt nhất, trung bình, xấu nhất của tìm kiếm tuần tự trên mảng n phần tử.', 'Tốt nhất: phần tử ở đầu → 1 so sánh, O(1). Xấu nhất: ở cuối hoặc không có → n so sánh, O(n). Trung bình (xác suất đều): ~(n+1)/2 → O(n).');
+        ES('sort', 'Cho mảng [4, 3, 2, 1]: đếm số nghịch thế và số lần hoán đổi của Insertion Sort. Trường hợp này là tốt nhất hay xấu nhất?', 'Nghịch thế: 3+2+1 = 6 = n(n−1)/2. Insertion Sort hoán đổi 6 lần. Đây là trường hợp xấu nhất (mảng giảm dần).');
+        ES('sort', 'Cho dữ liệu sinh viên (tên, lớp). Đã sắp theo tên, giờ sắp theo lớp bằng Selection Sort rồi Insertion Sort. Kết quả khác nhau thế nào về thứ tự các sinh viên cùng lớp? Giải thích.', 'Insertion Sort ổn định nên sinh viên cùng lớp vẫn giữ thứ tự theo tên. Selection Sort không ổn định (hoán đổi nhảy xa) nên có thể đảo thứ tự theo tên.');
+        ES('sort', 'Nêu các tiêu chí đánh giá thuật toán sắp xếp (thời gian, bộ nhớ phụ, in-place, stable) và lập bảng cho Selection, Insertion, Merge, Quick.', 'Selection: n² mọi trường hợp, in-place, không stable. Insertion: n² xấu nhất / n tốt nhất, in-place, stable. Merge: n lg n, cần O(n) phụ, stable. Quick: n lg n trung bình, n² xấu nhất, in-place, không stable.');
+        ES('sort', 'Chạy Mergesort top-down trên mảng [8, 3, 5, 1, 9, 2]. Ghi lại các bước chia và trộn.', 'Chia: [8,3,5] [1,9,2] → [8] [3,5] ; [1] [9,2] ...\nTrộn: [3,5] → [3,5,8]; [2,9] → [1,2,9]\nTrộn cuối: [1,2,3,5,8,9].');
+        ES('merge', 'Chạy partition của Quicksort (pivot = phần tử đầu) trên mảng [5, 8, 2, 9, 1, 7, 3]. Ghi i, j và mảng sau mỗi lần hoán đổi.', 'pivot = 5. i dừng ở 8, j dừng ở 3 → hoán đổi: [5,3,2,9,1,7,8].\ni dừng ở 9, j dừng ở 1 → hoán đổi: [5,3,2,1,9,7,8].\ni dừng ở 9, j dừng ở 1 (j < i) → kết thúc, đổi pivot với a[j]: [1,3,2,5,9,7,8]. Pivot ở chỉ số 3.');
+        ES('merge', 'Trình bày thuật toán Mergesort: bước merge, độ phức tạp thời gian/bộ nhớ, tính ổn định, và cải tiến CUTOFF.', 'Chia đôi, sort đệ quy hai nửa, merge bằng mảng phụ. T(n) = 2T(n/2) + n = O(n lg n), phụ O(n). Stable khi bằng nhau lấy bên trái trước. CUTOFF: mảng con ≤ ~7–10 phần tử dùng Insertion Sort để giảm overhead.');
+        ES('merge', 'Trình bày Quicksort: partition, vai trò của shuffle, trường hợp xấu nhất, trung bình. Đề xuất 3-way partition cho khoá trùng.', 'Partition đặt pivot về đúng chỗ. Shuffle làm pivot ngẫu nhiên → tránh O(n²). Trung bình ~1.39 n lg n. 3-way chia mảng thành <, =, > pivot (Dijkstra), nhờ đó khoá trùng không phải sắp lại; đạt O(n) khi chỉ có ít giá trị khác nhau.');
+        ES('merge', 'So sánh Mergesort và Quicksort. Khi nào chọn thuật toán nào? Cho ví dụ về đầu vào: sắp ngược, đã sắp xếp, gần sắp xếp, nhiều khoá trùng.', 'Mergesort: O(n lg n) bảo đảm, stable, tốn O(n) phụ → hợp khi cần stable / worst-case. Quicksort: nhanh trong thực tế, in-place → hợp khi ưu tiên bộ nhớ (shuffle trước). Gần sắp xếp: Insertion Sort. Nhiều khoá trùng: 3-way Quicksort. Sắp ngược/đã sắp: Quicksort cần shuffle để tránh n².');
+        ES('merge', 'Quick-select: mô tả cách tìm phần tử nhỏ thứ k mà không sắp xếp toàn mảng và độ phức tạp trung bình.', 'Partition quanh pivot, pivot ở chỉ số j. Nếu j = k trả về; nếu j > k tiếp tục bên trái; ngược lại bên phải. Chỉ đệ quy một phía nên trung bình O(n), xấu nhất O(n²) nếu không shuffle.');
+        ES('stack', 'Cài đặt linked list (chỉ có first) với addFirst, append, findFirst, deleteFirst, deleteAll bằng Java. Nêu độ phức tạp từng hàm.', 'addFirst O(1): Node n=new Node(d); n.next=first; first=n.\nappend O(n): duyệt đến cuối rồi gắn nút mới.\nfindFirst O(n). deleteFirst O(n): xử lý riêng khi first chứa data.\ndeleteAll O(n): while(first!=null&&first.data.equals(d)) first=first.next; rồi duyệt p, nếu p.next khớp thì p.next=p.next.next.');
+        ES('stack', 'Viết lại append, deleteFirst, deleteAll bằng đệ quy (hàm private riêng, giữ nguyên API). Mô tả trường hợp cơ sở.', 'private Node append(Node x, String d){ if(x==null) return new Node(d); x.next=append(x.next,d); return x; }\nprivate Node deleteFirst(Node x,String d){ if(x==null) return null; if(x.data.equals(d)) return x.next; x.next=deleteFirst(x.next,d); return x; }\nprivate Node deleteAll(Node x,String d){ if(x==null) return null; x.next=deleteAll(x.next,d); return x.data.equals(d)? x.next : x; }');
+        ES('stack', 'Viết chương trình Java kiểm tra chuỗi palindrome bằng stack (Java String Reverse). Chạy thử với "madam" và "hello".', 'Push từng ký tự vào stack, rồi pop và so sánh lần lượt với ký tự từ đầu chuỗi (hoặc push nửa đầu, so sánh với nửa sau).\n"madam" → palindrome. "hello" → không (h ≠ o).');
+        ES('stack', 'Chuyển biểu thức infix (3 + 4) * 5 − 6 / 2 sang postfix bằng stack toán tử và tính giá trị.', 'Postfix: 3 4 + 5 * 6 2 / −. Tính: 3,4→7; 7*5=35; 6/2=3; 35−3=32. Kết quả 32.');
+        ES('queue', 'Cài đặt Queue bằng hai Stack. Giải thích vì sao dequeue amortized O(1).', 'enqueue: push vào stack in. dequeue: nếu out rỗng thì pop hết in và push vào out (đảo thứ tự), rồi pop out. Mỗi phần tử chuyển tối đa 1 lần giữa các stack → trung bình O(1).');
+        ES('queue', 'Mô phỏng Queue rỗng với dãy: enqueue(5), enqueue(3), dequeue, enqueue(8), dequeue, enqueue(2), dequeue. Ghi trạng thái queue và giá trị dequeue.', 'Q=[5]; [5,3]; dequeue→5, Q=[3]; [3,8]; dequeue→3, Q=[8]; [8,2]; dequeue→8, Q=[2].\nCác giá trị dequeue: 5, 3, 8.');
+        ES('queue', 'Mô tả thuật toán BFS dùng queue trên đồ thị và độ phức tạp.', 'Đưa nguồn vào queue và đánh dấu. Lặp: dequeue v, với mỗi kề chưa thăm đánh dấu và enqueue. Duyệt theo từng lớp khoảng cách. O(V + E) với danh sách kề.');
+        ES('pq', 'Giữ nguyên max-heap [30, 15, 20, 4, 8, 10]. Tăng khoá 4 lên 77 rồi swim. Liệt kê các cặp so sánh và heap kết quả.', 'Khoá 4 ở chỉ số 4, cha chỉ số 2 (15): 77 > 15 → đổi. Rồi cha chỉ số 1 (30): 77 > 30 → đổi.\nHeap: [77, 30, 20, 15, 8, 10]. Các cặp so sánh: (77,15), (77,30).');
+        ES('pq', 'Thực hiện delMax trên max-heap [30, 15, 20, 4, 8, 10]. Ghi các cặp key được so sánh và heap sau thao tác.', 'Đổi gốc với cuối: [10,15,20,4,8], bỏ 30. sink(1): con 15 và 20 → chọn 20 (so sánh 15 vs 20), so sánh 10 vs 20 → đổi: [20,15,10,4,8]. Nút 3 không còn con. Heap: [20,15,10,4,8].');
+        ES('pq', 'Bài Jesse and Cookies: mô tả thuật toán dùng Min-PQ, độ phức tạp và khi nào trả về −1.', 'Đưa tất cả vào MinPQ. Khi min < K: nếu size < 2 trả −1; lấy m1, m2, chèn m1 + 2·m2, đếm++. Mỗi vòng O(log n), tối đa n vòng → O(n log n).');
+        ES('pq', 'Cài đặt StudentComparator cho hàng đợi ưu tiên: CGPA giảm dần, rồi tên theo thứ tự chữ cái, rồi id tăng dần. Viết hàm compare.', 'public int compare(Student x, Student y){ if(x.cgpa!=y.cgpa) return Double.compare(y.cgpa,x.cgpa); int c=x.name.compareTo(y.name); if(c!=0) return c; return Integer.compare(x.id,y.id); }');
+        ES('pq', 'Kiểm tra cây nhị phân cho trước có thể là max-heap hay không (nêu hai điều kiện). Xây lại thứ tự khi thiếu.', 'Điều kiện: (1) cây nhị phân hoàn chỉnh (complete); (2) mỗi nút ≥ hai con của nó. Nếu vi phạm một trong hai thì không phải max-heap.');
+        ES('pq', 'MinPQ dùng mảng co giãn: n lần insert rồi n lần delMin, thời gian xấu nhất là bao nhiêu? Giải thích có tính cả resize.', 'Θ(n log n): mỗi insert/delMin O(log n); resize gấp đôi/giảm nửa có chi phí amortized O(1) mỗi thao tác nên không đổi bậc.');
 
         function buildEssays(cfg) {
             const r = mulberry32(hashSeed(cfg.seed + '|essay|' + cfg.topics.join()));
