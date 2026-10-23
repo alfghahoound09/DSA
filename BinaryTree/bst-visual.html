@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Tree — Từ mảng random đến cây BST (Visual & Traversals)</title>
+    <meta name="description"
+        content="Học Binary Search Tree trực quan bằng cây số: chèn từng phần tử của mảng random, so sánh BST với Binary Tree, search/insert/delete/floor, duyệt Pre-order/In-order/Post-order có animation và code Java.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== Design System ===== */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-code: #0d1117;
+            --text-primary: #e8edf5;
+            --text-secondary: #8b95a8;
+            --text-muted: #5a6478;
+            --indigo: #6366f1;
+            --indigo-l: #818cf8;
+            --cyan: #06b6d4;
+            --amber: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --pink: #ec4899;
+            --purple: #a855f7;
+            --border: rgba(99, 102, 241, 0.15);
+            --border-hover: rgba(99, 102, 241, 0.35);
+            --glass: rgba(26, 32, 53, 0.75);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --transition: all .3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 15% 0%, rgba(99, 102, 241, .14), transparent 60%),
+                radial-gradient(ellipse 50% 40% at 90% 20%, rgba(6, 182, 212, .10), transparent 60%),
+                radial-gradient(ellipse 50% 50% at 50% 100%, rgba(16, 185, 129, .07), transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        code,
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        b,
+        strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* ===== Nav ===== */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            background: rgba(10, 14, 26, .78);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            overflow-x: auto;
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            margin-right: 12px;
+            white-space: nowrap;
+            background: linear-gradient(135deg, var(--indigo-l), var(--cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-inner a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 999px;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .nav-inner a:hover {
+            color: #fff;
+            background: rgba(99, 102, 241, .18);
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        section {
+            padding: 64px 0 24px;
+            scroll-margin-top: 50px;
+        }
+
+        .sec-tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--cyan);
+            background: rgba(6, 182, 212, .1);
+            border: 1px solid rgba(6, 182, 212, .25);
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        h2 {
+            font-size: clamp(26px, 3.4vw, 36px);
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .lead {
+            color: var(--text-secondary);
+            max-width: 820px;
+            margin-bottom: 28px;
+            font-size: 16px;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+        }
+
+        /* ===== Hero ===== */
+        .hero {
+            padding: 80px 0 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 68px);
+            font-weight: 900;
+            letter-spacing: -.035em;
+            line-height: 1.08;
+            margin-bottom: 18px;
+        }
+
+        .grad {
+            background: linear-gradient(135deg, #a5b4fc 0%, #22d3ee 50%, #34d399 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 720px;
+            margin: 0 auto 34px;
+        }
+
+        .rule-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 18px 28px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, .16), rgba(6, 182, 212, .1));
+            border: 1px solid rgba(129, 140, 248, .35);
+            box-shadow: 0 0 60px rgba(99, 102, 241, .18);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(15px, 2vw, 20px);
+        }
+
+        .rule-card .pill {
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .pill.l {
+            background: rgba(6, 182, 212, .18);
+            color: #67e8f9;
+        }
+
+        .pill.x {
+            background: rgba(245, 158, 11, .2);
+            color: #fcd34d;
+        }
+
+        .pill.r {
+            background: rgba(236, 72, 153, .18);
+            color: #f9a8d4;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 34px;
+        }
+
+        .stat {
+            padding: 12px 18px;
+            border-radius: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stat b {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--indigo-l);
+            margin-right: 6px;
+        }
+
+        /* ===== Tree SVG ===== */
+        .tree-wrap {
+            position: relative;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(99, 102, 241, .10), transparent 60%),
+                var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 10px;
+            overflow-x: auto;
+            min-height: 220px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .tree-svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        .edge {
+            stroke: #334155;
+            stroke-width: 2.5;
+            transition: stroke .3s, stroke-width .3s;
+        }
+
+        .edge.path {
+            stroke: var(--indigo-l);
+            stroke-width: 3.5;
+        }
+
+        .edge.bad {
+            stroke: var(--red);
+            stroke-dasharray: 6 4;
+        }
+
+        .node .inner,
+        .ghost .inner {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: pop .45s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .node circle {
+            fill: #1e293b;
+            stroke: var(--indigo);
+            stroke-width: 2.5;
+            transition: fill .3s, stroke .3s, stroke-width .3s;
+        }
+
+        .node .nlabel {
+            fill: #e8edf5;
+            font: 700 14px 'JetBrains Mono', monospace;
+            pointer-events: none;
+            transition: fill .3s;
+        }
+
+        .node .nbadge {
+            fill: #fbbf24;
+            font: 800 11px 'Inter', sans-serif;
+        }
+
+        .node.path circle {
+            fill: rgba(99, 102, 241, .38);
+            stroke: var(--indigo-l);
+        }
+
+        .node.cur circle {
+            fill: var(--amber);
+            stroke: #fde68a;
+            filter: drop-shadow(0 0 9px rgba(245, 158, 11, .9));
+        }
+
+        .node.cur .nlabel {
+            fill: #1a1300;
+        }
+
+        .node.new circle,
+        .node.found circle {
+            fill: var(--green);
+            stroke: #6ee7b7;
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, .9));
+        }
+
+        .node.new .nlabel,
+        .node.found .nlabel {
+            fill: #02150e;
+        }
+
+        .node.del circle {
+            fill: var(--red);
+            stroke: #fca5a5;
+            filter: drop-shadow(0 0 10px rgba(239, 68, 68, .9));
+        }
+
+        .node.succ circle {
+            fill: var(--pink);
+            stroke: #f9a8d4;
+            filter: drop-shadow(0 0 10px rgba(236, 72, 153, .9));
+        }
+
+        .node.cand circle {
+            fill: rgba(236, 72, 153, .25);
+            stroke: var(--pink);
+            stroke-width: 4;
+        }
+
+        .node.done circle {
+            fill: rgba(16, 185, 129, .2);
+            stroke: var(--green);
+        }
+
+        .node.bad circle {
+            fill: rgba(239, 68, 68, .22);
+            stroke: var(--red);
+            stroke-dasharray: 5 3;
+            stroke-width: 3;
+        }
+
+        .node.lside circle {
+            fill: rgba(6, 182, 212, .2);
+            stroke: var(--cyan);
+        }
+
+        .node.rside circle {
+            fill: rgba(236, 72, 153, .18);
+            stroke: var(--pink);
+        }
+
+        .node.dim {
+            opacity: .35;
+        }
+
+        .node.exit {
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .ghost circle {
+            fill: rgba(245, 158, 11, .14);
+            stroke: var(--amber);
+            stroke-width: 2.5;
+            stroke-dasharray: 5 4;
+        }
+
+        .ghost text {
+            fill: #fbbf24;
+            font: 800 14px 'JetBrains Mono', monospace;
+        }
+
+        .ghost.miss circle {
+            stroke: var(--red);
+            fill: rgba(239, 68, 68, .1);
+        }
+
+        .ghost.miss text {
+            fill: #fca5a5;
+            font-size: 11px;
+        }
+
+        .ghost-edge {
+            stroke: var(--amber);
+            stroke-width: 2;
+            stroke-dasharray: 6 5;
+            animation: dash 1s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -22;
+            }
+        }
+
+        .axis-line {
+            stroke: rgba(148, 163, 184, .28);
+            stroke-dasharray: 3 4;
+        }
+
+        .axis-box rect {
+            fill: #0f172a;
+            stroke: var(--cyan);
+            stroke-width: 1.5;
+        }
+
+        .axis-box text {
+            fill: #67e8f9;
+            font: 700 12px 'JetBrains Mono', monospace;
+        }
+
+        .axis-box.cur rect,
+        .axis-box.found rect,
+        .axis-box.new rect {
+            fill: rgba(245, 158, 11, .25);
+            stroke: var(--amber);
+        }
+
+        .empty-text {
+            fill: var(--text-muted);
+            font: 600 14px 'JetBrains Mono', monospace;
+        }
+
+        /* ===== Legend ===== */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: 2px solid;
+            display: inline-block;
+        }
+
+        /* ===== Array chips ===== */
+        .array-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .chip {
+            min-width: 46px;
+            text-align: center;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-hover);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .chip small {
+            position: absolute;
+            top: -17px;
+            left: 0;
+            right: 0;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .chip.done {
+            opacity: .45;
+            border-color: var(--green);
+        }
+
+        .chip.done::after {
+            content: '✓';
+            position: absolute;
+            right: 3px;
+            bottom: -2px;
+            font-size: 10px;
+            color: var(--green);
+        }
+
+        .chip.active {
+            background: var(--amber);
+            color: #1a1300;
+            border-color: #fde68a;
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 6px 24px rgba(245, 158, 11, .5);
+        }
+
+        .chip.just {
+            background: var(--green);
+            color: #02150e;
+            border-color: #6ee7b7;
+            opacity: 1;
+        }
+
+        .chip.out {
+            border-color: var(--green);
+            color: #6ee7b7;
+            animation: pop .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        /* ===== Controls ===== */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-hover);
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: rgba(99, 102, 241, .22);
+            border-color: var(--indigo-l);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, var(--indigo), #4f46e5);
+            border-color: transparent;
+            box-shadow: 0 4px 18px rgba(99, 102, 241, .4);
+        }
+
+        .btn.green {
+            background: linear-gradient(135deg, #059669, var(--green));
+            border-color: transparent;
+        }
+
+        .btn.red {
+            border-color: rgba(239, 68, 68, .5);
+        }
+
+        .btn.red:hover:not(:disabled) {
+            background: rgba(239, 68, 68, .2);
+            border-color: var(--red);
+        }
+
+        .btn-traversal-pre {
+            border-color: rgba(6, 182, 212, .5);
+            color: #67e8f9;
+        }
+
+        .btn-traversal-pre:hover:not(:disabled) {
+            background: rgba(6, 182, 212, .2);
+            border-color: var(--cyan);
+            box-shadow: 0 0 16px rgba(6, 182, 212, .3);
+        }
+
+        .btn-traversal-in {
+            border-color: rgba(16, 185, 129, .5);
+            color: #6ee7b7;
+        }
+
+        .btn-traversal-in:hover:not(:disabled) {
+            background: rgba(16, 185, 129, .2);
+            border-color: var(--green);
+            box-shadow: 0 0 16px rgba(16, 185, 129, .3);
+        }
+
+        .btn-traversal-post {
+            border-color: rgba(168, 85, 247, .5);
+            color: #d8b4fe;
+        }
+
+        .btn-traversal-post:hover:not(:disabled) {
+            background: rgba(168, 85, 247, .2);
+            border-color: var(--purple);
+            box-shadow: 0 0 16px rgba(168, 85, 247, .3);
+        }
+
+        input[type=text],
+        input[type=number] {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--text-primary);
+            background: var(--bg-code);
+            border: 1px solid var(--border-hover);
+            border-radius: 10px;
+            padding: 8px 12px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            border-color: var(--indigo-l);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, .25);
+        }
+
+        input[type=range] {
+            accent-color: var(--indigo);
+        }
+
+        label.chk {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        label.chk input {
+            accent-color: var(--cyan);
+        }
+
+        .progress {
+            height: 4px;
+            background: rgba(255, 255, 255, .06);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0 4px;
+        }
+
+        .progress>div {
+            height: 100%;
+            background: linear-gradient(90deg, var(--indigo), var(--cyan));
+            transition: width .3s;
+        }
+
+        /* ===== Build grid ===== */
+        .build-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 980px) {
+            .build-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .msg {
+            min-height: 56px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, .1);
+            border-left: 4px solid var(--indigo);
+            font-size: 15px;
+            margin-top: 14px;
+        }
+
+        .msg.ok {
+            background: rgba(16, 185, 129, .1);
+            border-color: var(--green);
+        }
+
+        .msg.err {
+            background: rgba(239, 68, 68, .1);
+            border-color: var(--red);
+        }
+
+        .msg.warn {
+            background: rgba(245, 158, 11, .1);
+            border-color: var(--amber);
+        }
+
+        /* code */
+        pre.code {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.75;
+            overflow-x: auto;
+        }
+
+        pre.code .ln {
+            display: block;
+            padding: 0 16px;
+            border-left: 3px solid transparent;
+            transition: background .25s, border-color .25s;
+            white-space: pre;
+        }
+
+        pre.code .ln.hl {
+            background: rgba(245, 158, 11, .15);
+            border-left-color: var(--amber);
+        }
+
+        .tk-k {
+            color: #c084fc;
+        }
+
+        .tk-c {
+            color: #6b7a90;
+            font-style: italic;
+        }
+
+        .tk-n {
+            color: #fbbf24;
+        }
+
+        .tk-t {
+            color: #67e8f9;
+        }
+
+        .trace {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .trace th,
+        .trace td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+        }
+
+        .trace th {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .trace td.mono {
+            color: #c7d2fe;
+        }
+
+        .trace tr.newrow td {
+            animation: flash 1s;
+        }
+
+        @keyframes flash {
+            from {
+                background: rgba(16, 185, 129, .25);
+            }
+
+            to {
+                background: transparent;
+            }
+        }
+
+        .trace-box {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log {
+            list-style: none;
+            font-size: 13.5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log li {
+            padding: 6px 0 6px 12px;
+            border-left: 2px solid rgba(99, 102, 241, .35);
+            color: var(--text-secondary);
+            margin-left: 4px;
+        }
+
+        .log li:last-child {
+            color: var(--text-primary);
+            border-left-color: var(--amber);
+        }
+
+        /* ===== Compare ===== */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        @media (max-width: 980px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        @media (max-width: 860px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mini .tree-wrap {
+            min-height: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+        }
+
+        .badge.g {
+            background: rgba(16, 185, 129, .15);
+            color: #6ee7b7;
+        }
+
+        .badge.r {
+            background: rgba(239, 68, 68, .15);
+            color: #fca5a5;
+        }
+
+        .badge.b {
+            background: rgba(99, 102, 241, .18);
+            color: #c7d2fe;
+        }
+
+        .caption {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+
+        table.cmp {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14.5px;
+        }
+
+        table.cmp th,
+        table.cmp td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        table.cmp th {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        table.cmp td:first-child {
+            color: var(--text-secondary);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        table.cmp tr:hover td {
+            background: rgba(99, 102, 241, .05);
+        }
+
+        .hl-cell {
+            color: #fcd34d;
+            font-weight: 600;
+        }
+
+        /* ===== Playground ===== */
+        .pg-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .pg-bar .sep {
+            width: 1px;
+            height: 26px;
+            background: var(--border-hover);
+            margin: 0 4px;
+        }
+
+        .out-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        /* ===== Tabs ===== */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .tab {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            padding: 7px 14px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            color: #fff;
+            background: rgba(99, 102, 241, .25);
+            border-color: var(--indigo-l);
+        }
+
+        .tip {
+            display: flex;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(245, 158, 11, .07);
+            border: 1px solid rgba(245, 158, 11, .2);
+            margin-bottom: 10px;
+            font-size: 14.5px;
+        }
+
+        .tip .ic {
+            font-size: 20px;
+            line-height: 1.3;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            padding: 50px 0 40px;
+        }
+
+        .kbd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 5px;
+            border: 1px solid var(--border-hover);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+        }
+
+        ul.clean {
+            padding-left: 20px;
+            color: var(--text-secondary);
+        }
+
+        ul.clean li {
+            margin: 4px 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2a3352;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">🌳 BST Visual</span>
+            <a href="#core">Core</a>
+            <a href="#compare">BST vs Binary Tree</a>
+            <a href="#build">Mảng → Cây</a>
+            <a href="#playground">Thao tác &amp; Duyệt cây</a>
+            <a href="#shape">Hình dạng cây</a>
+            <a href="#code">Code Java</a>
+            <a href="#summary">Tổng kết</a>
+        </div>
+    </nav>
+
+    <header class="hero container">
+        <h1>Binary <span class="grad">Search</span> Tree</h1>
+        <p>Một <b>Binary Tree</b> có thêm đúng <b>một quy tắc thứ tự</b>. Nhờ quy tắc này mà tìm, chèn, min/max,
+            floor đều chỉ cần đi <b>một đường</b> từ root xuống thay vì duyệt cả cây.</p>
+        <div class="rule-card" id="core">
+            <span class="pill l">mọi key cây con TRÁI</span>
+            <span>&lt;</span>
+            <span class="pill x">x.key</span>
+            <span>&lt;</span>
+            <span class="pill r">mọi key cây con PHẢI</span>
+        </div>
+        <div class="hero-stats">
+            <div class="stat"><b>1 + depth</b>số lần so sánh khi search/insert</div>
+            <div class="stat"><b>~1.39 lg N</b>trung bình (chèn ngẫu nhiên)</div>
+            <div class="stat"><b>N</b>worst case (chèn mảng đã sắp xếp)</div>
+            <div class="stat"><b>inorder</b>= dãy tăng dần</div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ================= CORE ================= -->
+        <section style="padding-top:20px">
+            <span class="sec-tag">01 · Phần core nhất</span>
+            <h2>3 thứ phải nhớ về BST</h2>
+            <p class="lead">Mọi thứ khác (floor, rank, delete…) đều suy ra từ 3 ý dưới đây.</p>
+            <div class="grid-3">
+                <div class="card">
+                    <span class="badge b">① Định nghĩa</span>
+                    <h3>Symmetric order</h3>
+                    <p class="caption" style="margin-top:0">Với <b>MỌI</b> node x: tất cả key ở cây con trái <b>&lt;</b>
+                        x.key <b>&lt;</b> tất cả key ở cây con phải. Lưu ý là <b>tất cả</b>, không chỉ con trực
+                        tiếp.</p>
+                </div>
+                <div class="card">
+                    <span class="badge b">② Search / Insert</span>
+                    <h3>Nhỏ → trái, lớn → phải</h3>
+                    <p class="caption" style="margin-top:0">So sánh với node hiện tại: nhỏ hơn thì sang trái, lớn hơn
+                        thì sang phải, bằng thì tìm thấy. Gặp <code>null</code>: search → không có, insert → tạo node
+                        tại đó.</p>
+                </div>
+                <div class="card">
+                    <span class="badge b">③ Inorder</span>
+                    <h3>Trái → Gốc → Phải = tăng dần</h3>
+                    <p class="caption" style="margin-top:0">Duyệt inorder một BST luôn cho dãy key <b>đã sắp xếp</b>.
+                        Đây là cách nhanh nhất để kiểm tra một cây có phải BST hay không.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= COMPARE ================= -->
+        <section id="compare">
+            <span class="sec-tag">02 · Khác nhau ở đâu?</span>
+            <h2>Binary Tree vs Binary Search Tree</h2>
+            <p class="lead"><b>Binary Tree</b> chỉ quy định <b>hình dạng</b>: mỗi node có tối đa 2 con. <b>BST</b> quy
+                định thêm cả <b>giá trị</b>. Ba cây dưới đây đều là binary tree, nhưng chỉ cây ở giữa là BST.</p>
+
+            <div class="grid-3">
+                <div class="card mini">
+                    <span class="badge r">Binary Tree thường</span>
+                    <div class="tree-wrap" id="cmpA"></div>
+                    <p class="caption">Số đặt tùy ý, không có quy tắc nào. Muốn tìm <b>35</b> thì phải duyệt
+                        <b>toàn bộ</b> cây: O(N).
+                    </p>
+                </div>
+                <div class="card mini">
+                    <span class="badge g">✓ BST hợp lệ</span>
+                    <div class="tree-wrap" id="cmpB"></div>
+                    <p class="caption">Tìm <b>35</b>: 35 &lt; 50 → trái, 35 &gt; 30 → phải, 35 &lt; 40 → trái → thấy
+                        ngay. Chỉ đi <b>1 đường</b> xuống: O(h).</p>
+                </div>
+                <div class="card mini">
+                    <span class="badge r">✗ Bẫy hay gặp trong đề thi</span>
+                    <div class="tree-wrap" id="cmpC"></div>
+                    <p class="caption">Mỗi cặp cha–con đều "đúng" (60 &gt; 30 nên nằm bên phải). Nhưng <b>60</b> nằm
+                        trong cây con <b>TRÁI</b> của 50 mà 60 &gt; 50 → <b>KHÔNG phải BST</b>. Inorder ra: 20, 30, 60,
+                        50, 70 (không tăng dần).</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:18px; overflow-x:auto">
+                <table class="cmp">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Binary Tree</th>
+                            <th>Binary Search Tree</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Định nghĩa</td>
+                            <td>Rỗng, hoặc 1 node + 2 binary tree con rời nhau (left, right)</td>
+                            <td>Binary tree <span class="hl-cell">+ symmetric order</span></td>
+                        </tr>
+                        <tr>
+                            <td>Quy định</td>
+                            <td>Chỉ <b>hình dạng</b> (≤ 2 con)</td>
+                            <td>Hình dạng <b>+ giá trị</b>: trái &lt; node &lt; phải</td>
+                        </tr>
+                        <tr>
+                            <td>Key</td>
+                            <td>Gì cũng được</td>
+                            <td>Phải <b>so sánh được</b> (<code>Comparable</code>, dùng <code>compareTo</code>)</td>
+                        </tr>
+                        <tr>
+                            <td>Tìm kiếm</td>
+                            <td>O(N): duyệt hết</td>
+                            <td class="hl-cell">O(h): mỗi bước loại 1 nhánh</td>
+                        </tr>
+                        <tr>
+                            <td>Min / Max</td>
+                            <td>O(N)</td>
+                            <td>Đi trái tận cùng / đi phải tận cùng: O(h)</td>
+                        </tr>
+                        <tr>
+                            <td>Inorder</td>
+                            <td>Thứ tự bất kỳ</td>
+                            <td class="hl-cell">Dãy tăng dần</td>
+                        </tr>
+                        <tr>
+                            <td>Chèn node</td>
+                            <td>Đặt ở đâu cũng được</td>
+                            <td>Chỉ có <b>đúng 1 vị trí</b> hợp lệ (chỗ null mà đường tìm kiếm dừng lại)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================= BUILD ================= -->
+        <section id="build">
+            <span class="sec-tag">03 · Từ mảng random → cây</span>
+            <h2>Chèn từng số của mảng vào BST</h2>
+            <p class="lead">Lấy từng số trong mảng theo thứ tự từ trái sang phải và gọi <code>put()</code>. Mỗi số
+                bắt đầu từ <b>root</b>, nhỏ hơn thì rẽ trái, lớn hơn thì rẽ phải, cho đến khi gặp <code>null</code> thì
+                đặt vào đó. Bấm <b>Bước tiếp</b> để xem từng lần so sánh.</p>
+
+            <div class="card">
+                <div class="controls" style="margin-bottom:22px">
+                    <input type="text" id="arrInput" size="38" aria-label="Mảng đầu vào"
+                        placeholder="vd: 45, 23, 71, 12, 34">
+                    <button class="btn" id="btnLoad">Dùng mảng này</button>
+                    <button class="btn primary" id="btnRandom">🎲 Mảng random</button>
+                </div>
+                <div class="array-row" id="arrChips" style="margin-top:6px"></div>
+                <div class="progress">
+                    <div id="buildProg"></div>
+                </div>
+                <div class="controls" style="justify-content:space-between">
+                    <div class="controls">
+                        <button class="btn" id="btnFirst" title="Về đầu">⏮</button>
+                        <button class="btn" id="btnPrev">◀ Lùi</button>
+                        <button class="btn primary" id="btnNext">Bước tiếp ▶</button>
+                        <button class="btn" id="btnNextVal" title="Chèn xong số hiện tại">⏭ Chèn xong số này</button>
+                        <button class="btn green" id="btnPlay">▶ Tự chạy</button>
+                        <button class="btn" id="btnLast" title="Tới cuối">⏭⏭</button>
+                    </div>
+                    <div class="controls">
+                        <label class="chk"><input type="checkbox" id="buildAxis"> Chiếu xuống trục số</label>
+                        <span style="font-size:12px;color:var(--text-muted)">Tốc độ</span>
+                        <input type="range" id="buildSpeed" min="150" max="1600" value="900" aria-label="Tốc độ">
+                        <span id="stepLabel" class="mono" style="font-size:12px;color:var(--text-muted)"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="build-grid">
+                <div class="card">
+                    <div class="tree-wrap" id="buildTree" style="min-height:320px"></div>
+                    <div class="msg" id="buildMsg"></div>
+                    <div class="legend">
+                        <span><i class="dot" style="background:var(--amber);border-color:#fde68a"></i>đang so
+                            sánh</span>
+                        <span><i class="dot"
+                                style="background:rgba(99,102,241,.38);border-color:var(--indigo-l)"></i>đường
+                            đã đi</span>
+                        <span><i class="dot"
+                                style="background:rgba(245,158,11,.14);border-color:var(--amber);border-style:dashed"></i>số
+                            đang chèn</span>
+                        <span><i class="dot" style="background:var(--green);border-color:#6ee7b7"></i>vừa chèn</span>
+                        <span style="margin-left:auto"><span class="kbd">←</span> <span class="kbd">→</span> <span
+                                class="kbd">Space</span></span>
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+                    <div class="card">
+                        <h3 style="font-size:15px">Code đang chạy: <code>put()</code></h3>
+                        <pre class="code" id="buildCode"></pre>
+                    </div>
+                    <div class="card">
+                        <h3 style="font-size:15px">Các bước của số hiện tại</h3>
+                        <ul class="log" id="buildLog"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:18px">
+                <h3 style="font-size:15px">📋 Bảng vết: đường đi của từng số</h3>
+                <div class="trace-box">
+                    <table class="trace">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Số</th>
+                                <th>Đường đi từ root</th>
+                                <th>Vị trí</th>
+                                <th>Số lần so sánh</th>
+                            </tr>
+                        </thead>
+                        <tbody id="traceBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PLAYGROUND ================= -->
+        <section id="playground">
+            <span class="sec-tag">04 · Thao tác trên cây</span>
+            <h2>Search · Insert · Delete · Min/Max · Floor/Ceiling · Duyệt cây (Pre/In/Post)</h2>
+            <p class="lead">Cây ở đây được lấy từ mục 3. Nhập một số rồi chọn thao tác. Mọi thao tác tìm kiếm/chèn/xóa
+                đều chỉ đi theo
+                <b>một đường</b> từ root xuống (chi phí O(h)), riêng các thao tác duyệt cây (Pre-order, In-order,
+                Post-order) đi qua mọi node (chi phí O(N)).
+            </p>
+
+            <div class="card">
+                <div class="pg-bar">
+                    <input type="number" id="pgVal" value="34" style="width:100px" aria-label="Giá trị">
+                    <button class="btn primary" data-op="search">🔍 get / search</button>
+                    <button class="btn green" data-op="insert">➕ put / insert</button>
+                    <button class="btn red" data-op="delete">🗑 delete</button>
+                    <button class="btn" data-op="floor">⌊ floor ⌋</button>
+                    <button class="btn" data-op="ceiling">⌈ ceiling ⌉</button>
+                    <span class="sep"></span>
+                    <button class="btn" data-op="min">min</button>
+                    <button class="btn" data-op="max">max</button>
+                    <button class="btn" data-op="deleteMin">deleteMin</button>
+                    <span class="sep"></span>
+                    <button class="btn btn-traversal-pre" data-op="preorder"
+                        title="Pre-order (NLR): Gốc → Trái → Phải">⬆ preorder (NLR)</button>
+                    <button class="btn btn-traversal-in" data-op="inorder" title="In-order (LNR): Trái → Gốc → Phải">↔
+                        inorder (LNR)</button>
+                    <button class="btn btn-traversal-post" data-op="postorder"
+                        title="Post-order (LRN): Trái → Phải → Gốc">⬇ postorder (LRN)</button>
+                </div>
+                <div class="pg-bar">
+                    <button class="btn" id="pgFromBuild">↺ Lấy cây từ mục 3</button>
+                    <button class="btn" id="pgRandom">🎲 Cây random</button>
+                    <label class="chk"><input type="checkbox" id="pgAxis"> Chiếu xuống trục số</label>
+                    <span style="font-size:12px;color:var(--text-muted)">Tốc độ</span>
+                    <input type="range" id="pgSpeed" min="150" max="1600" value="850" aria-label="Tốc độ thao tác">
+                </div>
+                <div class="tree-wrap" id="pgTree" style="min-height:340px"></div>
+                <div class="msg" id="pgMsg">Chọn một thao tác ở trên.</div>
+                <div class="out-row" id="pgOut"></div>
+                <div class="legend">
+                    <span><i class="dot" style="background:var(--amber);border-color:#fde68a"></i>đang xét</span>
+                    <span><i class="dot" style="background:var(--green);border-color:#6ee7b7"></i>tìm thấy / kết
+                        quả</span>
+                    <span><i class="dot" style="background:var(--red);border-color:#fca5a5"></i>node bị xóa</span>
+                    <span><i class="dot" style="background:var(--pink);border-color:#f9a8d4"></i>successor / thay
+                        thế</span>
+                    <span><i class="dot" style="background:rgba(236,72,153,.25);border-color:var(--pink)"></i>ứng viên
+                        floor/ceiling</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:18px">
+                <div class="card">
+                    <h3>🗑 Delete (Hibbard): 3 trường hợp</h3>
+                    <ul class="clean">
+                        <li><b>Case 0, lá (0 con):</b> gán link của cha thành <code>null</code>.</li>
+                        <li><b>Case 1, có 1 con:</b> nối thẳng cha với đứa con duy nhất.</li>
+                        <li><b>Case 2, có 2 con:</b> tìm <b>successor</b> = <code>min(t.right)</code> (sang phải 1 bước
+                            rồi đi trái tận cùng). Đặt successor vào chỗ t, rồi <code>deleteMin(t.right)</code>.</li>
+                    </ul>
+                    <p class="caption">Thử xóa một node có 2 con (ví dụ root) để xem successor được đưa lên thay.</p>
+                </div>
+                <div class="card">
+                    <h3>⌊ Floor ⌋ và ⌈ Ceiling ⌉</h3>
+                    <ul class="clean">
+                        <li><b>floor(k)</b> = số lớn nhất ≤ k. Gặp số <b>nhỏ hơn hoặc bằng k</b> thì ghi nhận làm ứng
+                            viên rồi thử sang phải tìm số lớn hơn; gặp số lớn hơn k thì sang trái.</li>
+                        <li><b>ceiling(k)</b> = số nhỏ nhất ≥ k. Làm đối xứng với floor.</li>
+                        <li>Bật <b>"Chiếu xuống trục số"</b> để thấy floor/ceiling chính là 2 số kẹp k trên dãy đã
+                            sắp xếp.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- So sánh 3 cách duyệt cây -->
+            <div class="grid-3" style="margin-top:18px">
+                <div class="card">
+                    <span class="badge" style="background:rgba(6,182,212,.18);color:#67e8f9">NLR · Node – Left –
+                        Right</span>
+                    <h3 style="color:#67e8f9;display:flex;align-items:center;gap:6px">⬆ Pre-order (Tiền thứ tự)</h3>
+                    <ul class="clean" style="font-size:14px">
+                        <li><b>Thứ tự duyệt:</b> <b>Gốc (Node)</b> → Cây con <b>Trái (Left)</b> → Cây con <b>Phải
+                                (Right)</b>.</li>
+                        <li><b>Đặc trưng:</b> Node cha luôn được xử lý <b>trước</b> các con. Node gốc (root) là phần tử
+                            <b>đầu tiên</b>.</li>
+                        <li><b>Ứng dụng:</b> Clone / copy cấu trúc cây, serialize cây lưu xuống file, duyệt biểu thức
+                            dạng tiền tố (prefix).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <span class="badge g">LNR · Left – Node – Right</span>
+                    <h3 style="color:#6ee7b7;display:flex;align-items:center;gap:6px">↔ In-order (Trung thứ tự)</h3>
+                    <ul class="clean" style="font-size:14px">
+                        <li><b>Thứ tự duyệt:</b> Cây con <b>Trái (Left)</b> → <b>Gốc (Node)</b> → Cây con <b>Phải
+                                (Right)</b>.</li>
+                        <li><b>Đặc trưng:</b> Đối với BST, kết quả duyệt <b>luôn là dãy tăng dần</b> (sorted order).
+                        </li>
+                        <li><b>Ứng dụng:</b> Kiểm tra cây có phải BST hợp lệ không, xuất dữ liệu theo thứ tự đã sắp xếp,
+                            biểu thức trung tố.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <span class="badge" style="background:rgba(168,85,247,.18);color:#d8b4fe">LRN · Left – Right –
+                        Node</span>
+                    <h3 style="color:#d8b4fe;display:flex;align-items:center;gap:6px">⬇ Post-order (Hậu thứ tự)</h3>
+                    <ul class="clean" style="font-size:14px">
+                        <li><b>Thứ tự duyệt:</b> Cây con <b>Trái (Left)</b> → Cây con <b>Phải (Right)</b> → <b>Gốc
+                                (Node)</b>.</li>
+                        <li><b>Đặc trưng:</b> Các con luôn được duyệt <b>trước</b> node cha. Node gốc (root) là phần tử
+                            <b>cuối cùng</b>.</li>
+                        <li><b>Ứng dụng:</b> Xóa/giải phóng bộ nhớ cây từ dưới lên (bottom-up), tính chiều cao / kích
+                            thước cây con, biểu thức hậu tố (RPN).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SHAPE ================= -->
+        <section id="shape">
+            <span class="sec-tag">05 · Hình dạng cây</span>
+            <h2>Cùng một tập số, thứ tự chèn khác nhau thì ra cây khác nhau</h2>
+            <p class="lead">Cả 3 cây đều chứa đúng các số <b>10, 20, 30, 40, 50, 60, 70</b>. Số lần so sánh = 1 + độ
+                sâu, nên <b>chiều cao h</b> quyết định tốc độ.</p>
+            <div class="grid-3">
+                <div class="card mini">
+                    <span class="badge g">Best case: h = lg N</span>
+                    <div class="tree-wrap" id="shapeBest"></div>
+                    <p class="caption mono" style="font-size:12.5px">chèn: 40, 20, 60, 10, 30, 50, 70</p>
+                </div>
+                <div class="card mini">
+                    <span class="badge b">Typical (random): ~ 2 ln N</span>
+                    <div class="tree-wrap" id="shapeRand"></div>
+                    <p class="caption mono" style="font-size:12.5px" id="shapeRandCap"></p>
+                    <button class="btn" id="btnShapeRand" style="margin-top:8px">🎲 Thứ tự khác</button>
+                </div>
+                <div class="card mini">
+                    <span class="badge r">Worst case: h = N − 1</span>
+                    <div class="tree-wrap" id="shapeWorst"></div>
+                    <p class="caption mono" style="font-size:12.5px">chèn: 10, 20, 30, 40, 50, 60, 70 (đã sắp xếp!)</p>
+                </div>
+            </div>
+            <div class="tip" style="margin-top:18px"><span class="ic">💡</span>
+                <div>Mảng đã sắp xếp (tăng hoặc giảm) làm BST suy biến thành <b>linked list</b>, search tốn O(N). Đó là
+                    lý do người ta <b>shuffle</b> mảng trước khi chèn, hoặc dùng cây cân bằng (<b>Red-Black BST</b>, bài
+                    sau). Chèn ngẫu nhiên N số khác nhau: trung bình ~<b>2 ln N ≈ 1.39 lg N</b> lần so sánh, chiều cao
+                    kỳ
+                    vọng ~4.311 ln N.</div>
+            </div>
+            <div class="tip"><span class="ic">🔗</span>
+                <div>BST tương ứng <b>1–1 với quicksort partitioning</b> (khi không có key trùng): root đóng vai trò
+                    pivot đầu tiên, cây con trái/phải là 2 phần sau khi partition. Vì vậy chi phí trung bình của hai
+                    thuật
+                    toán giống nhau.</div>
+            </div>
+        </section>
+
+        <!-- ================= CODE ================= -->
+        <section id="code">
+            <span class="sec-tag">06 · Code Java</span>
+            <h2>Code BST (key là số nguyên)</h2>
+            <p class="lead">Bản rút gọn với key <code>int</code> cho dễ đọc. Bản generic đầy đủ
+                <code>&lt;Key extends Comparable&lt;Key&gt;, Value&gt;</code> nằm trong <code>BST.java</code> cùng thư
+                mục.
+            </p>
+            <div class="card">
+                <div class="tabs" id="codeTabs"></div>
+                <pre class="code" id="codeView"></pre>
+                <p class="caption" id="codeNote"></p>
+            </div>
+        </section>
+
+        <!-- ================= SUMMARY ================= -->
+        <section id="summary">
+            <span class="sec-tag">07 · Tổng kết</span>
+            <h2>Độ phức tạp &amp; mẹo làm bài</h2>
+            <div class="grid-2">
+                <div class="card" style="overflow-x:auto">
+                    <table class="cmp">
+                        <thead>
+                            <tr>
+                                <th>Thao tác</th>
+                                <th>Worst</th>
+                                <th>Avg (random)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>search / insert</td>
+                                <td>N</td>
+                                <td class="hl-cell">1.39 lg N</td>
+                            </tr>
+                            <tr>
+                                <td>min / max</td>
+                                <td>h</td>
+                                <td>~ lg N</td>
+                            </tr>
+                            <tr>
+                                <td>floor / ceiling</td>
+                                <td>h</td>
+                                <td>~ lg N</td>
+                            </tr>
+                            <tr>
+                                <td>rank / select</td>
+                                <td>h</td>
+                                <td>~ lg N</td>
+                            </tr>
+                            <tr>
+                                <td>traversals (pre/in/post order)</td>
+                                <td>N</td>
+                                <td>N</td>
+                            </tr>
+                            <tr>
+                                <td>delete (Hibbard)</td>
+                                <td>N</td>
+                                <td>√N nếu xóa/chèn nhiều lần</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="caption">h = chiều cao cây (tỉ lệ với log N nếu chèn ngẫu nhiên). So với mảng đã sắp xếp
+                        (binary search): BST chèn nhanh hơn hẳn (lg N so với N).</p>
+                </div>
+                <div>
+                    <div class="tip"><span class="ic">🎯</span>
+                        <div>Đề cho mảng và bảo "vẽ BST": chèn <b>lần lượt từ trái sang phải</b>, số đầu tiên luôn là
+                            root.</div>
+                    </div>
+                    <div class="tip"><span class="ic">🧪</span>
+                        <div>Kiểm tra cây có phải BST: <b>duyệt inorder</b>, nếu ra dãy tăng dần thì đúng. Đừng chỉ kiểm
+                            tra từng cặp cha–con (xem lại bẫy ở mục 2).</div>
+                    </div>
+                    <div class="tip"><span class="ic">🌱</span>
+                        <div>Node mới <b>luôn là lá</b>. Insert không bao giờ làm thay đổi cấu trúc của những node đã
+                            có.</div>
+                    </div>
+                    <div class="tip"><span class="ic">🔁</span>
+                        <div>Successor của node có 2 con = <b>min của cây con phải</b>. Successor này <b>không có con
+                                trái</b>, nên xóa nó khỏi chỗ cũ rất dễ.</div>
+                    </div>
+                    <div class="tip"><span class="ic">⚠️</span>
+                        <div>Hibbard deletion <b>không đối xứng</b> (luôn lấy successor bên phải), nên sau nhiều lần
+                            xóa cây bị lệch và chi phí tăng lên √N.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>Dựa trên Algorithms 4th ed. — Sedgewick &amp; Wayne · 3.2 Binary Search Trees</footer>
+
+    <script>
+        /* =========================================================
+         *  BST core (giống hệt logic Java)
+         * ========================================================= */
+        class BNode { constructor(k) { this.key = k; this.left = null; this.right = null; } }
+        function insert(x, k) {
+            if (!x) return new BNode(k);
+            if (k < x.key) x.left = insert(x.left, k);
+            else if (k > x.key) x.right = insert(x.right, k);
+            return x;
+        }
+        function buildTree(arr) { let r = null; for (const k of arr) r = insert(r, k); return r; }
+        function height(x) { return x ? 1 + Math.max(height(x.left), height(x.right)) : -1; }
+        function countNodes(x) { return x ? 1 + countNodes(x.left) + countNodes(x.right) : 0; }
+        function preorder(x, out = []) { if (!x) return out; out.push(x.key); preorder(x.left, out); preorder(x.right, out); return out; }
+        function inorder(x, out = []) { if (!x) return out; inorder(x.left, out); out.push(x.key); inorder(x.right, out); return out; }
+        function postorder(x, out = []) { if (!x) return out; postorder(x.left, out); postorder(x.right, out); out.push(x.key); return out; }
+        function minNode(x) { while (x.left) x = x.left; return x; }
+        function deleteMin(x) { if (!x.left) return x.right; x.left = deleteMin(x.left); return x; }
+        function del(x, k) {
+            if (!x) return null;
+            if (k < x.key) x.left = del(x.left, k);
+            else if (k > x.key) x.right = del(x.right, k);
+            else {
+                if (!x.right) return x.left;
+                if (!x.left) return x.right;
+                const t = x;
+                x = minNode(t.right);
+                x.right = deleteMin(t.right);
+                x.left = t.left;
+            }
+            return x;
+        }
+        function cloneTree(x) { if (!x) return null; const n = new BNode(x.key); n.left = cloneTree(x.left); n.right = cloneTree(x.right); return n; }
+        function T(k, l = null, r = null) { const n = new BNode(k); n.left = l; n.right = r; return n; }
+        function randArray(n = 10, lo = 1, hi = 99) {
+            const s = new Set(); while (s.size < n) s.add(lo + Math.floor(Math.random() * (hi - lo + 1)));
+            return [...s];
+        }
+        function shuffle(a) { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+
+        /* =========================================================
+         *  TreeView — vẽ cây SVG có animation (layout theo inorder)
+         *  x = vị trí inorder → node luôn thẳng hàng với dãy sắp xếp
+         * ========================================================= */
+        const NS = 'http://www.w3.org/2000/svg';
+        function el(tag, attrs = {}, parent) {
+            const e = document.createElementNS(NS, tag);
+            for (const k in attrs) e.setAttribute(k, attrs[k]);
+            if (parent) parent.appendChild(e);
+            return e;
+        }
+
+        class TreeView {
+            constructor(host, opt = {}) {
+                this.o = Object.assign({ r: 20, levelH: 72, gap: 56, minW: 520, top: 44, anim: 480, axis: false }, opt);
+                this.svg = el('svg', { class: 'tree-svg' });
+                host.appendChild(this.svg);
+                this.gAxis = el('g', {}, this.svg);
+                this.gE = el('g', {}, this.svg);
+                this.gN = el('g', {}, this.svg);
+                this.gX = el('g', {}, this.svg);
+                this.emptyText = el('text', { class: 'empty-text', 'text-anchor': 'middle' }, this.gX);
+                this.nodes = new Map(); this.edges = new Map(); this.axisEls = new Map();
+                this.cur = new Map(); this.target = new Map();
+                this.vb = null; this.ghost = null;
+            }
+            setAxis(on) { this.o.axis = on; if (this.last) this.render(this.last.root, this.last.hl); }
+
+            render(root, hl = {}) {
+                this.last = { root, hl };
+                const o = this.o, list = [];
+                const walk = (n, d, p) => { if (!n) return; walk(n.left, d + 1, n.key); list.push({ key: n.key, d, p }); walk(n.right, d + 1, n.key); };
+                walk(root, 0, null);
+                const N = list.length;
+                let maxD = list.reduce((m, a) => Math.max(m, a.d), 0);
+                const W = Math.max(o.minW, (N + 1) * o.gap), step = W / (N + 1);
+                this.target = new Map();
+                list.forEach((a, i) => this.target.set(a.key, { x: (i + 1) * step, y: o.top + a.d * o.levelH }));
+
+                // ghost (số đang được chèn / vị trí null)
+                const gh = hl.ghost; let gT = null;
+                if (gh) {
+                    if (gh.slot) {
+                        const pp = this.target.get(gh.slot.p);
+                        const dx = Math.max(step / 2, o.r * 1.5) * (gh.slot.side === 'L' ? -1 : 1);
+                        gT = { x: pp.x + dx, y: pp.y + o.levelH, from: gh.slot.p };
+                        maxD = Math.max(maxD, Math.round((gT.y - o.top) / o.levelH));
+                    } else if (gh.near != null) {
+                        const pp = this.target.get(gh.near);
+                        gT = { x: pp.x + o.r * 1.9, y: pp.y - o.r * 1.55 };
+                    } else gT = { x: W / 2, y: o.top };
+                }
+
+                let H = o.top + maxD * o.levelH + o.r + 26;
+                this.axisY = H + 16;
+                if (o.axis && N) H += 64;
+                this.vbT = { w: W, h: H };
+                if (!this.vb) this.vb = { ...this.vbT };
+
+                this.emptyText.textContent = (N || gh) ? '' : 'root = null  (cây rỗng)';
+                this.emptyText.setAttribute('x', W / 2); this.emptyText.setAttribute('y', o.top + 5);
+
+                const cls = hl.cls || {}, badges = hl.badges || {};
+                // remove nodes
+                for (const [k, g] of this.nodes) if (!this.target.has(k)) {
+                    g.classList.add('exit'); setTimeout(() => g.remove(), 350);
+                    this.nodes.delete(k); this.cur.delete(k);
+                }
+                // add / update nodes
+                list.forEach(a => {
+                    let g = this.nodes.get(a.key);
+                    if (!g) {
+                        g = el('g', {}, this.gN);
+                        const inner = el('g', { class: 'inner' }, g);
+                        el('circle', { r: o.r }, inner);
+                        const t = el('text', { class: 'nlabel', 'text-anchor': 'middle', dy: '0.35em' }, inner);
+                        t.textContent = a.key;
+                        g._b = el('text', { class: 'nbadge', 'text-anchor': 'middle', y: -o.r - 7 }, inner);
+                        this.nodes.set(a.key, g);
+                        let st = this.target.get(a.key);
+                        if (this.ghost && this.ghost.val === a.key && this.ghostCur) st = this.ghostCur;
+                        else if (a.p != null && this.cur.get(a.p)) st = this.cur.get(a.p);
+                        this.cur.set(a.key, { ...st });
+                        g.setAttribute('transform', `translate(${st.x},${st.y})`);
+                    }
+                    g.setAttribute('class', 'node ' + (cls[a.key] || ''));
+                    g._b.textContent = badges[a.key] ?? '';
+                });
+                // edges
+                const pairs = new Set(), pa = hl.path || [];
+                for (let i = 1; i < pa.length; i++) pairs.add(pa[i - 1] + '>' + pa[i]);
+                const want = new Set();
+                list.forEach(a => {
+                    if (a.p == null) return;
+                    const id = a.p + '>' + a.key; want.add(id);
+                    let ln = this.edges.get(id);
+                    if (!ln) { ln = el('line', {}, this.gE); ln._pc = [a.p, a.key]; this.edges.set(id, ln); }
+                    const ec = (hl.edgeCls && hl.edgeCls[id]) || '';
+                    ln.setAttribute('class', 'edge' + (pairs.has(id) ? ' path' : '') + (ec ? ' ' + ec : ''));
+                });
+                for (const [id, ln] of this.edges) if (!want.has(id)) { ln.remove(); this.edges.delete(id); }
+                // axis
+                for (const [k, ax] of this.axisEls) if (!o.axis || !this.target.has(k)) { ax.g.remove(); this.axisEls.delete(k); }
+                if (o.axis) list.forEach(a => {
+                    let ax = this.axisEls.get(a.key);
+                    if (!ax) {
+                        const g = el('g', {}, this.gAxis);
+                        const line = el('line', { class: 'axis-line' }, g);
+                        const box = el('g', {}, g);
+                        el('rect', { x: -17, y: -13, width: 34, height: 26, rx: 6 }, box);
+                        const t = el('text', { 'text-anchor': 'middle', dy: '0.35em' }, box); t.textContent = a.key;
+                        ax = { g, line, box }; this.axisEls.set(a.key, ax);
+                    }
+                    ax.box.setAttribute('class', 'axis-box ' + (cls[a.key] || ''));
+                });
+                // ghost element
+                if (gT) {
+                    if (!this.ghostEl) {
+                        this.ghostEdge = el('line', { class: 'ghost-edge' }, this.gX);
+                        this.ghostEl = el('g', {}, this.gX);
+                        const inner = el('g', { class: 'inner' }, this.ghostEl);
+                        el('circle', { r: o.r }, inner);
+                        this.ghostText = el('text', { 'text-anchor': 'middle', dy: '0.35em' }, inner);
+                        this.ghostCur = null;
+                    }
+                    this.ghostEl.setAttribute('class', 'ghost' + (gh.miss ? ' miss' : ''));
+                    this.ghostText.textContent = gh.label ?? gh.val;
+                    this.ghost = gh; this.ghostT = gT;
+                    if (!this.ghostCur) { this.ghostCur = { x: gT.x, y: gT.y }; }
+                } else {
+                    if (this.ghostEl) { this.ghostEl.remove(); this.ghostEdge.remove(); }
+                    this.ghostEl = null; this.ghostT = null; this.ghostCur = null; this.ghost = null;
+                }
+                this.animate();
+            }
+
+            animate() {
+                const o = this.o;
+                const from = new Map(); for (const [k, p] of this.cur) from.set(k, { ...p });
+                const vbF = { ...this.vb }, gF = this.ghostCur ? { ...this.ghostCur } : null;
+                const t0 = performance.now(), D = o.anim;
+                cancelAnimationFrame(this.raf);
+                const tick = now => {
+                    const t = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - t, 3);
+                    const L = (a, b) => a + (b - a) * e;
+                    for (const [k, tg] of this.target) {
+                        const f = from.get(k) || tg, p = { x: L(f.x, tg.x), y: L(f.y, tg.y) };
+                        this.cur.set(k, p);
+                        const g = this.nodes.get(k); if (g) g.setAttribute('transform', `translate(${p.x},${p.y})`);
+                    }
+                    for (const ln of this.edges.values()) {
+                        const a = this.cur.get(ln._pc[0]), b = this.cur.get(ln._pc[1]);
+                        if (a && b) { ln.setAttribute('x1', a.x); ln.setAttribute('y1', a.y); ln.setAttribute('x2', b.x); ln.setAttribute('y2', b.y); }
+                    }
+                    for (const [k, ax] of this.axisEls) {
+                        const p = this.cur.get(k); if (!p) continue;
+                        ax.line.setAttribute('x1', p.x); ax.line.setAttribute('y1', p.y + o.r);
+                        ax.line.setAttribute('x2', p.x); ax.line.setAttribute('y2', this.axisY - 13);
+                        ax.box.setAttribute('transform', `translate(${p.x},${this.axisY})`);
+                    }
+                    if (this.ghostEl && this.ghostT) {
+                        const f = gF || this.ghostT;
+                        this.ghostCur = { x: L(f.x, this.ghostT.x), y: L(f.y, this.ghostT.y) };
+                        this.ghostEl.setAttribute('transform', `translate(${this.ghostCur.x},${this.ghostCur.y})`);
+                        if (this.ghostT.from != null && this.cur.get(this.ghostT.from)) {
+                            const a = this.cur.get(this.ghostT.from), b = this.ghostCur;
+                            const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+                            this.ghostEdge.style.display = '';
+                            this.ghostEdge.setAttribute('x1', a.x + dx / len * o.r); this.ghostEdge.setAttribute('y1', a.y + dy / len * o.r);
+                            this.ghostEdge.setAttribute('x2', b.x - dx / len * o.r); this.ghostEdge.setAttribute('y2', b.y - dy / len * o.r);
+                        } else this.ghostEdge.style.display = 'none';
+                    }
+                    this.vb = { w: L(vbF.w, this.vbT.w), h: L(vbF.h, this.vbT.h) };
+                    this.svg.setAttribute('viewBox', `0 0 ${this.vb.w} ${this.vb.h}`);
+                    this.svg.setAttribute('width', this.vb.w);
+                    this.svg.setAttribute('height', this.vb.h);
+                    if (t < 1) this.raf = requestAnimationFrame(tick);
+                };
+                this.raf = requestAnimationFrame(tick);
+            }
+        }
+
+        /* =========================================================
+         *  Java syntax highlight (đơn giản)
+         * ========================================================= */
+        function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        function hlJava(src) {
+            return esc(src).replace(/(\/\/.*$)|(\b(?:public|private|class|void|if|else|return|while|new|null|static|boolean|true|false)\b)|(\b(?:int|Node|Queue|Iterable|Integer|LinkedList)\b)|(\b\d+\b)/gm,
+                (m, c, k, t, n) => c ? `<span class="tk-c">${c}</span>` : k ? `<span class="tk-k">${k}</span>` : t ? `<span class="tk-t">${t}</span>` : `<span class="tk-n">${n}</span>`);
+        }
+
+        /* =========================================================
+         *  02 · Compare
+         * ========================================================= */
+        const miniOpt = { r: 17, levelH: 58, gap: 46, minW: 280, top: 30 };
+        new TreeView(document.getElementById('cmpA'), miniOpt)
+            .render(T(50, T(80, T(10), T(65)), T(20, null, T(35))));
+        new TreeView(document.getElementById('cmpB'), miniOpt)
+            .render(buildTree([50, 30, 70, 20, 40, 60, 80, 35]), { cls: { 50: 'path', 30: 'path', 40: 'path', 35: 'found' }, path: [50, 30, 40, 35] });
+        new TreeView(document.getElementById('cmpC'), miniOpt)
+            .render(T(50, T(30, T(20), T(60)), T(70)), { cls: { 60: 'bad', 50: 'cur' }, edgeCls: { '30>60': 'bad' } });
+
+        /* =========================================================
+         *  03 · Build from array
+         * ========================================================= */
+        const DEFAULT_ARR = [45, 23, 71, 12, 34, 56, 89, 29, 63, 5];
+        const B = { arr: [], steps: [], traces: [], i: 0, timer: null };
+        const buildView = new TreeView(document.getElementById('buildTree'), { minW: 560 });
+
+        const PUT_LINES = [
+            ['private Node put(Node x, int key) {', null],
+            ['    if (x == null) return new Node(key);     // gặp null → tạo node', 'null'],
+            ['    if (key < x.key)                         // nhỏ hơn', 'lt'],
+            ['        x.left  = put(x.left,  key);         //   → sang TRÁI', 'lt'],
+            ['    else if (key > x.key)                    // lớn hơn', 'gt'],
+            ['        x.right = put(x.right, key);         //   → sang PHẢI', 'gt'],
+            ['    else  /* key == x.key */  ;              // trùng → cập nhật val', 'eq'],
+            ['    return x;                                // gán lại link khi quay lên', 'ret'],
+            ['}', null],
+        ];
+        document.getElementById('buildCode').innerHTML =
+            PUT_LINES.map(([t, k]) => `<span class="ln" data-k="${k || ''}">${hlJava(t)}</span>`).join('');
+
+        function genBuildSteps(arr) {
+            const steps = [{ k: 0, cur: -1, msg: `Bắt đầu với <b>root = null</b>. Ta sẽ <b>put()</b> lần lượt từng số trong mảng, từ trái sang phải.` }];
+            const traces = []; let root = null;
+            arr.forEach((v, i) => {
+                const path = []; let x = root, parent = null, dir = null, dup = false;
+                if (!root) steps.push({ k: i, cur: i, path: [], rootSlot: true, line: 'null', msg: `Chèn <b>${v}</b>: cây đang rỗng (x == null) → tạo node mới, <b>${v}</b> trở thành <b>ROOT</b>.` });
+                while (x) {
+                    path.push(x.key);
+                    if (v < x.key) {
+                        steps.push({ k: i, cur: i, at: x.key, path: [...path], line: 'lt', msg: `<b>${v}</b> &lt; ${x.key} → đi sang <b>TRÁI</b> của ${x.key}` });
+                        parent = x; dir = 'L'; x = x.left;
+                    } else if (v > x.key) {
+                        steps.push({ k: i, cur: i, at: x.key, path: [...path], line: 'gt', msg: `<b>${v}</b> &gt; ${x.key} → đi sang <b>PHẢI</b> của ${x.key}` });
+                        parent = x; dir = 'R'; x = x.right;
+                    } else {
+                        dup = true;
+                        steps.push({ k: i, cur: i, at: x.key, dup: true, path: [...path], line: 'eq', msg: `<b>${v}</b> == ${x.key} → key đã có trong cây, chỉ cập nhật value, <b>không</b> thêm node.` });
+                        break;
+                    }
+                    if (!x) steps.push({ k: i, cur: i, path: [...path], slot: { p: parent.key, side: dir }, line: 'null', msg: `${dir === 'L' ? 'Trái' : 'Phải'} của ${parent.key} là <b>null</b> → tạo node <b>${v}</b> tại đây` });
+                }
+                root = insert(root, v);
+                traces.push({ v, path: [...path], parent: parent ? parent.key : null, dir, dup });
+                const n = countNodes(root), h = height(root);
+                steps.push({
+                    k: i + 1, cur: i, done: true, newKey: dup ? null : v, path: dup ? [...path] : [...path, v], line: 'ret',
+                    msg: dup ? `Bỏ qua <b>${v}</b> (trùng). Cây vẫn có ${n} node.`
+                        : `✓ Đã chèn <b>${v}</b> ${parent ? `làm con <b>${dir === 'L' ? 'trái' : 'phải'}</b> của ${parent.key}` : 'làm <b>root</b>'} sau ${path.length} lần so sánh. Cây hiện có ${n} node, chiều cao h = ${h}.`
+                });
+            });
+            steps.push({ k: arr.length, cur: -1, final: true, msg: `🎉 Xong! Số nhỏ ở trên vàng là thứ tự inorder: <b class="mono">${inorder(root).join(' → ')}</b>, đúng bằng mảng đã sắp xếp tăng dần.` });
+            return { steps, traces };
+        }
+
+        function loadArray(arr) {
+            stopPlay();
+            B.arr = arr; const g = genBuildSteps(arr); B.steps = g.steps; B.traces = g.traces; B.i = 0;
+            document.getElementById('arrInput').value = arr.join(', ');
+            B.lastTraceCount = -1;
+            renderBuild();
+        }
+
+        function renderBuild() {
+            const s = B.steps[B.i];
+            const root = buildTree(B.arr.slice(0, s.k));
+            const cls = {}; (s.path || []).forEach(k => cls[k] = 'path');
+            if (s.at != null) cls[s.at] = s.dup ? 'found' : 'cur';
+            if (s.newKey != null) cls[s.newKey] = 'new';
+            let badges = {};
+            if (s.final) inorder(root).forEach((k, i) => { badges[k] = i + 1; cls[k] = 'done'; });
+            const v = s.cur >= 0 ? B.arr[s.cur] : null;
+            let ghost = null;
+            if (!s.done && v != null && !s.dup) {
+                if (s.at != null) ghost = { val: v, near: s.at };
+                else if (s.slot) ghost = { val: v, slot: s.slot };
+                else if (s.rootSlot) ghost = { val: v };
+            }
+            buildView.render(root, { cls, path: s.path, ghost, badges });
+
+            const msg = document.getElementById('buildMsg');
+            msg.innerHTML = s.msg;
+            msg.className = 'msg' + (s.done || s.final ? ' ok' : s.dup ? ' warn' : '');
+
+            // chips
+            document.getElementById('arrChips').innerHTML = B.arr.map((x, i) => {
+                let c = '';
+                if (i === s.cur && s.done) c = 'just';
+                else if (i === s.cur) c = 'active';
+                else if (i < s.k) c = 'done';
+                return `<div class="chip ${c}"><small>[${i}]</small>${x}</div>`;
+            }).join('');
+
+            // code
+            document.querySelectorAll('#buildCode .ln').forEach(l => l.classList.toggle('hl', !!s.line && l.dataset.k === s.line));
+
+            // log of current value
+            const log = document.getElementById('buildLog');
+            if (s.cur >= 0) {
+                const items = []; for (let j = 0; j <= B.i; j++) if (B.steps[j].cur === s.cur) items.push(B.steps[j].msg);
+                log.innerHTML = `<li><b>put(${v})</b>: bắt đầu từ root</li>` + items.map(m => `<li>${m}</li>`).join('');
+                log.scrollTop = log.scrollHeight;
+            } else log.innerHTML = `<li>${s.final ? 'Đã chèn hết mảng.' : 'Chưa chèn số nào.'}</li>`;
+
+            // trace table
+            const nDone = s.k;
+            const tb = document.getElementById('traceBody');
+            tb.innerHTML = B.traces.slice(0, nDone).map((t, i) => {
+                const pathStr = t.path.length ? t.path.join(' → ') + (t.dup ? ' (=)' : ` → <b>${t.v}</b>`) : `<b>${t.v}</b>`;
+                const pos = t.dup ? 'trùng, bỏ qua' : t.parent == null ? 'ROOT' : `con ${t.dir === 'L' ? 'trái ↙' : 'phải ↘'} của ${t.parent}`;
+                return `<tr class="${i === nDone - 1 && nDone !== B.lastTraceCount ? 'newrow' : ''}"><td>${i}</td><td class="mono"><b>${t.v}</b></td><td class="mono">${pathStr}</td><td>${pos}</td><td class="mono">${t.path.length}</td></tr>`;
+            }).join('') || `<tr><td colspan="5" style="color:var(--text-muted)">Chưa có số nào được chèn.</td></tr>`;
+            B.lastTraceCount = nDone;
+
+            document.getElementById('buildProg').style.width = (B.i / (B.steps.length - 1) * 100) + '%';
+            document.getElementById('stepLabel').textContent = `bước ${B.i}/${B.steps.length - 1}`;
+            document.getElementById('btnPrev').disabled = document.getElementById('btnFirst').disabled = B.i === 0;
+            document.getElementById('btnNext').disabled = document.getElementById('btnLast').disabled = document.getElementById('btnNextVal').disabled = B.i === B.steps.length - 1;
+        }
+
+        function go(i) { B.i = Math.max(0, Math.min(B.steps.length - 1, i)); renderBuild(); }
+        function nextVal() {
+            let j = B.i + 1;
+            while (j < B.steps.length - 1 && !B.steps[j].done) j++;
+            go(j);
+        }
+        function stopPlay() {
+            clearTimeout(B.timer); B.timer = null;
+            document.getElementById('btnPlay').textContent = '▶ Tự chạy';
+        }
+        function play() {
+            if (B.timer) { stopPlay(); return; }
+            if (B.i === B.steps.length - 1) go(0);
+            document.getElementById('btnPlay').textContent = '⏸ Dừng';
+            const loop = () => {
+                if (B.i >= B.steps.length - 1) { stopPlay(); return; }
+                go(B.i + 1);
+                B.timer = setTimeout(loop, 1750 - +document.getElementById('buildSpeed').value);
+            };
+            B.timer = setTimeout(loop, 200);
+        }
+
+        document.getElementById('btnNext').onclick = () => { stopPlay(); go(B.i + 1); };
+        document.getElementById('btnPrev').onclick = () => { stopPlay(); go(B.i - 1); };
+        document.getElementById('btnFirst').onclick = () => { stopPlay(); go(0); };
+        document.getElementById('btnLast').onclick = () => { stopPlay(); go(B.steps.length - 1); };
+        document.getElementById('btnNextVal').onclick = () => { stopPlay(); nextVal(); };
+        document.getElementById('btnPlay').onclick = play;
+        document.getElementById('btnRandom').onclick = () => loadArray(randArray(10));
+        document.getElementById('btnLoad').onclick = () => {
+            const arr = document.getElementById('arrInput').value.split(/[\s,;]+/).filter(Boolean).map(Number).filter(n => Number.isFinite(n)).map(n => Math.round(n)).slice(0, 20);
+            if (arr.length) loadArray(arr);
+        };
+        document.getElementById('arrInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnLoad').click(); });
+        document.getElementById('buildAxis').onchange = e => buildView.setAxis(e.target.checked);
+        document.addEventListener('keydown', e => {
+            if (e.target.tagName === 'INPUT') return;
+            const r = document.getElementById('build').getBoundingClientRect();
+            if (r.bottom < 0 || r.top > innerHeight) return;
+            if (e.key === 'ArrowRight') { stopPlay(); go(B.i + 1); e.preventDefault(); }
+            else if (e.key === 'ArrowLeft') { stopPlay(); go(B.i - 1); e.preventDefault(); }
+            else if (e.key === ' ') { play(); e.preventDefault(); }
+        });
+
+        loadArray(DEFAULT_ARR);
+
+        /* =========================================================
+         *  04 · Playground
+         * ========================================================= */
+        const P = { root: null, busy: false };
+        const pgView = new TreeView(document.getElementById('pgTree'), { minW: 560 });
+        const pgMsg = document.getElementById('pgMsg'), pgOut = document.getElementById('pgOut');
+        const pgDelay = () => wait(1750 - +document.getElementById('pgSpeed').value);
+        function say(html, type = '') { pgMsg.innerHTML = html; pgMsg.className = 'msg' + (type ? ' ' + type : ''); }
+        function draw(hl = {}) { pgView.render(P.root, hl); }
+        function mk(path, c = 'path') { const o = {}; path.forEach(k => o[k] = c); return o; }
+        function setBusy(b) { P.busy = b; document.querySelectorAll('#playground .btn').forEach(x => x.disabled = b); }
+
+        const OPS = {
+            async search(v) {
+                let x = P.root; const path = [];
+                if (!x) return say('Cây rỗng → get() trả về null.', 'err');
+                say(`🔍 <b>get(${v})</b>: bắt đầu từ root ${x.key}`);
+                while (x) {
+                    path.push(x.key);
+                    const cls = mk(path); cls[x.key] = 'cur'; draw({ cls, path });
+                    if (v === x.key) {
+                        await pgDelay(); cls[x.key] = 'found'; draw({ cls, path });
+                        return say(`✅ ${v} == ${x.key} → <b>TÌM THẤY</b> sau <b>${path.length}</b> lần so sánh (= 1 + độ sâu ${path.length - 1}).`, 'ok');
+                    }
+                    const L = v < x.key;
+                    say(`${v} ${L ? '&lt;' : '&gt;'} ${x.key} → sang <b>${L ? 'TRÁI' : 'PHẢI'}</b>`);
+                    await pgDelay();
+                    const nx = L ? x.left : x.right;
+                    if (!nx) {
+                        draw({ cls: mk(path), path, ghost: { val: v, label: 'null', miss: true, slot: { p: x.key, side: L ? 'L' : 'R' } } });
+                        return say(`❌ Gặp <b>null</b> → <b>không có</b> ${v} trong cây (${path.length} lần so sánh). get() trả về null.`, 'err');
+                    }
+                    x = nx;
+                }
+            },
+            async insert(v) {
+                if (!P.root) { P.root = insert(P.root, v); draw({ cls: { [v]: 'new' } }); return say(`Cây rỗng → <b>${v}</b> thành root.`, 'ok'); }
+                let x = P.root; const path = [];
+                say(`➕ <b>put(${v})</b>: tìm chỗ null giống như search`);
+                while (x) {
+                    path.push(x.key);
+                    const cls = mk(path); cls[x.key] = 'cur'; draw({ cls, path, ghost: { val: v, near: x.key } });
+                    if (v === x.key) { await pgDelay(); cls[x.key] = 'found'; draw({ cls, path }); return say(`${v} đã có trong cây → chỉ cập nhật value, không thêm node.`, 'warn'); }
+                    const L = v < x.key;
+                    say(`${v} ${L ? '&lt;' : '&gt;'} ${x.key} → sang <b>${L ? 'TRÁI' : 'PHẢI'}</b>`);
+                    await pgDelay();
+                    const nx = L ? x.left : x.right;
+                    if (!nx) {
+                        draw({ cls: mk(path), path, ghost: { val: v, slot: { p: x.key, side: L ? 'L' : 'R' } } });
+                        say(`${L ? 'Trái' : 'Phải'} của ${x.key} là <b>null</b> → tạo node ${v} tại đây`);
+                        await pgDelay();
+                        P.root = insert(P.root, v);
+                        draw({ cls: { ...mk(path), [v]: 'new' }, path: [...path, v] });
+                        return say(`✓ Đã chèn <b>${v}</b> (luôn là <b>lá</b>). Chiều cao cây: ${height(P.root)}.`, 'ok');
+                    }
+                    x = nx;
+                }
+            },
+            async delete(v) {
+                let x = P.root; const path = [];
+                say(`🗑 <b>delete(${v})</b>: trước hết phải tìm node ${v}`);
+                while (x && x.key !== v) {
+                    path.push(x.key); const cls = mk(path); cls[x.key] = 'cur'; draw({ cls, path });
+                    await pgDelay(); x = v < x.key ? x.left : x.right;
+                }
+                if (!x) { draw({ cls: mk(path), path }); return say(`Không tìm thấy ${v} → không xóa gì.`, 'err'); }
+                path.push(x.key);
+                const cls = mk(path); cls[v] = 'del';
+                const kids = (x.left ? 1 : 0) + (x.right ? 1 : 0);
+                let succKey = null;
+                if (kids === 0) { draw({ cls, path }); say(`<b>Case 0</b>: ${v} là lá (0 con) → gán link của cha = <b>null</b>.`, 'warn'); }
+                else if (kids === 1) {
+                    const c = x.left || x.right; cls[c.key] = 'succ'; succKey = c.key; draw({ cls, path });
+                    say(`<b>Case 1</b>: ${v} có đúng 1 con (${c.key}) → nối thẳng cha với cây con gốc ${c.key}.`, 'warn');
+                } else {
+                    draw({ cls, path });
+                    say(`<b>Case 2</b>: ${v} có 2 con → tìm <b>successor = min(t.right)</b>: sang phải 1 bước, rồi đi trái đến tận cùng.`, 'warn');
+                    await pgDelay();
+                    let s = x.right; const sp = [];
+                    while (s) {
+                        sp.push(s.key); const c2 = { ...cls }; sp.forEach(k => c2[k] = 'cand'); c2[s.key] = 'cur';
+                        draw({ cls: c2, path });
+                        await pgDelay();
+                        if (!s.left) break; s = s.left;
+                    }
+                    succKey = s.key; cls[s.key] = 'succ'; draw({ cls, path });
+                    say(`Successor = <b>${s.key}</b> (số nhỏ nhất &gt; ${v}). Đưa ${s.key} lên thay chỗ ${v}, rồi <b>deleteMin(t.right)</b>.`, 'warn');
+                }
+                await pgDelay(); await pgDelay();
+                P.root = del(P.root, v);
+                draw({ cls: succKey != null ? { [succKey]: 'new' } : {} });
+                say(`✓ Đã xóa ${v}. Inorder vẫn tăng dần: <span class="mono">${inorder(P.root).join(', ') || '(rỗng)'}</span>`, 'ok');
+            },
+            async walkEdge(dir) {
+                if (!P.root) return say('Cây rỗng.', 'err');
+                let x = P.root; const path = [];
+                while (x) {
+                    path.push(x.key); const cls = mk(path); cls[x.key] = 'cur'; draw({ cls, path });
+                    const nx = dir === 'L' ? x.left : x.right;
+                    if (!nx) { await pgDelay(); cls[x.key] = 'found'; draw({ cls, path }); return x; }
+                    say(`${x.key} còn con ${dir === 'L' ? 'trái' : 'phải'} → đi tiếp sang ${dir === 'L' ? 'TRÁI' : 'PHẢI'}`);
+                    await pgDelay(); x = nx;
+                }
+            },
+            async min() { const x = await OPS.walkEdge('L'); if (x) say(`min = <b>${x.key}</b>: node trái nhất (left == null).`, 'ok'); },
+            async max() { const x = await OPS.walkEdge('R'); if (x) say(`max = <b>${x.key}</b>: node phải nhất (right == null).`, 'ok'); },
+            async deleteMin() {
+                const x = await OPS.walkEdge('L'); if (!x) return;
+                const c = {}; c[x.key] = 'del'; if (x.right) c[x.right.key] = 'succ'; draw({ cls: c });
+                say(`deleteMin: ${x.key} không có con trái → thay ${x.key} bằng <b>${x.right ? 'cây con phải ' + x.right.key : 'null'}</b>.`, 'warn');
+                await pgDelay(); await pgDelay();
+                const k = x.key; P.root = deleteMin(P.root);
+                draw(x.right ? { cls: { [x.right.key]: 'new' } } : {}); say(`✓ Đã xóa min = ${k}.`, 'ok');
+            },
+            async bound(v, isFloor) {
+                const name = isFloor ? 'floor' : 'ceiling';
+                if (!P.root) return say('Cây rỗng.', 'err');
+                let x = P.root, best = null; const path = [];
+                say(`<b>${name}(${v})</b> = số ${isFloor ? 'lớn nhất ≤' : 'nhỏ nhất ≥'} ${v}`);
+                while (x) {
+                    path.push(x.key);
+                    const cls = mk(path); if (best) cls[best.key] = 'cand'; cls[x.key] = 'cur'; draw({ cls, path });
+                    if (v === x.key) { best = x; break; }
+                    const goodSide = isFloor ? x.key < v : x.key > v;
+                    if (goodSide) {
+                        best = x;
+                        say(`${x.key} ${isFloor ? '&lt;' : '&gt;'} ${v} → <b>${x.key}</b> là ứng viên; thử tìm số ${isFloor ? 'lớn hơn ở bên PHẢI' : 'nhỏ hơn ở bên TRÁI'}`);
+                        await pgDelay(); x = isFloor ? x.right : x.left;
+                    } else {
+                        say(`${x.key} ${isFloor ? '&gt;' : '&lt;'} ${v} → ${x.key} không thỏa, ${name} chắc chắn nằm bên <b>${isFloor ? 'TRÁI' : 'PHẢI'}</b>`);
+                        await pgDelay(); x = isFloor ? x.left : x.right;
+                    }
+                }
+                const cls = mk(path); if (best) cls[best.key] = 'found'; draw({ cls, path });
+                if (best) say(`✅ ${name}(${v}) = <b>${best.key}</b>${best.key === v ? ' (có đúng số này trong cây)' : ''}`, 'ok');
+                else say(`${name}(${v}) = <b>null</b>: không có số nào ${isFloor ? '≤' : '≥'} ${v}.`, 'err');
+            },
+            async floor(v) { return OPS.bound(v, true); },
+            async ceiling(v) { return OPS.bound(v, false); },
+            async preorder() {
+                const order = preorder(P.root); if (!order.length) return say('Cây rỗng.', 'err');
+                pgOut.innerHTML = '<span class="badge" style="background:rgba(6,182,212,.18);color:#67e8f9;margin-right:8px">Pre-order (NLR):</span>';
+                const cls = {}, badges = {};
+                for (let i = 0; i < order.length; i++) {
+                    const k = order[i]; if (i) cls[order[i - 1]] = 'done';
+                    cls[k] = 'cur'; badges[k] = i + 1; draw({ cls, badges });
+                    say(`<b>preorder</b>: thăm node gốc <b>${k}</b> trước → ghi nhận <b>${k}</b> → duyệt tiếp sang cây con trái rồi cây con phải`);
+                    pgOut.insertAdjacentHTML('beforeend', `<div class="chip out" style="border-color:var(--cyan);color:#67e8f9">${k}</div>`);
+                    await pgDelay();
+                }
+                cls[order[order.length - 1]] = 'done'; draw({ cls, badges });
+                say(`✓ Pre-order (Gốc → Trái → Phải / NLR) = <b class="mono">${order.join(' → ')}</b>. Node cha luôn đứng trước các con.`, 'ok');
+            },
+            async inorder() {
+                const order = inorder(P.root); if (!order.length) return say('Cây rỗng.', 'err');
+                pgOut.innerHTML = '<span class="badge g" style="margin-right:8px">In-order (LNR):</span>';
+                const cls = {}, badges = {};
+                for (let i = 0; i < order.length; i++) {
+                    const k = order[i]; if (i) cls[order[i - 1]] = 'done';
+                    cls[k] = 'cur'; badges[k] = i + 1; draw({ cls, badges });
+                    say(`<b>inorder</b>: cây con trái của <b>${k}</b> đã duyệt xong → ghi nhận <b>${k}</b> → duyệt sang cây con phải`);
+                    pgOut.insertAdjacentHTML('beforeend', `<div class="chip out">${k}</div>`);
+                    await pgDelay();
+                }
+                cls[order[order.length - 1]] = 'done'; draw({ cls, badges });
+                say(`✓ In-order (Trái → Gốc → Phải / LNR) = <b class="mono">${order.join(' → ')}</b>, <b>tăng dần</b>.`, 'ok');
+            },
+            async postorder() {
+                const order = postorder(P.root); if (!order.length) return say('Cây rỗng.', 'err');
+                pgOut.innerHTML = '<span class="badge" style="background:rgba(168,85,247,.18);color:#d8b4fe;margin-right:8px">Post-order (LRN):</span>';
+                const cls = {}, badges = {};
+                for (let i = 0; i < order.length; i++) {
+                    const k = order[i]; if (i) cls[order[i - 1]] = 'done';
+                    cls[k] = 'cur'; badges[k] = i + 1; draw({ cls, badges });
+                    say(`<b>postorder</b>: cây con trái &amp; phải của <b>${k}</b> đã duyệt xong → ghi nhận node gốc <b>${k}</b>`);
+                    pgOut.insertAdjacentHTML('beforeend', `<div class="chip out" style="border-color:var(--purple);color:#d8b4fe">${k}</div>`);
+                    await pgDelay();
+                }
+                cls[order[order.length - 1]] = 'done'; draw({ cls, badges });
+                say(`✓ Post-order (Trái → Phải → Gốc / LRN) = <b class="mono">${order.join(' → ')}</b>. Các con duyệt trước, Root ở cuối cùng.`, 'ok');
+            },
+        };
+
+        document.querySelectorAll('[data-op]').forEach(b => b.onclick = async () => {
+            if (P.busy) return;
+            const op = b.dataset.op, v = Math.round(+document.getElementById('pgVal').value);
+            if (!['preorder', 'inorder', 'postorder'].includes(op)) pgOut.innerHTML = '';
+            setBusy(true);
+            try { await OPS[op](v); } finally { setBusy(false); }
+        });
+        document.getElementById('pgFromBuild').onclick = () => { P.root = buildTree(B.arr); pgOut.innerHTML = ''; draw(); say('Đã lấy cây từ mảng ở mục 3: <span class="mono">[' + B.arr.join(', ') + ']</span>'); };
+        document.getElementById('pgRandom').onclick = () => { const a = randArray(10); P.root = buildTree(a); pgOut.innerHTML = ''; draw(); say('Cây random từ mảng <span class="mono">[' + a.join(', ') + ']</span>'); };
+        document.getElementById('pgAxis').onchange = e => pgView.setAxis(e.target.checked);
+        document.getElementById('pgVal').addEventListener('keydown', e => { if (e.key === 'Enter') document.querySelector('[data-op=search]').click(); });
+        P.root = buildTree(DEFAULT_ARR); draw();
+
+        /* =========================================================
+         *  05 · Shapes
+         * ========================================================= */
+        const shapeOpt = { r: 16, levelH: 46, gap: 42, minW: 290, top: 28 };
+        const KEYS = [10, 20, 30, 40, 50, 60, 70];
+        new TreeView(document.getElementById('shapeBest'), shapeOpt).render(buildTree([40, 20, 60, 10, 30, 50, 70]));
+        new TreeView(document.getElementById('shapeWorst'), shapeOpt).render(buildTree(KEYS));
+        const randView = new TreeView(document.getElementById('shapeRand'), shapeOpt);
+        function shapeRandom() {
+            const a = shuffle(KEYS); const r = buildTree(a);
+            randView.render(r);
+            document.getElementById('shapeRandCap').textContent = `chèn: ${a.join(', ')}  →  h = ${height(r)}`;
+        }
+        document.getElementById('btnShapeRand').onclick = shapeRandom;
+        shapeRandom();
+
+        /* =========================================================
+         *  06 · Code tabs
+         * ========================================================= */
+        const CODE = {
+            'Node': [`class Node {
+    int key;            // số dùng để so sánh
+    Node left, right;   // left: các số NHỎ hơn, right: các số LỚN hơn
+    int count;          // số node trong cây con gốc tại đây (cho size/rank)
+
+    Node(int key) { this.key = key; this.count = 1; }
+}
+
+private Node root;      // BST = 1 tham chiếu tới node gốc
+
+private int size(Node x) { return x == null ? 0 : x.count; }`,
+                'BST chỉ cần một con trỏ <code>root</code>. Mỗi node có key và 2 link left/right, giống binary tree. Khác biệt duy nhất nằm ở <b>cách đặt</b> key.'],
+            'get': [`public boolean get(int key) {
+    Node x = root;
+    while (x != null) {
+        if      (key < x.key) x = x.left;    // nhỏ hơn → trái
+        else if (key > x.key) x = x.right;   // lớn hơn → phải
+        else return true;                    // bằng → search hit
+    }
+    return false;                            // gặp null → search miss
+}`,
+                'Số lần so sánh = <b>1 + độ sâu</b> của node. Không cần đệ quy, chỉ một vòng while đi xuống.'],
+            'put': [`public void put(int key) { root = put(root, key); }
+
+private Node put(Node x, int key) {
+    if (x == null) return new Node(key);       // chỗ trống → tạo node (luôn là lá)
+    if      (key < x.key) x.left  = put(x.left,  key);
+    else if (key > x.key) x.right = put(x.right, key);
+    // key == x.key → đã có, không làm gì (hoặc cập nhật val)
+    x.count = 1 + size(x.left) + size(x.right);
+    return x;                                  // gán lại link trên đường quay lên
+}`,
+                'Code ngắn nhưng dễ nhầm: <code>x.left = put(x.left, key)</code>. Khi x.left là null, lời gọi đệ quy trả về node mới và gán luôn vào x.left.'],
+            'min / max': [`public int min() {
+    Node x = root;
+    while (x.left != null) x = x.left;    // trái tận cùng
+    return x.key;
+}
+
+public int max() {
+    Node x = root;
+    while (x.right != null) x = x.right;  // phải tận cùng
+    return x.key;
+}`,
+                'Số nhỏ nhất luôn ở node <b>trái nhất</b>, số lớn nhất ở node <b>phải nhất</b>.'],
+            'floor': [`public Integer floor(int key) {
+    Node x = floor(root, key);
+    return x == null ? null : x.key;
+}
+
+private Node floor(Node x, int key) {
+    if (x == null) return null;
+    if (key == x.key) return x;                  // case 1: bằng → chính nó
+    if (key <  x.key) return floor(x.left, key); // case 2: floor nằm bên trái
+    Node t = floor(x.right, key);                // case 3: có thể ở bên phải...
+    return (t != null) ? t : x;                  //   ...nếu không có thì là x
+}`,
+                'ceiling viết đối xứng: đổi <code>left ↔ right</code> và đổi chiều dấu so sánh.'],
+            'rank': [`// rank(key) = có bao nhiêu key < key
+private int rank(int key, Node x) {
+    if (x == null) return 0;
+    if      (key < x.key) return rank(key, x.left);
+    else if (key > x.key) return 1 + size(x.left) + rank(key, x.right);
+    else                  return size(x.left);
+}`,
+                'Cần trường <code>count</code> trong Node. Khi rẽ phải thì cộng thêm toàn bộ cây con trái và chính node x.'],
+            'preorder': [`public Iterable<Integer> preorder() {
+    Queue<Integer> q = new LinkedList<>();
+    preorder(root, q);
+    return q;
+}
+
+private void preorder(Node x, Queue<Integer> q) {
+    if (x == null) return;
+    q.add(x.key);          // 1. GỐC trước (Node)
+    preorder(x.left, q);   // 2. Cây con trái (Left)
+    preorder(x.right, q);  // 3. Cây con phải (Right)
+}`,
+                'Pre-order (NLR): Gốc → Trái → Phải. Node cha luôn đứng trước 2 con. Dùng để clone/serialize cây hoặc in biểu thức tiền tố.'],
+            'inorder': [`public Iterable<Integer> inorder() {
+    Queue<Integer> q = new LinkedList<>();
+    inorder(root, q);
+    return q;
+}
+
+private void inorder(Node x, Queue<Integer> q) {
+    if (x == null) return;
+    inorder(x.left, q);    // 1. Cây con trái (Left)
+    q.add(x.key);          // 2. GỐC (Node) -> TĂNG DẦN
+    inorder(x.right, q);   // 3. Cây con phải (Right)
+}`,
+                'In-order (LNR): Trái → Gốc → Phải. Với BST, inorder luôn cho ra dãy key TĂNG DẦN theo thứ tự tự nhiên.'],
+            'postorder': [`public Iterable<Integer> postorder() {
+    Queue<Integer> q = new LinkedList<>();
+    postorder(root, q);
+    return q;
+}
+
+private void postorder(Node x, Queue<Integer> q) {
+    if (x == null) return;
+    postorder(x.left, q);   // 1. Cây con trái (Left)
+    postorder(x.right, q);  // 2. Cây con phải (Right)
+    q.add(x.key);           // 3. GỐC sau cùng (Node)
+}`,
+                'Post-order (LRN): Trái → Phải → Gốc. Các con duyệt xong mới đến cha. Thích hợp để xóa giải phóng cây từ dưới lên, tính chiều cao và kích thước cây con.'],
+            'delete': [`public void deleteMin() { root = deleteMin(root); }
+
+private Node deleteMin(Node x) {
+    if (x.left == null) return x.right;       // thay node min bằng con phải
+    x.left = deleteMin(x.left);
+    x.count = 1 + size(x.left) + size(x.right);
+    return x;
+}
+
+public void delete(int key) { root = delete(root, key); }
+
+private Node delete(Node x, int key) {
+    if (x == null) return null;
+    if      (key < x.key) x.left  = delete(x.left,  key);
+    else if (key > x.key) x.right = delete(x.right, key);
+    else {
+        if (x.right == null) return x.left;   // case 0 + case 1
+        if (x.left  == null) return x.right;  // case 1
+        Node t = x;                           // case 2: 2 con
+        x = min(t.right);                     //   successor
+        x.right = deleteMin(t.right);
+        x.left  = t.left;
+    }
+    x.count = 1 + size(x.left) + size(x.right);
+    return x;
+}`,
+                'Hibbard deletion. Thứ tự 2 dòng <code>x.right = deleteMin(t.right)</code> rồi mới <code>x.left = t.left</code> là quan trọng.'],
+            'isBST (bonus)': [`// Kiểm tra cây có phải BST: mỗi node phải nằm trong khoảng (lo, hi)
+boolean isBST(Node x, Integer lo, Integer hi) {
+    if (x == null) return true;
+    if (lo != null && x.key <= lo) return false;
+    if (hi != null && x.key >= hi) return false;
+    return isBST(x.left, lo, x.key)        // cây trái: < x.key
+        && isBST(x.right, x.key, hi);      // cây phải: > x.key
+}
+// gọi: isBST(root, null, null)`,
+                'Kiểm tra theo <b>khoảng</b> (lo, hi) nên bắt được cái bẫy ở mục 2: 60 nằm trong khoảng (30, 50), mà 60 ≥ 50 nên trả về false.'],
+        };
+        const tabs = document.getElementById('codeTabs');
+        Object.keys(CODE).forEach((name, i) => {
+            const b = document.createElement('button'); b.className = 'tab' + (i ? '' : ' active'); b.textContent = name;
+            b.onclick = () => { tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); b.classList.add('active'); showCode(name); };
+            tabs.appendChild(b);
+        });
+        function showCode(name) {
+            const [src, note] = CODE[name];
+            document.getElementById('codeView').innerHTML = src.split('\n').map(l => `<span class="ln">${hlJava(l) || ' '}</span>`).join('');
+            document.getElementById('codeNote').innerHTML = note;
+        }
+        showCode('Node');
+    </script>
+</body>
+
+</html>
