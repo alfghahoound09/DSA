@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binary Search Tree — Từ mảng random đến cây BST (Visual & Traversals)</title>
+    <title>Binary Search Tree &amp; Balanced Search Trees (2-3 Tree, Red-Black BST) — Visual &amp; Java</title>
     <meta name="description"
-        content="Học Binary Search Tree trực quan bằng cây số: chèn từng phần tử của mảng random, so sánh BST với Binary Tree, search/insert/delete/floor, duyệt Pre-order/In-order/Post-order có animation và code Java.">
+        content="Học Binary Search Tree và Balanced Search Trees (Cây 2-3, Left-Leaning Red-Black BST) trực quan: chèn từng phần tử, xoay trái/phải, đổi màu, ánh xạ 1-1 với cây 2-3, duyệt cây và code Java.">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
         rel="stylesheet">
@@ -770,6 +770,7 @@
             border-left: 3px solid transparent;
             transition: background .25s, border-color .25s;
             white-space: pre;
+            min-height: 1.8em;
         }
 
         pre.code .ln.hl {
@@ -1054,18 +1055,170 @@
             background: #2a3352;
             border-radius: 8px;
         }
+
+        /* ===== Balanced Tree (2-3 & LLRB) ===== */
+        .edge.red-link {
+            stroke: #ef4444;
+            stroke-width: 5.5;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.75));
+        }
+
+        .edge.red-link.right-bad {
+            stroke: #f59e0b;
+            stroke-dasharray: 8 4;
+            filter: drop-shadow(0 0 9px rgba(245, 158, 11, 0.85));
+        }
+
+        .node.red-child circle {
+            stroke: #f87171;
+            stroke-width: 2.8;
+            fill: #2b1620;
+        }
+
+        .node.rot-focus circle {
+            fill: rgba(245, 158, 11, 0.28);
+            stroke: #fbbf24;
+            stroke-width: 3.5;
+            filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.85));
+        }
+
+        .node.flip-focus circle {
+            fill: rgba(236, 72, 153, 0.28);
+            stroke: #f472b6;
+            stroke-width: 3.5;
+            filter: drop-shadow(0 0 12px rgba(236, 72, 153, 0.85));
+        }
+
+        /* 2-3 Tree SVG styles */
+        .edge23 {
+            stroke: #475569;
+            stroke-width: 2.4;
+            transition: all .35s;
+        }
+
+        .edge23.null-tick {
+            stroke: rgba(148, 163, 184, 0.32);
+            stroke-width: 1.8;
+        }
+
+        .n23 rect {
+            fill: #1e293b;
+            stroke: var(--indigo);
+            stroke-width: 2.4;
+            transition: all .3s;
+        }
+
+        .n23.node3 rect {
+            fill: rgba(239, 68, 68, 0.16);
+            stroke: #f87171;
+            stroke-width: 2.6;
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.32));
+        }
+
+        .n23.node4 rect {
+            fill: rgba(245, 158, 11, 0.24);
+            stroke: #fbbf24;
+            stroke-width: 3;
+            stroke-dasharray: 5 3;
+            filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.65));
+        }
+
+        .n23.active rect {
+            stroke: #34d399;
+            stroke-width: 3.2;
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.7));
+        }
+
+        .n23 .sep23 {
+            stroke: rgba(248, 113, 113, 0.45);
+            stroke-width: 1.5;
+        }
+
+        .n23 text {
+            fill: #e8edf5;
+            font: 700 13.5px 'JetBrains Mono', monospace;
+            pointer-events: none;
+        }
+
+        .n23 .tag23 {
+            fill: #94a3b8;
+            font: 700 10px 'Inter', sans-serif;
+        }
+
+        .n23.node3 .tag23 {
+            fill: #fca5a5;
+        }
+
+        .n23.node4 .tag23 {
+            fill: #fde68a;
+        }
+
+        .rb-stat-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .rb-stat-pill {
+            padding: 6px 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border);
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rb-stat-pill b {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+        }
+
+        .invariant-box {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 18px 0;
+        }
+
+        @media (max-width: 860px) {
+            .invariant-box {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .inv-item {
+            padding: 16px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(26, 32, 53, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .inv-item h4 {
+            font-size: 15px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
     </style>
 </head>
 
 <body>
     <nav>
         <div class="nav-inner">
-            <span class="nav-logo">🌳 BST Visual</span>
+            <span class="nav-logo">🌳 BST &amp; Balanced Tree</span>
             <a href="#core">Core</a>
             <a href="#compare">BST vs Binary Tree</a>
-            <a href="#build">Mảng → Cây</a>
-            <a href="#playground">Thao tác &amp; Duyệt cây</a>
+            <a href="#build">Mảng → BST</a>
+            <a href="#playground">Thao tác &amp; Duyệt</a>
             <a href="#shape">Hình dạng cây</a>
+            <a href="#balanced" style="color:#fca5a5;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3)">⚖️ Balanced (2-3 &amp; LLRB)</a>
+            <a href="#llrb-sim" style="color:#fcd34d;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3)">🔥 Mô phỏng LLRB</a>
             <a href="#code">Code Java</a>
             <a href="#summary">Tổng kết</a>
         </div>
@@ -1444,11 +1597,213 @@
             </div>
         </section>
 
+        <!-- ================= BALANCED TREES (2-3 & LLRB) ================= -->
+        <section id="balanced">
+            <span class="sec-tag" style="color:#fca5a5;background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">06 · Balanced Search Trees (3.3)</span>
+            <h2>Cây tìm kiếm cân bằng: 2-3 Tree &amp; Red-Black BST (LLRB)</h2>
+            <p class="lead">Làm sao để <b>đảm bảo (guarantee)</b> tìm kiếm và chèn luôn đạt <b>O(lg N) trong cả trường hợp xấu nhất</b> (kể cả khi chèn mảng đã sắp xếp)? Câu trả lời của Sedgewick: <b>Cây 2-3</b> (ý tưởng lý thuyết) và <b>Left-Leaning Red-Black BST</b> (cài đặt thực tế chỉ thêm 3 dòng lệnh vào BST chuẩn).</p>
+
+            <!-- 6.1: 2-3 Search Tree -->
+            <div class="grid-3">
+                <div class="card">
+                    <span class="badge b">2-Node (1 key, 2 nhánh)</span>
+                    <h3>Giống hệt node BST</h3>
+                    <p class="caption" style="margin-top:0">Chứa <b>1 key</b> <code>k</code> và <b>2 link con</b>: nhánh trái chứa các key <b>&lt; k</b>, nhánh phải chứa các key <b>&gt; k</b>.</p>
+                </div>
+                <div class="card" style="border-color:rgba(239,68,68,.35)">
+                    <span class="badge r">3-Node (2 key, 3 nhánh)</span>
+                    <h3>Chứa 2 key <code>a &lt; b</code></h3>
+                    <p class="caption" style="margin-top:0">Có <b>3 link con</b>: nhánh trái (<b>&lt; a</b>), nhánh giữa (nằm trong khoảng <b>(a, b)</b>), và nhánh phải (<b>&gt; b</b>). Chèn vào 2-node ở đáy sẽ biến nó thành 3-node mà <b>không tăng chiều cao</b>!</p>
+                </div>
+                <div class="card" style="border-color:rgba(245,158,11,.35)">
+                    <span class="badge" style="background:rgba(245,158,11,.18);color:#fde68a">4-Node tạm (3 key → Split)</span>
+                    <h3>Tách đẩy key giữa lên cha</h3>
+                    <p class="caption" style="margin-top:0">Chèn vào 3-node tạo ra <b>4-node tạm</b> <code>[a | b | c]</code> → lập tức <b>tách (split)</b> làm 2 node <code>a</code>, <code>c</code> và đẩy <b>key giữa <code>b</code> lên cha</b>. Cây chỉ cao thêm khi <b>root bị tách</b> → mọi đường tới <code>null</code> dài bằng nhau tuyệt đối!</p>
+                </div>
+            </div>
+
+            <!-- 6.2: 1-1 Correspondence between 2-3 Tree and LLRB -->
+            <div class="card" style="margin-top:18px">
+                <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
+                    <div>
+                        <span class="badge r" style="margin-bottom:4px">Tương ứng 1–1 (1–1 Correspondence)</span>
+                        <h3 style="margin-bottom:2px">Biểu diễn Cây 2-3 bằng Left-Leaning Red-Black BST (LLRB)</h3>
+                        <p class="caption" style="margin-top:2px">Mỗi <b>3-node <code>[a | b]</code></b> được biểu diễn bằng 2 node BST nối bởi <b>cạnh ĐỎ nghiêng trái</b> (<code>b</code> làm cha, <code>a</code> làm con trái đỏ). Nếu vẽ cạnh đỏ nằm ngang, bạn sẽ thấy ngay cây 2-3!</p>
+                    </div>
+                    <div class="controls">
+                        <button class="btn primary" id="btnIsoPreset1">📘 Cây mẫu Sedgewick</button>
+                        <button class="btn" id="btnIsoPreset2">📈 Chèn tăng dần 10..70</button>
+                        <button class="btn" id="btnIsoPreset3">🎲 Cây ngẫu nhiên</button>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="card mini" style="background:rgba(15,23,42,.6)">
+                        <span class="badge r">① Red-Black BST (LLRB chuẩn)</span>
+                        <div class="tree-wrap" id="isoLLRB" style="min-height:240px"></div>
+                        <p class="caption">Cạnh <b style="color:#f87171">ĐỎ</b> nghiêng trái "dán" 2 node của 1 3-node. Search giữ nguyên 100% code của BST thường (bỏ qua màu)!</p>
+                    </div>
+                    <div class="card mini" style="background:rgba(15,23,42,.6)">
+                        <span class="badge" style="background:rgba(245,158,11,.18);color:#fde68a">② Cạnh ĐỎ nằm ngang (Horizontal)</span>
+                        <div class="tree-wrap" id="isoHoriz" style="min-height:240px"></div>
+                        <p class="caption">Nâng node con đỏ lên <b>cùng tầng</b> với cha: mọi lá đều nằm trên cùng một độ sâu đen (<b>Perfect Black Balance</b>).</p>
+                    </div>
+                    <div class="card mini" style="background:rgba(15,23,42,.6)">
+                        <span class="badge g">③ Cây 2-3 tương ứng (2-3 Tree)</span>
+                        <div class="tree-wrap" id="iso23" style="min-height:240px"></div>
+                        <p class="caption">Gộp mỗi cặp nối đỏ thành viên thuốc <b>3-node <code>[a | b]</code></b> có 3 nhánh con. Mọi đường từ root tới <code>null</code> dài bằng nhau!</p>
+                    </div>
+                </div>
+
+                <div class="invariant-box">
+                    <div class="inv-item">
+                        <h4><span style="color:#f87171">①</span> Red links lean left</h4>
+                        <p class="caption" style="margin-top:0">Mọi cạnh ĐỎ đều phải <b>nghiêng sang trái</b> (<code>h.right</code> không bao giờ đỏ sau khi kết thúc thao tác). Nếu nghiêng phải → gọi <code>rotateLeft(h)</code>.</p>
+                    </div>
+                    <div class="inv-item">
+                        <h4><span style="color:#fbbf24">②</span> No two reds in a row</h4>
+                        <p class="caption" style="margin-top:0">Không có node nào gắn với <b>2 cạnh ĐỎ liên tiếp</b> (tương đương không được để tồn tại 4-node sau khi chèn xong). Nếu có 2 đỏ trái liên tiếp → <code>rotateRight(h)</code>.</p>
+                    </div>
+                    <div class="inv-item">
+                        <h4><span style="color:#34d399">③</span> Perfect black balance</h4>
+                        <p class="caption" style="margin-top:0">Mọi đường đi từ <code>root</code> xuống bất kỳ link <code>null</code> nào đều đi qua <b>đúng bằng nhau số lượng cạnh ĐEN</b> (= chiều cao của cây 2-3).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6.3: 3 Elementary Red-Black Operations Interactive Lab -->
+            <div style="margin-top:24px">
+                <h3>🛠️ 3 Phép biến đổi cơ bản (Elementary Red-Black Operations)</h3>
+                <p class="lead" style="margin-bottom:16px">Để duy trì 3 bất biến trên đường đệ quy quay lên sau khi chèn, LLRB chỉ dùng đúng <b>3 phép biến đổi cục bộ O(1)</b> dưới đây. Bấm nút trên từng thẻ để xem animation trước và sau khi biến đổi!</p>
+                <div class="grid-3">
+                    <div class="card mini">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                            <span class="badge" style="background:rgba(245,158,11,.18);color:#fde68a;margin:0">1 · rotateLeft(h)</span>
+                            <button class="btn primary" id="btnDemoRotL" style="padding:5px 11px;font-size:12.5px">↻ Chạy Rotate Left</button>
+                        </div>
+                        <div class="tree-wrap" id="demoRotLTree" style="min-height:210px"></div>
+                        <p class="caption" id="demoRotLCap"><b>Khi nào gọi?</b> Khi có cạnh ĐỎ nghiêng phải (<code>isRed(h.right) &amp;&amp; !isRed(h.left)</code>). Đưa con phải lớn hơn lên làm cha để cạnh đỏ nghiêng trái.</p>
+                    </div>
+
+                    <div class="card mini">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                            <span class="badge" style="background:rgba(6,182,212,.18);color:#67e8f9;margin:0">2 · rotateRight(h)</span>
+                            <button class="btn primary" id="btnDemoRotR" style="padding:5px 11px;font-size:12.5px">↺ Chạy Rotate Right</button>
+                        </div>
+                        <div class="tree-wrap" id="demoRotRTree" style="min-height:210px"></div>
+                        <p class="caption" id="demoRotRCap"><b>Khi nào gọi?</b> Khi có 2 cạnh ĐỎ liên tiếp bên trái (<code>isRed(h.left) &amp;&amp; isRed(h.left.left)</code>). Xoay phải để cân bằng 4-node tạm thành cha có 2 con đỏ.</p>
+                    </div>
+
+                    <div class="card mini">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                            <span class="badge" style="background:rgba(236,72,153,.18);color:#f9a8d4;margin:0">3 · flipColors(h)</span>
+                            <button class="btn primary" id="btnDemoFlip" style="padding:5px 11px;font-size:12.5px">🎨 Chạy Flip Colors</button>
+                        </div>
+                        <div class="tree-wrap" id="demoFlipTree" style="min-height:210px"></div>
+                        <p class="caption" id="demoFlipCap"><b>Khi nào gọi?</b> Khi cả 2 con đều ĐỎ (<code>isRed(h.left) &amp;&amp; isRed(h.right)</code>). Đổi 2 con thành ĐEN và đẩy cạnh ĐỎ lên cha <code>h</code> (tách 4-node đẩy key giữa lên cha!).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= LLRB STEP-BY-STEP SIMULATOR ================= -->
+        <section id="llrb-sim">
+            <span class="sec-tag" style="color:#fcd34d;background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">07 · Mô phỏng từng bước LLRB</span>
+            <h2>Chèn từng số vào Red-Black BST (LLRB) &amp; Đồng bộ Cây 2-3</h2>
+            <p class="lead">Node mới luôn được gắn ở đáy bằng <b>cạnh ĐỎ</b> (tương ứng gộp vào lá của cây 2-3). Trên đường đệ quy quay ngược lên, mỗi node kiểm tra lần lượt <b>3 câu lệnh <code>if</code></b>: <code>rotateLeft</code> → <code>rotateRight</code> → <code>flipColors</code>. Hãy thử bấm <b>"📈 Mảng tăng dần"</b> để xem LLRB tự xoay cân bằng ngoạn mục như thế nào!</p>
+
+            <div class="card">
+                <div class="controls" style="margin-bottom:18px">
+                    <input type="text" id="rbArrInput" size="34" aria-label="Mảng đầu vào LLRB"
+                        placeholder="vd: 10, 20, 30, 40, 50, 60, 70">
+                    <button class="btn" id="btnRbLoad">Dùng mảng này</button>
+                    <button class="btn primary" id="btnRbAsc" title="Worst case của BST thường nhưng LLRB cân bằng hoàn hảo!">📈 Mảng tăng dần (10→90)</button>
+                    <button class="btn" id="btnRbDesc">📉 Mảng giảm dần (90→10)</button>
+                    <button class="btn" id="btnRbBook">📘 S E A R C H X M P L</button>
+                    <button class="btn" id="btnRbRandom">🎲 Mảng random</button>
+                </div>
+
+                <div class="array-row" id="rbArrChips" style="margin-top:6px"></div>
+                <div class="progress">
+                    <div id="rbProg"></div>
+                </div>
+
+                <div class="controls" style="justify-content:space-between">
+                    <div class="controls">
+                        <button class="btn" id="btnRbFirst" title="Về đầu">⏮</button>
+                        <button class="btn" id="btnRbPrev">◀ Lùi</button>
+                        <button class="btn primary" id="btnRbNext">Bước tiếp ▶</button>
+                        <button class="btn" id="btnRbNextVal" title="Chèn xong số hiện tại">⏭ Chèn xong số này</button>
+                        <button class="btn green" id="btnRbPlay">▶ Tự chạy</button>
+                        <button class="btn" id="btnRbLast" title="Tới cuối">⏭⏭</button>
+                    </div>
+                    <div class="controls">
+                        <label class="chk"><input type="checkbox" id="rbHorizChk"> Cạnh ĐỎ nằm ngang</label>
+                        <span style="font-size:12px;color:var(--text-muted)">Tốc độ</span>
+                        <input type="range" id="rbSpeed" min="150" max="1600" value="950" aria-label="Tốc độ LLRB">
+                        <span id="rbStepLabel" class="mono" style="font-size:12px;color:var(--text-muted)"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="build-grid">
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+                        <h3 style="font-size:15.5px;margin:0">🔴⚫ Left-Leaning Red-Black BST</h3>
+                        <div class="rb-stat-bar" id="rbStats" style="margin:0"></div>
+                    </div>
+                    <div class="tree-wrap" id="rbTree" style="min-height:330px"></div>
+                    <div class="msg" id="rbMsg"></div>
+                    <div class="legend">
+                        <span><i class="dot" style="background:#ef4444;border-color:#fca5a5"></i>cạnh ĐỎ (red link / glue 3-node)</span>
+                        <span><i class="dot" style="background:var(--amber);border-color:#fde68a"></i>đang xét / xoay</span>
+                        <span><i class="dot" style="background:var(--pink);border-color:#f9a8d4"></i>flipColors (tách 4-node)</span>
+                        <span><i class="dot" style="background:var(--green);border-color:#6ee7b7"></i>vừa chèn / hoàn tất</span>
+                    </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+                    <div class="card">
+                        <h3 style="font-size:15px">Code đang chạy: <code>LLRB put()</code></h3>
+                        <pre class="code" id="rbCode"></pre>
+                    </div>
+                    <div class="card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <h3 style="font-size:15px;margin:0">🌳 Cây 2-3 tương ứng trực tiếp</h3>
+                            <span class="badge g" style="margin:0" id="rb23Badge">Perfect Balance</span>
+                        </div>
+                        <div class="tree-wrap" id="rb23Tree" style="min-height:200px;padding:10px 6px"></div>
+                        <p class="caption" id="rb23Cap" style="margin-top:8px;font-size:12.5px">Mọi nhánh <code>null</code> ở đáy luôn nằm trên cùng một tầng. Khi xuất hiện <b>4-node tạm <code>[a|b|c]</code></b> (viền vàng nét đứt), <code>flipColors</code> sẽ tách nó ngay!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- So sánh trực tiếp LLRB vs BST thường trên cùng mảng hiện tại -->
+            <div class="card" style="margin-top:18px">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+                    <div>
+                        <h3 style="font-size:16px;margin-bottom:2px">⚔️ Đối chiếu trực tiếp trên mảng hiện tại: Red-Black BST (LLRB) vs BST thường</h3>
+                        <p class="caption" style="margin-top:0" id="rbVsBstLead">Cùng một thứ tự chèn từ mảng đầu vào, hãy xem sự khác biệt về chiều cao và độ cân bằng!</p>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="card mini" style="background:rgba(15,23,42,.55)">
+                        <span class="badge g" id="cmpRbBadge">Red-Black BST (LLRB)</span>
+                        <div class="tree-wrap" id="cmpRbFinal" style="min-height:220px"></div>
+                    </div>
+                    <div class="card mini" style="background:rgba(15,23,42,.55)">
+                        <span class="badge r" id="cmpBstBadge">BST thường (Standard BST)</span>
+                        <div class="tree-wrap" id="cmpBstFinal" style="min-height:220px"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ================= CODE ================= -->
         <section id="code">
-            <span class="sec-tag">06 · Code Java</span>
-            <h2>Code BST (key là số nguyên)</h2>
-            <p class="lead">Bản rút gọn với key <code>int</code> cho dễ đọc. Bản generic đầy đủ
+            <span class="sec-tag">08 · Code Java</span>
+            <h2>Code BST &amp; Red-Black BST (key là số nguyên)</h2>
+            <p class="lead">Bản rút gọn với key <code>int</code> cho dễ đọc, bao gồm cả <b>BST thường</b> và <b>Left-Leaning Red-Black BST (LLRB)</b>. Bản generic đầy đủ
                 <code>&lt;Key extends Comparable&lt;Key&gt;, Value&gt;</code> nằm trong <code>BST.java</code> cùng thư
                 mục.
             </p>
@@ -1461,81 +1816,77 @@
 
         <!-- ================= SUMMARY ================= -->
         <section id="summary">
-            <span class="sec-tag">07 · Tổng kết</span>
-            <h2>Độ phức tạp &amp; mẹo làm bài</h2>
+            <span class="sec-tag">09 · Tổng kết</span>
+            <h2>Độ phức tạp (BST vs 2-3 Tree vs Red-Black BST) &amp; mẹo làm bài</h2>
             <div class="grid-2">
                 <div class="card" style="overflow-x:auto">
                     <table class="cmp">
                         <thead>
                             <tr>
-                                <th>Thao tác</th>
-                                <th>Worst</th>
-                                <th>Avg (random)</th>
+                                <th>Cấu trúc / Thao tác</th>
+                                <th>Worst (Guarantee)</th>
+                                <th>Average (Random)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>search / insert</td>
-                                <td>N</td>
+                                <td><b>BST thường</b> (search / insert)</td>
+                                <td style="color:#fca5a5;font-weight:700">N (suy biến)</td>
                                 <td class="hl-cell">1.39 lg N</td>
                             </tr>
                             <tr>
-                                <td>min / max</td>
-                                <td>h</td>
-                                <td>~ lg N</td>
+                                <td><b>BST thường</b> (delete Hibbard)</td>
+                                <td style="color:#fca5a5;font-weight:700">N</td>
+                                <td>√N</td>
                             </tr>
                             <tr>
-                                <td>floor / ceiling</td>
-                                <td>h</td>
-                                <td>~ lg N</td>
+                                <td><b>2-3 Search Tree</b> (search / insert / delete)</td>
+                                <td style="color:#6ee7b7;font-weight:700">c lg N</td>
+                                <td style="color:#6ee7b7;font-weight:700">c lg N</td>
                             </tr>
                             <tr>
-                                <td>rank / select</td>
-                                <td>h</td>
-                                <td>~ lg N</td>
+                                <td><b>Red-Black BST (LLRB)</b> (search / insert / delete)</td>
+                                <td style="color:#6ee7b7;font-weight:700">2 lg N</td>
+                                <td class="hl-cell">1.00 lg N</td>
                             </tr>
                             <tr>
-                                <td>traversals (pre/in/post order)</td>
+                                <td><b>B-Tree bậc M</b> (search / insert trên đĩa)</td>
+                                <td style="color:#67e8f9;font-weight:700">log<sub>M/2</sub> N probes</td>
+                                <td style="color:#67e8f9;font-weight:700">log<sub>M−1</sub> N probes</td>
+                            </tr>
+                            <tr>
+                                <td><b>Traversals</b> (pre / in / post-order)</td>
                                 <td>N</td>
                                 <td>N</td>
-                            </tr>
-                            <tr>
-                                <td>delete (Hibbard)</td>
-                                <td>N</td>
-                                <td>√N nếu xóa/chèn nhiều lần</td>
                             </tr>
                         </tbody>
                     </table>
-                    <p class="caption">h = chiều cao cây (tỉ lệ với log N nếu chèn ngẫu nhiên). So với mảng đã sắp xếp
-                        (binary search): BST chèn nhanh hơn hẳn (lg N so với N).</p>
+                    <p class="caption">Chiều cao của cây <b>2-3 Tree</b> luôn nằm trong khoảng <b>[log₃ N ≈ 0.631 lg N, lg N]</b> (với 1 triệu node chỉ cao từ 12 đến 20 tầng!). Chiều cao của <b>LLRB</b> tối đa là <b>≤ 2 lg N</b>.</p>
                 </div>
                 <div>
                     <div class="tip"><span class="ic">🎯</span>
                         <div>Đề cho mảng và bảo "vẽ BST": chèn <b>lần lượt từ trái sang phải</b>, số đầu tiên luôn là
                             root.</div>
                     </div>
+                    <div class="tip"><span class="ic">🔴</span>
+                        <div><b>Nhớ nhanh 3 bước chèn LLRB:</b> (1) Phải đỏ, trái đen → <code>rotateLeft</code>; (2) Trái đỏ &amp; trái-trái đỏ → <code>rotateRight</code>; (3) Cả 2 con đều đỏ → <code>flipColors</code>. Cuối cùng ép <code>root.color = BLACK</code>.</div>
+                    </div>
+                    <div class="tip"><span class="ic">🔗</span>
+                        <div><b>Chuyển đổi 2-3 Tree ↔ LLRB trong đề thi:</b> Mỗi <b>3-node <code>(a, b)</code></b> với <code>a &lt; b</code> luôn có <code>b</code> làm node cha ĐEN và <code>a</code> làm con trái nối bằng <b>cạnh ĐỎ</b>. Đếm chiều cao đen (black-height) chính là chiều cao cây 2-3!</div>
+                    </div>
                     <div class="tip"><span class="ic">🧪</span>
                         <div>Kiểm tra cây có phải BST: <b>duyệt inorder</b>, nếu ra dãy tăng dần thì đúng. Đừng chỉ kiểm
                             tra từng cặp cha–con (xem lại bẫy ở mục 2).</div>
                     </div>
-                    <div class="tip"><span class="ic">🌱</span>
-                        <div>Node mới <b>luôn là lá</b>. Insert không bao giờ làm thay đổi cấu trúc của những node đã
-                            có.</div>
-                    </div>
                     <div class="tip"><span class="ic">🔁</span>
-                        <div>Successor của node có 2 con = <b>min của cây con phải</b>. Successor này <b>không có con
-                                trái</b>, nên xóa nó khỏi chỗ cũ rất dễ.</div>
-                    </div>
-                    <div class="tip"><span class="ic">⚠️</span>
-                        <div>Hibbard deletion <b>không đối xứng</b> (luôn lấy successor bên phải), nên sau nhiều lần
-                            xóa cây bị lệch và chi phí tăng lên √N.</div>
+                        <div>Successor của node có 2 con = <b>min của cây con phải</b>. Hibbard deletion không đối xứng làm BST lệch thành √N, còn Red-Black BST đảm bảo cả xóa cũng <b>O(lg N)</b> (dùng trong <code>java.util.TreeMap</code>, <code>TreeSet</code>, C++ <code>std::map</code>).</div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>Dựa trên Algorithms 4th ed. — Sedgewick &amp; Wayne · 3.2 Binary Search Trees</footer>
+    <footer>Dựa trên Algorithms 4th ed. — Sedgewick &amp; Wayne · 3.2 Binary Search Trees &amp; 3.3 Balanced Search Trees</footer>
 
     <script>
         /* =========================================================
@@ -1593,7 +1944,7 @@
 
         class TreeView {
             constructor(host, opt = {}) {
-                this.o = Object.assign({ r: 20, levelH: 72, gap: 56, minW: 520, top: 44, anim: 480, axis: false }, opt);
+                this.o = Object.assign({ r: 20, levelH: 72, gap: 56, minW: 520, top: 44, anim: 480, axis: false, horizontalRed: false }, opt);
                 this.svg = el('svg', { class: 'tree-svg' });
                 host.appendChild(this.svg);
                 this.gAxis = el('g', {}, this.svg);
@@ -1606,12 +1957,19 @@
                 this.vb = null; this.ghost = null;
             }
             setAxis(on) { this.o.axis = on; if (this.last) this.render(this.last.root, this.last.hl); }
+            setHorizontalRed(on) { this.o.horizontalRed = on; if (this.last) this.render(this.last.root, this.last.hl); }
 
             render(root, hl = {}) {
                 this.last = { root, hl };
                 const o = this.o, list = [];
-                const walk = (n, d, p) => { if (!n) return; walk(n.left, d + 1, n.key); list.push({ key: n.key, d, p }); walk(n.right, d + 1, n.key); };
-                walk(root, 0, null);
+                const walk = (n, d, p, side) => {
+                    if (!n) return;
+                    const myD = (o.horizontalRed && n.color && p != null) ? d - 1 : d;
+                    walk(n.left, myD + 1, n.key, 'L');
+                    list.push({ key: n.key, d: myD, p, red: !!n.color, side });
+                    walk(n.right, myD + 1, n.key, 'R');
+                };
+                walk(root, 0, null, null);
                 const N = list.length;
                 let maxD = list.reduce((m, a) => Math.max(m, a.d), 0);
                 const W = Math.max(o.minW, (N + 1) * o.gap), step = W / (N + 1);
@@ -1623,12 +1981,14 @@
                 if (gh) {
                     if (gh.slot) {
                         const pp = this.target.get(gh.slot.p);
-                        const dx = Math.max(step / 2, o.r * 1.5) * (gh.slot.side === 'L' ? -1 : 1);
-                        gT = { x: pp.x + dx, y: pp.y + o.levelH, from: gh.slot.p };
-                        maxD = Math.max(maxD, Math.round((gT.y - o.top) / o.levelH));
+                        if (pp) {
+                            const dx = Math.max(step / 2, o.r * 1.5) * (gh.slot.side === 'L' ? -1 : 1);
+                            gT = { x: pp.x + dx, y: pp.y + o.levelH, from: gh.slot.p };
+                            maxD = Math.max(maxD, Math.round((gT.y - o.top) / o.levelH));
+                        } else gT = { x: W / 2, y: o.top };
                     } else if (gh.near != null) {
                         const pp = this.target.get(gh.near);
-                        gT = { x: pp.x + o.r * 1.9, y: pp.y - o.r * 1.55 };
+                        gT = pp ? { x: pp.x + o.r * 1.9, y: pp.y - o.r * 1.55 } : { x: W / 2, y: o.top };
                     } else gT = { x: W / 2, y: o.top };
                 }
 
@@ -1664,7 +2024,8 @@
                         this.cur.set(a.key, { ...st });
                         g.setAttribute('transform', `translate(${st.x},${st.y})`);
                     }
-                    g.setAttribute('class', 'node ' + (cls[a.key] || ''));
+                    const redCls = (a.red && a.p != null) ? ' red-child' : '';
+                    g.setAttribute('class', 'node ' + (cls[a.key] || '') + redCls);
                     g._b.textContent = badges[a.key] ?? '';
                 });
                 // edges
@@ -1676,8 +2037,10 @@
                     const id = a.p + '>' + a.key; want.add(id);
                     let ln = this.edges.get(id);
                     if (!ln) { ln = el('line', {}, this.gE); ln._pc = [a.p, a.key]; this.edges.set(id, ln); }
+                    else ln._pc = [a.p, a.key];
                     const ec = (hl.edgeCls && hl.edgeCls[id]) || '';
-                    ln.setAttribute('class', 'edge' + (pairs.has(id) ? ' path' : '') + (ec ? ' ' + ec : ''));
+                    const redEdge = a.red ? (' red-link' + (a.side === 'R' ? ' right-bad' : '')) : '';
+                    ln.setAttribute('class', 'edge' + (pairs.has(id) ? ' path' : '') + redEdge + (ec ? ' ' + ec : ''));
                 });
                 for (const [id, ln] of this.edges) if (!want.has(id)) { ln.remove(); this.edges.delete(id); }
                 // axis
@@ -2160,7 +2523,611 @@
         shapeRandom();
 
         /* =========================================================
-         *  06 · Code tabs
+         *  06 & 07 · Balanced Search Trees (2-3 Tree & LLRB)
+         * ========================================================= */
+        class RBNode {
+            constructor(k, color = true) {
+                this.key = k;
+                this.left = null;
+                this.right = null;
+                this.color = color; // true = RED, false = BLACK
+            }
+        }
+        function isRed(x) { return !!(x && x.color === true); }
+        function cloneRB(x) {
+            if (!x) return null;
+            const n = new RBNode(x.key, x.color);
+            n.left = cloneRB(x.left);
+            n.right = cloneRB(x.right);
+            return n;
+        }
+        function rotateLeftRB(h) {
+            const x = h.right;
+            h.right = x.left;
+            x.left = h;
+            x.color = h.color;
+            h.color = true;
+            return x;
+        }
+        function rotateRightRB(h) {
+            const x = h.left;
+            h.left = x.right;
+            x.right = h;
+            x.color = h.color;
+            h.color = true;
+            return x;
+        }
+        function flipColorsRB(h) {
+            h.color = true;
+            if (h.left) h.left.color = false;
+            if (h.right) h.right.color = false;
+        }
+        function insertRB(h, k) {
+            if (!h) return new RBNode(k, true);
+            if (k < h.key) h.left = insertRB(h.left, k);
+            else if (k > h.key) h.right = insertRB(h.right, k);
+            if (isRed(h.right) && !isRed(h.left)) h = rotateLeftRB(h);
+            if (isRed(h.left) && isRed(h.left.left)) h = rotateRightRB(h);
+            if (isRed(h.left) && isRed(h.right)) flipColorsRB(h);
+            return h;
+        }
+        function buildRBTree(arr) {
+            let r = null;
+            for (const k of arr) {
+                r = insertRB(r, k);
+                r.color = false;
+            }
+            return r;
+        }
+        function blackHeight(x) {
+            let bh = 0;
+            while (x) {
+                if (!x.color) bh++;
+                x = x.left;
+            }
+            return bh; // số node đen từ root xuống lá (trừ 1 = số cạnh đen nội bộ)
+        }
+        function countRedLinks(x) {
+            if (!x) return 0;
+            return (x.color ? 1 : 0) + countRedLinks(x.left) + countRedLinks(x.right);
+        }
+
+        /* =========================================================
+         *  Tree23View — Chuyển LLRB sang Cây 2-3-4 & vẽ SVG
+         *  Gom mọi cụm nối bằng cạnh ĐỎ thành 1 viên thuốc (2-node / 3-node / 4-node tạm)
+         * ========================================================= */
+        function llrbTo23(root) {
+            if (!root) return null;
+            function collectCluster(n, keys = [], kids = []) {
+                if (!n) return;
+                if (n.left && n.left.color) collectCluster(n.left, keys, kids);
+                else kids.push(n.left);
+                keys.push(n.key);
+                if (n.right && n.right.color) collectCluster(n.right, keys, kids);
+                else kids.push(n.right);
+            }
+            function build(n, d = 0) {
+                if (!n) return null;
+                const keys = [], rawKids = [];
+                collectCluster(n, keys, rawKids);
+                const children = rawKids.map(c => build(c, d + 1));
+                return { id: keys.join('-'), keys, children, d };
+            }
+            return build(root, 0);
+        }
+
+        class Tree23View {
+            constructor(host, opt = {}) {
+                this.o = Object.assign({ levelH: 70, top: 36, minW: 320, cellW: 30, pillH: 32, leafGap: 48 }, opt);
+                this.svg = el('svg', { class: 'tree-svg' });
+                host.appendChild(this.svg);
+                this.gE = el('g', {}, this.svg);
+                this.gN = el('g', {}, this.svg);
+                this.emptyText = el('text', { class: 'empty-text', 'text-anchor': 'middle' }, this.gN);
+            }
+            render(rbRoot, activeKeys = []) {
+                const actSet = new Set(activeKeys);
+                while (this.gE.firstChild) this.gE.firstChild.remove();
+                while (this.gN.firstChild) this.gN.firstChild.remove();
+                const root23 = llrbTo23(rbRoot);
+                if (!root23) {
+                    const W = this.o.minW, H = 110;
+                    const t = el('text', { class: 'empty-text', 'text-anchor': 'middle', x: W / 2, y: 52 }, this.gN);
+                    t.textContent = '2-3 tree rỗng (root = null)';
+                    this.svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+                    this.svg.setAttribute('width', W);
+                    this.svg.setAttribute('height', H);
+                    return { has4Node: false, maxD: 0 };
+                }
+                const o = this.o;
+                let slotIdx = 0, maxD = 0, has4Node = false;
+                const nodes = [];
+                function layout(u) {
+                    maxD = Math.max(maxD, u.d);
+                    if (u.keys.length >= 3) has4Node = true;
+                    const nonNullKids = u.children.filter(Boolean);
+                    if (!nonNullKids.length) {
+                        u.slot = slotIdx;
+                        slotIdx += Math.max(1, u.keys.length * 0.85);
+                    } else {
+                        u.children.forEach(c => { if (c) layout(c); });
+                        const first = nonNullKids[0].slot, last = nonNullKids[nonNullKids.length - 1].slot;
+                        u.slot = (first + last) / 2;
+                    }
+                    nodes.push(u);
+                }
+                layout(root23);
+                const totalSlots = Math.max(1, slotIdx);
+                const W = Math.max(o.minW, (totalSlots + 1.2) * o.leafGap);
+                const step = W / (totalSlots + 1);
+                nodes.forEach(u => {
+                    u.x = (u.slot + 0.6) * step;
+                    u.y = o.top + u.d * o.levelH;
+                    u.w = Math.max(36, u.keys.length * o.cellW + 10);
+                });
+
+                // Vẽ các cạnh nối và các râu null ở đáy
+                nodes.forEach(u => {
+                    const kLen = u.keys.length;
+                    const M = u.children.length; // kLen + 1 nhánh
+                    u.children.forEach((c, idx) => {
+                        const anchorX = u.x - u.w / 2 + (u.w * (idx + 0.5)) / M;
+                        const anchorY = u.y + o.pillH / 2 - 2;
+                        if (c) {
+                            el('line', {
+                                class: 'edge23',
+                                x1: anchorX, y1: anchorY,
+                                x2: c.x, y2: c.y - o.pillH / 2 + 2
+                            }, this.gE);
+                        } else {
+                            const dx = (idx - (M - 1) / 2) * 9;
+                            el('line', {
+                                class: 'edge23 null-tick',
+                                x1: anchorX, y1: anchorY,
+                                x2: anchorX + dx, y2: anchorY + 14
+                            }, this.gE);
+                        }
+                    });
+                });
+
+                // Vẽ từng viên thuốc 2-node / 3-node / 4-node
+                nodes.forEach(u => {
+                    const kLen = u.keys.length;
+                    const isAct = u.keys.some(k => actSet.has(k));
+                    const typeCls = kLen === 1 ? 'node2' : kLen === 2 ? 'node3' : 'node4';
+                    const g = el('g', {
+                        class: `n23 ${typeCls}${isAct ? ' active' : ''}`,
+                        transform: `translate(${u.x},${u.y})`
+                    }, this.gN);
+                    el('rect', {
+                        x: -u.w / 2, y: -o.pillH / 2,
+                        width: u.w, height: o.pillH,
+                        rx: o.pillH / 2
+                    }, g);
+                    for (let i = 1; i < kLen; i++) {
+                        const sx = -u.w / 2 + (u.w * i) / kLen;
+                        el('line', { class: 'sep23', x1: sx, y1: -o.pillH / 2 + 5, x2: sx, y2: o.pillH / 2 - 5 }, g);
+                    }
+                    u.keys.forEach((k, i) => {
+                        const tx = -u.w / 2 + (u.w * (i + 0.5)) / kLen;
+                        const t = el('text', { x: tx, y: 0, 'text-anchor': 'middle', dy: '0.35em' }, g);
+                        t.textContent = k;
+                    });
+                    const tag = el('text', { class: 'tag23', x: 0, y: -o.pillH / 2 - 6, 'text-anchor': 'middle' }, g);
+                    tag.textContent = kLen === 1 ? '2-node' : kLen === 2 ? '3-node' : '⚡ 4-node tạm';
+                });
+
+                const H = o.top + maxD * o.levelH + o.pillH + 34;
+                this.svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+                this.svg.setAttribute('width', W);
+                this.svg.setAttribute('height', H);
+                return { has4Node, maxD };
+            }
+        }
+
+        /* =========================================================
+         *  06.2 · 1-1 Correspondence Viewer (LLRB / Horizontal / 2-3)
+         * ========================================================= */
+        const isoOpt = { r: 16, levelH: 52, gap: 36, minW: 290, top: 30 };
+        const isoLLRBView = new TreeView(document.getElementById('isoLLRB'), isoOpt);
+        const isoHorizView = new TreeView(document.getElementById('isoHoriz'), { ...isoOpt, horizontalRed: true, levelH: 60 });
+        const iso23View = new Tree23View(document.getElementById('iso23'), { minW: 290, levelH: 62, leafGap: 38 });
+
+        function renderIso(arr) {
+            const r = buildRBTree(arr);
+            isoLLRBView.render(cloneRB(r));
+            isoHorizView.render(cloneRB(r));
+            iso23View.render(cloneRB(r));
+        }
+        // Sedgewick slide 18-20: S E A R C H X M P L -> quy sang số giữ nguyên thứ tự bảng chữ cái
+        const SEDGEWICK_ARR = [19, 5, 1, 18, 3, 8, 24, 13, 16, 12];
+        document.getElementById('btnIsoPreset1').onclick = () => renderIso(SEDGEWICK_ARR);
+        document.getElementById('btnIsoPreset2').onclick = () => renderIso([10, 20, 30, 40, 50, 60, 70]);
+        document.getElementById('btnIsoPreset3').onclick = () => renderIso(randArray(9, 10, 95));
+        renderIso(SEDGEWICK_ARR);
+
+        /* =========================================================
+         *  06.3 · 3 Elementary Operations Interactive Demo
+         * ========================================================= */
+        const demoOpt = { r: 17, levelH: 54, gap: 44, minW: 260, top: 32, anim: 550 };
+        const demoRotLView = new TreeView(document.getElementById('demoRotLTree'), demoOpt);
+        const demoRotRView = new TreeView(document.getElementById('demoRotRTree'), demoOpt);
+        const demoFlipView = new TreeView(document.getElementById('demoFlipTree'), demoOpt);
+
+        function RB(k, red = false, l = null, r = null) {
+            const n = new RBNode(k, red);
+            n.left = l; n.right = r;
+            return n;
+        }
+
+        let rotLState = false;
+        function drawDemoRotL() {
+            if (!rotLState) {
+                // Trước khi rotateLeft(30): 30 có con phải ĐỎ là 60
+                const t = RB(30, false, RB(15, false), RB(60, true, RB(45, false), RB(80, false)));
+                demoRotLView.render(t, { cls: { 30: 'rot-focus', 60: 'rot-focus' }, badges: { 30: 'h', 60: 'x (ĐỎ phải!)' } });
+                document.getElementById('btnDemoRotL').textContent = '↻ Chạy Rotate Left';
+            } else {
+                // Sau khi rotateLeft(30): 60 lên làm cha, 30 xuống làm con trái ĐỎ
+                const t = RB(60, false, RB(30, true, RB(15, false), RB(45, false)), RB(80, false));
+                demoRotLView.render(t, { cls: { 60: 'done', 30: 'done' }, badges: { 60: 'x (cha mới)', 30: 'h (ĐỎ trái ✓)' } });
+                document.getElementById('btnDemoRotL').textContent = '↺ Đặt lại (Trước xoay)';
+            }
+        }
+        document.getElementById('btnDemoRotL').onclick = () => { rotLState = !rotLState; drawDemoRotL(); };
+        drawDemoRotL();
+
+        let rotRState = false;
+        function drawDemoRotR() {
+            if (!rotRState) {
+                // Trước khi rotateRight(70): 70 -> 40 (ĐỎ) -> 20 (ĐỎ) (2 cạnh đỏ liên tiếp bên trái)
+                const t = RB(70, false, RB(40, true, RB(20, true), RB(55, false)), RB(85, false));
+                demoRotRView.render(t, { cls: { 70: 'rot-focus', 40: 'rot-focus', 20: 'rot-focus' }, badges: { 70: 'h', 40: 'x (ĐỎ)', 20: 'ĐỎ-ĐỎ!' } });
+                document.getElementById('btnDemoRotR').textContent = '↺ Chạy Rotate Right';
+            } else {
+                // Sau khi rotateRight(70): 40 lên làm cha, có 2 con ĐỎ là 20 và 70 (sẵn sàng cho flipColors)
+                const t = RB(40, false, RB(20, true), RB(70, true, RB(55, false), RB(85, false)));
+                demoRotRView.render(t, { cls: { 40: 'done', 20: 'done', 70: 'done' }, badges: { 40: 'x (cha mới)', 20: 'ĐỎ', 70: 'h (ĐỎ)' } });
+                document.getElementById('btnDemoRotR').textContent = '↺ Đặt lại (Trước xoay)';
+            }
+        }
+        document.getElementById('btnDemoRotR').onclick = () => { rotRState = !rotRState; drawDemoRotR(); };
+        drawDemoRotR();
+
+        let flipState = false;
+        function drawDemoFlip() {
+            if (!flipState) {
+                // Trước khi flipColors(40): 50 là root đen, con trái 40 (đen) có 2 con ĐỎ 20 và 45
+                const t = RB(60, false, RB(35, false, RB(20, true), RB(45, true)), RB(80, false));
+                demoFlipView.render(t, { cls: { 35: 'flip-focus', 20: 'flip-focus', 45: 'flip-focus' }, badges: { 35: 'h (4-node)', 20: 'ĐỎ', 45: 'ĐỎ' } });
+                document.getElementById('btnDemoFlip').textContent = '🎨 Chạy Flip Colors';
+            } else {
+                // Sau khi flipColors(35): 20 và 45 thành ĐEN, 35 nối lên 60 bằng cạnh ĐỎ!
+                const t = RB(60, false, RB(35, true, RB(20, false), RB(45, false)), RB(80, false));
+                demoFlipView.render(t, { cls: { 35: 'done', 20: 'done', 45: 'done' }, badges: { 35: 'h (ĐỎ lên cha!)', 20: 'ĐEN ✓', 45: 'ĐEN ✓' } });
+                document.getElementById('btnDemoFlip').textContent = '↺ Đặt lại (Trước Flip)';
+            }
+        }
+        document.getElementById('btnDemoFlip').onclick = () => { flipState = !flipState; drawDemoFlip(); };
+        drawDemoFlip();
+
+        /* =========================================================
+         *  07 · LLRB Step-by-Step Simulator
+         * ========================================================= */
+        const RB_PUT_LINES = [
+            ['private Node put(Node h, int key) {', null],
+            ['  if (h == null)', 'null'],
+            ['    return new Node(key, RED);', 'null'],
+            ['  if (key < h.key)', 'lt'],
+            ['    h.left = put(h.left, key);', 'lt'],
+            ['  else if (key > h.key)', 'gt'],
+            ['    h.right = put(h.right, key);', 'gt'],
+            ['  else return h;', 'eq'],
+            ['', null],
+            ['  // 1. đỏ nghiêng phải → xoay trái', null],
+            ['  if (isRed(h.right) &&', 'rotL'],
+            ['      !isRed(h.left))', 'rotL'],
+            ['    h = rotateLeft(h);', 'rotL'],
+            ['  // 2. 2 đỏ trái liên tiếp → xoay phải', null],
+            ['  if (isRed(h.left) &&', 'rotR'],
+            ['      isRed(h.left.left))', 'rotR'],
+            ['    h = rotateRight(h);', 'rotR'],
+            ['  // 3. 2 con đều đỏ → tách 4-node', null],
+            ['  if (isRed(h.left) &&', 'flip'],
+            ['      isRed(h.right))', 'flip'],
+            ['    flipColors(h);', 'flip'],
+            ['', null],
+            ['  return h;', 'ret'],
+            ['}', null],
+        ];
+        document.getElementById('rbCode').innerHTML =
+            RB_PUT_LINES.map(([t, k]) => `<span class="ln" data-k="${k || ''}">${hlJava(t)}</span>`).join('');
+
+        const RBSim = { arr: [], steps: [], i: 0, timer: null };
+        const rbMainView = new TreeView(document.getElementById('rbTree'), { minW: 540, levelH: 64 });
+        const rb23SimView = new Tree23View(document.getElementById('rb23Tree'), { minW: 360, levelH: 60, leafGap: 42 });
+        const cmpRbFinalView = new TreeView(document.getElementById('cmpRbFinal'), { r: 16, levelH: 48, gap: 38, minW: 300, top: 28 });
+        const cmpBstFinalView = new TreeView(document.getElementById('cmpBstFinal'), { r: 16, levelH: 44, gap: 38, minW: 300, top: 28 });
+
+        function genRBSteps(arr) {
+            const steps = [];
+            let root = null;
+            steps.push({
+                k: 0, cur: -1, tree: null, bstArr: [],
+                msg: `Bắt đầu với <b>root = null</b>. Mọi node mới chèn vào LLRB đều được tô <b>cạnh ĐỎ</b> (gộp vào node lá của cây 2-3), sau đó tự cân bằng khi quay lên.`
+            });
+
+            arr.forEach((v, idx) => {
+                const path = [];
+                let statsRotL = 0, statsRotR = 0, statsFlip = 0;
+
+                if (!root) {
+                    root = new RBNode(v, false);
+                    steps.push({
+                        k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                        cls: { [v]: 'new' }, badges: { [v]: 'ROOT (ĐEN)' }, active23: [v], line: 'null', done: true,
+                        msg: `Chèn <b>${v}</b> vào cây rỗng → tạo node <b>${v}</b> và đặt <code>root.color = BLACK</code>.`
+                    });
+                    return;
+                }
+
+                // Hàm đệ quy thật trên root và chụp snapshot sau mỗi bước đi xuống / mỗi phép xoay-flip khi quay lên
+                function putTrace(h, parentSetter) {
+                    path.push(h.key);
+                    if (v === h.key) {
+                        steps.push({
+                            k: idx, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx),
+                            cls: { ...mk(path), [h.key]: 'found' }, path: [...path], active23: [v], line: 'eq',
+                            msg: `<b>${v}</b> == ${h.key} → đã có trong cây, bỏ qua.`
+                        });
+                        return h;
+                    }
+                    const goLeft = v < h.key;
+                    steps.push({
+                        k: idx, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx),
+                        cls: { ...mk(path), [h.key]: 'cur' }, path: [...path],
+                        ghost: { val: v, near: h.key }, active23: [h.key], line: goLeft ? 'lt' : 'gt',
+                        msg: `So sánh <b>${v}</b> ${goLeft ? '&lt;' : '&gt;'} ${h.key} → đi sang nhánh <b>${goLeft ? 'TRÁI' : 'PHẢI'}</b> của ${h.key}.`
+                    });
+
+                    if (goLeft) {
+                        if (!h.left) {
+                            h.left = new RBNode(v, true);
+                            parentSetter(h);
+                            steps.push({
+                                k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                                cls: { ...mk(path), [v]: 'new' }, badges: { [v]: '+RED' }, path: [...path, v], active23: [h.key, v], line: 'null',
+                                msg: `Gặp <code>null</code> bên trái ${h.key} → gắn node <b>${v}</b> bằng <b style="color:#f87171">cạnh ĐỎ nghiêng trái</b> (gộp vào node của ${h.key} trên cây 2-3).`
+                            });
+                        } else {
+                            putTrace(h.left, child => { h.left = child; parentSetter(h); });
+                        }
+                    } else {
+                        if (!h.right) {
+                            h.right = new RBNode(v, true);
+                            parentSetter(h);
+                            steps.push({
+                                k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                                cls: { ...mk(path), [v]: 'new' }, badges: { [v]: 'ĐỎ phải!' }, path: [...path, v], active23: [h.key, v], line: 'null',
+                                msg: `Gặp <code>null</code> bên phải ${h.key} → gắn node <b>${v}</b> bằng <b style="color:#fbbf24">cạnh ĐỎ bên phải</b> (tạm thời nghiêng phải, cần sửa khi quay lên!).`
+                            });
+                        } else {
+                            putTrace(h.right, child => { h.right = child; parentSetter(h); });
+                        }
+                    }
+
+                    // Quay lên kiểm tra 3 điều kiện tại node h
+                    // 1. rotateLeft
+                    if (isRed(h.right) && !isRed(h.left)) {
+                        const oldH = h.key, rKey = h.right.key;
+                        steps.push({
+                            k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                            cls: { [oldH]: 'rot-focus', [rKey]: 'rot-focus' },
+                            badges: { [oldH]: 'rotateLeft', [rKey]: 'ĐỎ phải' },
+                            active23: [oldH, rKey], line: 'rotL', warn: true,
+                            msg: `⚠️ Quay lên tại <b>${oldH}</b>: cạnh phải <b>${oldH} → ${rKey}</b> là ĐỎ trong khi cạnh trái ĐEN → gọi <code>rotateLeft(${oldH})</code>!`
+                        });
+                        h = rotateLeftRB(h);
+                        parentSetter(h);
+                        statsRotL++;
+                        steps.push({
+                            k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                            cls: { [h.key]: 'done', [oldH]: 'done' },
+                            badges: { [h.key]: 'cha mới', [oldH]: 'ĐỎ trái ✓' },
+                            active23: [h.key, oldH], line: 'rotL',
+                            msg: `↻ Đã <code>rotateLeft</code>: <b>${h.key}</b> lên làm cha, cạnh đỏ <b>${h.key} → ${oldH}</b> đã nghiêng trái hợp lệ.`
+                        });
+                    }
+
+                    // 2. rotateRight
+                    if (isRed(h.left) && isRed(h.left.left)) {
+                        const oldH = h.key, lKey = h.left.key, llKey = h.left.left.key;
+                        steps.push({
+                            k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                            cls: { [oldH]: 'rot-focus', [lKey]: 'rot-focus', [llKey]: 'rot-focus' },
+                            badges: { [oldH]: 'rotateRight', [lKey]: 'ĐỎ 1', [llKey]: 'ĐỎ 2!' },
+                            active23: [oldH, lKey, llKey], line: 'rotR', warn: true,
+                            msg: `⚠️ Tại <b>${oldH}</b>: có <b>2 cạnh ĐỎ liên tiếp bên trái</b> (${oldH} → ${lKey} → ${llKey}, tạo thành 4-node tạm lệch trái) → gọi <code>rotateRight(${oldH})</code>!`
+                        });
+                        h = rotateRightRB(h);
+                        parentSetter(h);
+                        statsRotR++;
+                        steps.push({
+                            k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                            cls: { [h.key]: 'done', [llKey]: 'done', [oldH]: 'done' },
+                            badges: { [h.key]: 'giữa lên', [llKey]: 'ĐỎ trái', [oldH]: 'ĐỎ phải' },
+                            active23: [h.key, llKey, oldH], line: 'rotR',
+                            msg: `↺ Đã <code>rotateRight</code>: key ở giữa <b>${h.key}</b> lên làm cha của 2 con đỏ <b>${llKey}</b> và <b>${oldH}</b> (cân bằng 4-node tạm).`
+                        });
+                    }
+
+                    // 3. flipColors
+                    if (isRed(h.left) && isRed(h.right)) {
+                        const hKey = h.key, lKey = h.left.key, rKey = h.right.key;
+                        steps.push({
+                            k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                            cls: { [hKey]: 'flip-focus', [lKey]: 'flip-focus', [rKey]: 'flip-focus' },
+                            badges: { [hKey]: 'flipColors', [lKey]: 'ĐỎ', [rKey]: 'ĐỎ' },
+                            active23: [hKey, lKey, rKey], line: 'flip', warn: true,
+                            msg: `🎨 Tại <b>${hKey}</b>: cả 2 con <b>${lKey}</b> và <b>${rKey}</b> đều ĐỎ (4-node tạm <code>[${lKey}|${hKey}|${rKey}]</code> trên cây 2-3) → gọi <code>flipColors(${hKey})</code> để tách 4-node!`
+                        });
+                        flipColorsRB(h);
+                        parentSetter(h);
+                        statsFlip++;
+                        steps.push({
+                            k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                            cls: { [hKey]: 'done', [lKey]: 'done', [rKey]: 'done' },
+                            badges: { [hKey]: 'ĐỎ lên cha', [lKey]: 'ĐEN ✓', [rKey]: 'ĐEN ✓' },
+                            active23: [hKey, lKey, rKey], line: 'flip',
+                            msg: `✨ Đã <code>flipColors(${hKey})</code>: 2 con <b>${lKey}</b>, <b>${rKey}</b> thành ĐEN (tách thành hai 2-node) và đẩy key giữa <b>${hKey}</b> (cạnh ĐỎ) lên tầng cha!`
+                        });
+                    }
+                    return h;
+                }
+
+                putTrace(root, newRoot => { root = newRoot; });
+
+                if (root.color) {
+                    root.color = false;
+                    steps.push({
+                        k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                        cls: { [root.key]: 'new' }, badges: { [root.key]: 'ROOT → ĐEN (+1 tầng)' },
+                        active23: [root.key], line: 'ret', done: true,
+                        msg: `🌟 Root <b>${root.key}</b> vừa được đẩy cạnh ĐỎ lên → ép <code>root.color = BLACK</code>. Cây 2-3 vừa <b>tách root và tăng chiều cao thêm 1 tầng</b> trên toàn bộ cây!`
+                    });
+                } else {
+                    const opsSummary = (statsRotL || statsRotR || statsFlip)
+                        ? `(${[statsRotL ? `${statsRotL} rotateLeft` : '', statsRotR ? `${statsRotR} rotateRight` : '', statsFlip ? `${statsFlip} flipColors` : ''].filter(Boolean).join(', ')})`
+                        : '(không cần xoay/đổi màu)';
+                    steps.push({
+                        k: idx + 1, cur: idx, tree: cloneRB(root), bstArr: arr.slice(0, idx + 1),
+                        cls: { [v]: 'done' }, active23: [v], line: 'ret', done: true,
+                        msg: `✓ Hoàn tất <code>put(${v})</code> ${opsSummary}. Cả 3 bất biến của LLRB đều thỏa mãn!`
+                    });
+                }
+            });
+
+            const bstRoot = buildTree(arr);
+            steps.push({
+                k: arr.length, cur: -1, tree: cloneRB(root), bstArr: [...arr],
+                cls: {}, badges: {}, active23: [], final: true,
+                msg: `🎉 Đã chèn xong cả mảng! Chiều cao LLRB <b>h = ${height(root)}</b> (chiều cao cây 2-3 = <b>${Math.max(0, blackHeight(root) - 1)}</b>), so với BST thường <b>h = ${height(bstRoot)}</b>.`
+            });
+            return steps;
+        }
+
+        function loadRBArray(arr) {
+            stopRBPlay();
+            RBSim.arr = arr;
+            RBSim.steps = genRBSteps(arr);
+            RBSim.i = RBSim.steps.length - 1; // Hiển thị ngay cây hoàn chỉnh đầu tiên hoặc bước 0? Hãy bắt đầu ở bước 0 khi bấm bước tiếp, hoặc hiển thị cây đầy đủ ở phần đối chiếu dưới!
+            RBSim.i = 0;
+            document.getElementById('rbArrInput').value = arr.join(', ');
+            renderRBSim();
+            // Render bảng đối chiếu cuối cùng
+            const finalRB = buildRBTree(arr);
+            const finalBST = buildTree(arr);
+            cmpRbFinalView.render(finalRB);
+            cmpBstFinalView.render(finalBST);
+            const hRB = height(finalRB), bh = Math.max(0, blackHeight(finalRB) - 1), hBST = height(finalBST);
+            document.getElementById('cmpRbBadge').textContent = `✓ Red-Black BST (LLRB): h = ${hRB} (chiều cao 2-3 = ${bh})`;
+            document.getElementById('cmpBstBadge').textContent = `BST thường: h = ${hBST}${hBST >= arr.length - 1 && arr.length > 3 ? ' (Suy biến thành Linked List!)' : ''}`;
+            document.getElementById('rbVsBstLead').innerHTML =
+                `Với mảng <code>[${arr.join(', ')}]</code> (${arr.length} phần tử): <b>LLRB</b> giữ chiều cao <b>h = ${hRB}</b> (số cạnh đen tới mọi lá = <b>${bh}</b>), trong khi <b>BST thường</b> có chiều cao <b>h = ${hBST}</b>.`;
+        }
+
+        function renderRBSim() {
+            const s = RBSim.steps[RBSim.i];
+            rbMainView.render(s.tree, { cls: s.cls || {}, badges: s.badges || {}, path: s.path || [], ghost: s.ghost || null });
+            const info23 = rb23SimView.render(s.tree, s.active23 || []);
+
+            const b23 = document.getElementById('rb23Badge');
+            if (info23.has4Node) {
+                b23.textContent = '⚡ Có 4-node tạm (chờ flipColors)';
+                b23.className = 'badge r';
+            } else {
+                b23.textContent = `✓ Perfect Balance (h₂₃ = ${info23.maxD})`;
+                b23.className = 'badge g';
+            }
+
+            // Stats bar
+            const nNodes = countNodes(s.tree);
+            const hRB = Math.max(0, height(s.tree));
+            const bh = s.tree ? Math.max(0, blackHeight(s.tree) - 1) : 0;
+            const hBST = Math.max(0, height(buildTree(s.bstArr || [])));
+            document.getElementById('rbStats').innerHTML = `
+                <span class="rb-stat-pill">Nodes: <b>${nNodes}</b></span>
+                <span class="rb-stat-pill">h (LLRB): <b style="color:#6ee7b7">${hRB}</b></span>
+                <span class="rb-stat-pill">Black-height (h₂₃): <b style="color:#67e8f9">${bh}</b></span>
+                <span class="rb-stat-pill">Cạnh ĐỎ: <b style="color:#f87171">${countRedLinks(s.tree)}</b></span>
+                <span class="rb-stat-pill">h (BST thường): <b style="color:${hBST > hRB + 1 ? '#fca5a5' : '#fcd34d'}">${hBST}</b></span>
+            `;
+
+            const msg = document.getElementById('rbMsg');
+            msg.innerHTML = s.msg;
+            msg.className = 'msg' + (s.done || s.final ? ' ok' : s.warn ? ' warn' : '');
+
+            document.getElementById('rbArrChips').innerHTML = RBSim.arr.map((x, i) => {
+                let c = '';
+                if (i === s.cur && s.done) c = 'just';
+                else if (i === s.cur) c = 'active';
+                else if (i < s.k) c = 'done';
+                return `<div class="chip ${c}"><small>[${i}]</small>${x}</div>`;
+            }).join('');
+
+            document.querySelectorAll('#rbCode .ln').forEach(l => l.classList.toggle('hl', !!s.line && l.dataset.k === s.line));
+
+            document.getElementById('rbProg').style.width = (RBSim.i / Math.max(1, RBSim.steps.length - 1) * 100) + '%';
+            document.getElementById('rbStepLabel').textContent = `bước ${RBSim.i}/${RBSim.steps.length - 1}`;
+            document.getElementById('btnRbPrev').disabled = document.getElementById('btnRbFirst').disabled = RBSim.i === 0;
+            document.getElementById('btnRbNext').disabled = document.getElementById('btnRbLast').disabled = document.getElementById('btnRbNextVal').disabled = RBSim.i === RBSim.steps.length - 1;
+        }
+
+        function goRB(i) { RBSim.i = Math.max(0, Math.min(RBSim.steps.length - 1, i)); renderRBSim(); }
+        function nextRBVal() {
+            let j = RBSim.i + 1;
+            while (j < RBSim.steps.length - 1 && !RBSim.steps[j].done) j++;
+            goRB(j);
+        }
+        function stopRBPlay() {
+            clearTimeout(RBSim.timer); RBSim.timer = null;
+            document.getElementById('btnRbPlay').textContent = '▶ Tự chạy';
+        }
+        function playRB() {
+            if (RBSim.timer) { stopRBPlay(); return; }
+            if (RBSim.i === RBSim.steps.length - 1) goRB(0);
+            document.getElementById('btnRbPlay').textContent = '⏸ Dừng';
+            const loop = () => {
+                if (RBSim.i >= RBSim.steps.length - 1) { stopRBPlay(); return; }
+                goRB(RBSim.i + 1);
+                RBSim.timer = setTimeout(loop, 1750 - +document.getElementById('rbSpeed').value);
+            };
+            RBSim.timer = setTimeout(loop, 200);
+        }
+
+        document.getElementById('btnRbNext').onclick = () => { stopRBPlay(); goRB(RBSim.i + 1); };
+        document.getElementById('btnRbPrev').onclick = () => { stopRBPlay(); goRB(RBSim.i - 1); };
+        document.getElementById('btnRbFirst').onclick = () => { stopRBPlay(); goRB(0); };
+        document.getElementById('btnRbLast').onclick = () => { stopRBPlay(); goRB(RBSim.steps.length - 1); };
+        document.getElementById('btnRbNextVal').onclick = () => { stopRBPlay(); nextRBVal(); };
+        document.getElementById('btnRbPlay').onclick = playRB;
+        document.getElementById('rbHorizChk').onchange = e => rbMainView.setHorizontalRed(e.target.checked);
+        document.getElementById('btnRbAsc').onclick = () => { loadRBArray([10, 20, 30, 40, 50, 60, 70, 80, 90]); goRB(RBSim.steps.length - 1); };
+        document.getElementById('btnRbDesc').onclick = () => { loadRBArray([90, 80, 70, 60, 50, 40, 30, 20, 10]); goRB(RBSim.steps.length - 1); };
+        document.getElementById('btnRbBook').onclick = () => { loadRBArray(SEDGEWICK_ARR); goRB(RBSim.steps.length - 1); };
+        document.getElementById('btnRbRandom').onclick = () => { loadRBArray(randArray(9, 10, 95)); goRB(RBSim.steps.length - 1); };
+        document.getElementById('btnRbLoad').onclick = () => {
+            const arr = document.getElementById('rbArrInput').value.split(/[\s,;]+/).filter(Boolean).map(Number).filter(n => Number.isFinite(n)).map(n => Math.round(n)).slice(0, 18);
+            if (arr.length) loadRBArray(arr);
+        };
+        document.getElementById('rbArrInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnRbLoad').click(); });
+
+        // Mặc định nạp mảng tăng dần 10..90 và hiển thị kết quả cuối (bấm Bước tiếp / Tự chạy để xem từ đầu)
+        loadRBArray([10, 20, 30, 40, 50, 60, 70, 80, 90]);
+        goRB(RBSim.steps.length - 1);
+
+        /* =========================================================
+         *  08 · Code tabs
          * ========================================================= */
         const CODE = {
             'Node': [`class Node {
@@ -2305,6 +3272,69 @@ boolean isBST(Node x, Integer lo, Integer hi) {
 }
 // gọi: isBST(root, null, null)`,
                 'Kiểm tra theo <b>khoảng</b> (lo, hi) nên bắt được cái bẫy ở mục 2: 60 nằm trong khoảng (30, 50), mà 60 ≥ 50 nên trả về false.'],
+            '🔴 LLRB Node': [`private static final boolean RED   = true;
+private static final boolean BLACK = false;
+
+private class Node {
+    int key;
+    Node left, right;
+    boolean color;      // màu của link từ CHA trỏ tới node này!
+
+    Node(int key, boolean color) {
+        this.key = key;
+        this.color = color;
+    }
+}
+
+private boolean isRed(Node x) {
+    if (x == null) return false;   // mọi link null đều là BLACK
+    return x.color == RED;
+}`,
+                'Mỗi node chỉ có đúng 1 cha, nên màu của cạnh nối <code>parent → x</code> được lưu ngay trong biến <code>x.color</code>. Các link <code>null</code> luôn được quy ước là <b>BLACK</b>.'],
+            '🔴 rotate / flip': [`private Node rotateLeft(Node h) {   // sửa cạnh ĐỎ nghiêng phải → nghiêng trái
+    Node x = h.right;
+    h.right = x.left;
+    x.left = h;
+    x.color = h.color;
+    h.color = RED;
+    return x;
+}
+
+private Node rotateRight(Node h) {  // xoay phải khi có 2 cạnh ĐỎ trái liên tiếp
+    Node x = h.left;
+    h.left = x.right;
+    x.right = h;
+    x.color = h.color;
+    h.color = RED;
+    return x;
+}
+
+private void flipColors(Node h) {   // tách 4-node tạm: đẩy ĐỎ lên cha
+    h.color = RED;
+    h.left.color = BLACK;
+    h.right.color = BLACK;
+}`,
+                'Cả 3 phép biến đổi <code>rotateLeft</code>, <code>rotateRight</code>, <code>flipColors</code> đều chạy trong <b>O(1)</b> và bảo toàn cả <b>Symmetric Order</b> lẫn <b>Perfect Black Balance</b>!'],
+            '🔴 LLRB put': [`public void put(int key) {
+    root = put(root, key);
+    root.color = BLACK;   // root luôn luôn là BLACK
+}
+
+private Node put(Node h, int key) {
+    if (h == null) return new Node(key, RED);   // chèn ở đáy bằng link ĐỎ
+
+    if      (key < h.key) h.left  = put(h.left,  key);
+    else if (key > h.key) h.right = put(h.right, key);
+    else                  /* key == h.key */ ;
+
+    // Chỉ thêm đúng 3 dòng if này so với BST chuẩn:
+    if (isRed(h.right) && !isRed(h.left))    h = rotateLeft(h);   // 1. nghiêng trái
+    if (isRed(h.left)  && isRed(h.left.left)) h = rotateRight(h); // 2. cân bằng 4-node
+    if (isRed(h.left)  && isRed(h.right))     flipColors(h);      // 3. tách 4-node
+
+    return h;
+}`,
+                'Chỉ cần thêm <b>3 dòng <code>if</code></b> trước lệnh <code>return h;</code> của BST chuẩn là ta có ngay cây <b>Left-Leaning Red-Black BST</b> đảm bảo chiều cao <b>≤ 2 lg N</b> trong mọi trường hợp!'],
         };
         const tabs = document.getElementById('codeTabs');
         Object.keys(CODE).forEach((name, i) => {
