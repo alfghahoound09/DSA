@@ -1,0 +1,3614 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Tổng Hợp — Complexity, Stack, Queue, Heap, BST, AVL, LLRB &amp; Sorting</title>
+<style>
+:root {
+  --bg: #0b0f19;
+  --bg2: #111827;
+  --card: #161f33;
+  --code: #0d1117;
+  --tx: #e5e7eb;
+  --tx2: #9ca3af;
+  --mut: #6b7280;
+  --border: #1f2937;
+  --pri: #6366f1;
+  --pri2: #818cf8;
+  --g: #10b981;
+  --y: #f59e0b;
+  --c: #06b6d4;
+  --r: #ef4444;
+  --p: #ec4899;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  line-height: 1.65;
+}
+body {
+  display: flex;
+  flex-direction: row;
+}
+/* Sidebar TOC — Independent left pane (100vh) */
+aside#toc {
+  width: 280px;
+  min-width: 280px;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 18px 14px 32px;
+  font-size: 13.5px;
+  flex-shrink: 0;
+}
+aside#toc .brand {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+aside#toc .sub {
+  font-size: 11.5px;
+  color: var(--mut);
+  margin-bottom: 12px;
+}
+#search {
+  width: 100%;
+  padding: 7px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--tx);
+  font-size: 13px;
+  margin-bottom: 12px;
+  outline: none;
+}
+#search:focus { border-color: var(--pri); }
+#toc .grp {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mut);
+  margin: 14px 6px 5px;
+}
+#toc a {
+  display: block;
+  padding: 5px 8px;
+  color: var(--tx2);
+  text-decoration: none;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: 0.15s;
+}
+#toc a.sub-link {
+  padding-left: 18px;
+  font-size: 12.5px;
+  color: var(--mut);
+}
+#toc a:hover {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.08);
+}
+#toc a.active {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.16);
+  border-left-color: var(--pri);
+  font-weight: 600;
+}
+#toc a.hidden-by-search { display: none; }
+
+/* Main Content */
+main {
+  max-width: 1060px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 36px 40px 80px;
+}
+header.hero {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(6, 182, 212, 0.08));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 36px;
+}
+header.hero h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #fff, #a5b4fc, #67e8f9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+header.hero p { color: var(--tx2); font-size: 14.5px; }
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  color: var(--tx);
+  text-decoration: none;
+}
+.pill:hover { border-color: var(--pri2); color: #fff; }
+
+section {
+  margin-bottom: 52px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 20px;
+}
+h2[id], h3[id], h4[id] {
+  scroll-margin-top: 24px;
+}
+@keyframes jumpPulse {
+  0%   { background-color: rgba(99, 102, 241, 0.32); box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.18); border-radius: 6px; }
+  100% { background-color: transparent; box-shadow: none; }
+}
+.jump-flash {
+  animation: jumpPulse 1.4s ease-out;
+}
+section:first-of-type { border-top: none; padding-top: 0; }
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--pri2);
+  margin-bottom: 8px;
+}
+h2 {
+  font-size: 23px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 14px;
+}
+h3 {
+  font-size: 17.5px;
+  font-weight: 700;
+  color: #e0e7ff;
+  margin: 26px 0 10px;
+  padding-left: 10px;
+  border-left: 3px solid var(--pri);
+}
+h4 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #f3f4f6;
+  margin: 14px 0 6px;
+}
+p { margin-bottom: 10px; color: var(--tx); }
+ul, ol { margin: 8px 0 14px 22px; color: var(--tx); }
+li { margin: 4px 0; }
+code {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.88em;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #93c5fd;
+}
+.mono { font-family: 'JetBrains Mono', Consolas, monospace; }
+
+/* Cards & Grids */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.card h4 { margin-top: 0; color: #a5b4fc; }
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 12px 0;
+}
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 12px 0;
+}
+.note {
+  background: rgba(245, 158, 11, 0.09);
+  border-left: 4px solid var(--y);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 14px 0;
+  font-size: 14px;
+}
+.note.ok {
+  background: rgba(16, 185, 129, 0.09);
+  border-left-color: var(--g);
+}
+.note.danger {
+  background: rgba(239, 68, 68, 0.09);
+  border-left-color: var(--r);
+}
+pre.ascii {
+  background: var(--code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  overflow-x: auto;
+  margin: 10px 0 14px;
+}
+
+/* Codebox */
+.codebox {
+  background: var(--code);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 12px 0 18px;
+}
+.codebox .bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 14px;
+  background: #161b22;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--tx2);
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+.codebox .bar button {
+  background: rgba(99, 102, 241, 0.18);
+  color: #c7d2fe;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 5px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.codebox .bar button:hover { background: var(--pri); color: #fff; }
+.codebox pre {
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.58;
+  color: #e5e7eb;
+}
+.kw { color: #ff7b72; font-weight: 600; }
+.ty { color: #ffa657; }
+.fn { color: #d2a8ff; }
+.st { color: #a5d6ff; }
+.nu { color: #79c0ff; }
+.cm { color: #8b949e; font-style: italic; }
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 18px;
+  font-size: 13.5px;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+}
+th, td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  background: #1e293b;
+  color: #cbd5e1;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+tr:hover td { background: rgba(255, 255, 255, 0.02); }
+.g { color: var(--g); font-weight: 700; }
+.y { color: var(--y); font-weight: 700; }
+.c { color: var(--c); font-weight: 700; }
+.r { color: var(--r); font-weight: 700; }
+
+/* Visualizer */
+.ctrl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+select, input[type="number"] {
+  background: var(--bg);
+  color: var(--tx);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+button {
+  background: #1f2937;
+  color: var(--tx);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+button.pri {
+  background: var(--pri);
+  color: #fff;
+  border-color: var(--pri);
+  font-weight: 600;
+}
+.viz {
+  height: 210px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  background: var(--code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 8px 0;
+  margin-bottom: 10px;
+}
+.viz > div {
+  flex: 1;
+  background: var(--pri2);
+  border-radius: 2px 2px 0 0;
+  transition: height 0.05s;
+}
+.viz > div.cmp { background: var(--y); }
+.viz > div.sw { background: var(--r); }
+.viz > div.done { background: var(--g); }
+
+/* Interactive Data Structure Visualizers */
+.ds-viz {
+  background: var(--code);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 12px 0;
+}
+.ds-log {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 12.5px;
+  color: #c7d2fe;
+  margin-top: 10px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.arr-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 10px 0;
+}
+.cell {
+  min-width: 48px;
+  height: 54px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #161f33;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s;
+  padding: 2px 6px;
+}
+.cell .idx {
+  font-size: 10px;
+  color: var(--mut);
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+.cell .val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+.cell.empty {
+  background: rgba(255, 255, 255, 0.02);
+  border-style: dashed;
+}
+.cell.empty .val { color: var(--mut); font-weight: 400; font-size: 11px; }
+.cell.active { border-color: var(--pri); background: rgba(99, 102, 241, 0.25); transform: translateY(-2px); }
+.cell.hi-y { border-color: var(--y); background: rgba(245, 158, 11, 0.25); transform: scale(1.06); }
+.cell.hi-g { border-color: var(--g); background: rgba(16, 185, 129, 0.25); transform: scale(1.06); }
+.cell.hi-r { border-color: var(--r); background: rgba(239, 68, 68, 0.25); transform: scale(1.06); }
+.cell.hi-c { border-color: var(--c); background: rgba(6, 182, 212, 0.25); }
+.cell.dim { opacity: 0.3; }
+.ptr-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  position: absolute;
+  top: -10px;
+  background: var(--pri);
+  color: #fff;
+  white-space: nowrap;
+}
+.ll-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0;
+  min-height: 52px;
+}
+.ll-node {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--pri2);
+  border-radius: 7px;
+  background: rgba(99, 102, 241, 0.16);
+  overflow: hidden;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 13px;
+}
+.ll-node .v { padding: 6px 10px; font-weight: 700; color: #fff; }
+.ll-node .nx { padding: 6px 7px; background: rgba(0, 0, 0, 0.35); color: var(--c); font-size: 11px; border-left: 1px solid rgba(99, 102, 241, 0.3); }
+.ll-arrow { color: var(--tx2); font-weight: 700; font-size: 14px; }
+svg.tree-svg {
+  width: 100%;
+  height: 310px;
+  background: #0b0f17;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: block;
+}
+input[type="text"].inp-sm {
+  background: var(--bg);
+  color: var(--tx);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  width: 90px;
+}
+
+.top-btn {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--pri);
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+}
+@media (max-width: 920px) {
+  main { padding: 48px 16px 60px; }
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<button id="tocToggle" class="toc-toggle" onclick="document.body.classList.toggle('toc-collapsed'); this.textContent = document.body.classList.contains('toc-collapsed') ? '☰ Hiện Mục Lục' : '✕ Ẩn Mục Lục'" title="Ẩn / Hiện thanh mục lục" style="left: 279.518px; top: 6px;">✕ Ẩn Mục Lục</button>
+
+<aside id="toc">
+  <div class="brand">📘 DSA Tổng Hợp</div>
+  <div class="sub">Sedgewick 4th Ed · Full Code &amp; Lý thuyết</div>
+  <input id="search" type="text" placeholder="🔍 Tìm mục (vd: avl, heap, quick)...">
+
+  <div class="grp">01 · Độ phức tạp</div>
+  <a href="#complexity">1. Phân tích thuật toán &amp; Complexity</a>
+  <a href="#c-asym" class="sub-link">1.1 Ký hiệu ~, O, Ω, Θ</a>
+  <a href="#c-rules" class="sub-link">1.2 Quy tắc tính &amp; Vòng lặp</a>
+  <a href="#c-mem" class="sub-link">1.3 Doubling Test &amp; Bộ nhớ 64-bit</a>
+  <a href="#c-code" class="sub-link">1.4 Binary Search, 3-Sum, Bitonic</a>
+  <a href="#c-viz" class="sub-link">1.5 🎬 Visualizer: Binary Search &amp; Big-O</a>
+
+  <div class="grp">02 · Stack &amp; Queue</div>
+  <a href="#stack">2. Stack (Ngăn xếp — LIFO)</a>
+  <a href="#st-impl" class="sub-link">2.1 Cài đặt Linked List &amp; Array</a>
+  <a href="#st-apps" class="sub-link">2.2 Ngoặc, Postfix, Infix, LinkedList</a>
+  <a href="#st-viz" class="sub-link">2.3 🎬 Visualizer: Stack &amp; Ngoặc</a>
+  <a href="#queue">3. Queue (Hàng đợi — FIFO)</a>
+  <a href="#q-impl" class="sub-link">3.1 Linked List &amp; Circular Array</a>
+  <a href="#q-two-stack" class="sub-link">3.2 Queue bằng 2 Stack &amp; So sánh</a>
+  <a href="#q-viz" class="sub-link">3.3 🎬 Visualizer: Queue (3 cách cài)</a>
+
+  <div class="grp">03 · Hàng đợi ưu tiên</div>
+  <a href="#heap">4. Priority Queue &amp; Binary Heap</a>
+  <a href="#h-core" class="sub-link">4.1 Biểu diễn mảng, swim &amp; sink</a>
+  <a href="#h-build" class="sub-link">4.2 Build Heap O(N) &amp; Tính chất</a>
+  <a href="#h-code" class="sub-link">4.3 Code MaxPQ, MinPQ &amp; Bài tập</a>
+  <a href="#h-viz" class="sub-link">4.4 🎬 Visualizer: Binary Heap</a>
+
+  <div class="grp">04 · Cây tìm kiếm</div>
+  <a href="#bst">5. Binary Search Tree (BST)</a>
+  <a href="#bst-ops" class="sub-link">5.1 Search, Insert, Min/Max, Floor</a>
+  <a href="#bst-del" class="sub-link">5.2 Hibbard Deletion &amp; Duyệt cây</a>
+  <a href="#bst-code" class="sub-link">5.3 Code BST đầy đủ + isBST, LCA</a>
+  <a href="#bst-viz" class="sub-link">5.4 🎬 Visualizer: BST &amp; Duyệt cây</a>
+  <a href="#avl">6. Cây Cân Bằng: AVL, 2-3 &amp; LLRB</a>
+  <a href="#avl-rot" class="sub-link">6.1 AVL Tree &amp; 4 phép xoay LL/RR/LR/RL</a>
+  <a href="#avl-code" class="sub-link">6.2 Code AVL Tree đầy đủ</a>
+  <a href="#rb-tree" class="sub-link">6.3 Cây 2-3 &amp; Red-Black BST (LLRB)</a>
+  <a href="#avl-viz" class="sub-link">6.4 🎬 Visualizer: AVL &amp; Red-Black</a>
+
+  <div class="grp">05 · Sắp xếp &amp; Tổng kết</div>
+  <a href="#sort">7. Các thuật toán sắp xếp</a>
+  <a href="#s-selection" class="sub-link">7.1 Selection Sort</a>
+  <a href="#s-insertion" class="sub-link">7.2 Insertion Sort</a>
+  <a href="#s-shell" class="sub-link">7.3 Shell Sort</a>
+  <a href="#s-merge" class="sub-link">7.4 Merge Sort (Top-down &amp; BU)</a>
+  <a href="#s-quick" class="sub-link">7.5 Quick Sort, 3-Way &amp; Quickselect</a>
+  <a href="#s-heap" class="sub-link">7.6 Heap Sort</a>
+  <a href="#s-other" class="sub-link">7.7 Counting, Radix, Bubble &amp; Shuffle</a>
+  <a href="#s-viz" class="sub-link">7.8 🎬 Visualizer</a>
+  <a href="#cheat">8. Bảng tổng kết Cheat Sheet</a>
+  <a href="#tips">9. Mẹo làm bài &amp; Bẫy đề thi</a>
+</aside>
+
+<main>
+<header class="hero">
+  <h1>Tài Liệu Tổng Hợp Cấu Trúc Dữ Liệu &amp; Giải Thuật (DSA)</h1>
+  <p>Tổng hợp toàn bộ lý thuyết cốt lõi, phân tích độ phức tạp (Complexity), cách cài đặt chi tiết và code Java chuẩn cho <b>Complexity, Stack, Queue, Priority Queue (Binary Heap), BST, AVL Tree, 2-3 Tree, Red-Black BST (LLRB)</b> và <b>Các thuật toán Sắp xếp (Sorting)</b>.</p>
+  <div class="pill-row">
+    <a class="pill" href="#complexity">01 · Complexity</a>
+    <a class="pill" href="#stack">02 · Stack</a>
+    <a class="pill" href="#queue">03 · Queue</a>
+    <a class="pill" href="#heap">04 · Binary Heap</a>
+    <a class="pill" href="#bst">05 · BST</a>
+    <a class="pill" href="#avl">06 · AVL &amp; LLRB</a>
+    <a class="pill" href="#sort">07 · Sorting</a>
+    <a class="pill" href="#cheat">08 · Cheat Sheet</a>
+    <a class="pill" href="#tips">09 · Exam Tips</a>
+  </div>
+</header>
+
+<!-- ===================================================== -->
+<section id="complexity">
+<span class="tag">01 · Algorithm Analysis &amp; Complexity</span>
+<h2>1. Phân tích thuật toán &amp; Độ phức tạp (Complexity)</h2>
+<p>Mục tiêu của phân tích thuật toán là dự đoán <b>thời gian chạy (Time Complexity)</b> và <b>dung lượng bộ nhớ (Space Complexity)</b> khi kích thước đầu vào <code>N</code> tăng lớn, độc lập với phần cứng máy tính.</p>
+
+<h3 id="c-asym">1.1 Mô hình chi phí &amp; Các ký hiệu tiệm cận (~, Θ, O, Ω)</h3>
+<p><b>Mô hình chi phí (Cost Model):</b> Chọn thao tác cơ bản chiếm phần lớn thời gian chạy (ví dụ: phép so sánh <code>compareTo</code>, phép truy cập mảng <code>a[i]</code>) và đếm tần suất thực hiện theo <code>N</code>.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h4>① Ký hiệu Xấp xỉ Tilde: <code>f(N) ~ g(N)</code></h4>
+    <p>Nghĩa là <code>lim<sub>N→∞</sub> f(N) / g(N) = 1</code>. <b>Giữ lại hệ số dẫn đầu</b> của số hạng bậc cao nhất, bỏ các số hạng bậc thấp.</p>
+    <ul>
+      <li><code>2N³ - 15N² + N  ~  2N³</code></li>
+      <li><code>½N(N - 1)  ~  ½N²</code></li>
+      <li><code>lg(2N) / lg N = (1 + lg N)/lg N ~ 1</code></li>
+      <li><code>lg(N² + 1) / lg N ~ 2 lg N / lg N ~ 2</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>② Big-Theta: <code>f(N) = Θ(g(N))</code> (Cận chặt / Order of Growth)</h4>
+    <p>Tồn tại <code>c₁, c₂ &gt; 0</code> sao cho <code>c₁·g(N) ≤ f(N) ≤ c₂·g(N)</code> với mọi <code>N ≥ N₀</code>. <b>Bỏ cả hệ số hằng dẫn đầu</b>, dùng để phân loại <b>bậc tăng trưởng (order of growth)</b>.</p>
+    <ul>
+      <li>Nếu <code>f(N) ~ c·g(N)</code> (<code>c &gt; 0</code>) thì <code>f(N) = Θ(g(N))</code>.</li>
+      <li>Ví dụ: <code>½N² - ½N = Θ(N²)</code>.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>③ Big-Oh: <code>f(N) = O(g(N))</code> (Cận trên — Upper Bound)</h4>
+    <p>Tồn tại <code>c &gt; 0</code> sao cho <code>f(N) ≤ c·g(N)</code> với mọi <code>N ≥ N₀</code>. Không vượt quá tốc độ tăng của <code>g(N)</code>.</p>
+    <ul>
+      <li><b>Chính xác toán học (dùng trong bài thi):</b> Nếu <code>f(N) = 2N² + 2N</code> thì <code>f(N)</code> thuộc cả <code>O(N²)</code>, <code>O(N³)</code>, <code>O(2ⁿ)</code> (vì đều là cận trên!).</li>
+      <li>Trong giao tiếp thường ngày, người ta hay dùng <code>O(...)</code> để chỉ worst-case, nhưng trong đề thi COS226 cần phân biệt rõ <b>cận trên <code>O</code></b> và <b>cận chặt <code>Θ</code></b>.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>④ Big-Omega: <code>f(N) = Ω(g(N))</code> (Cận dưới — Lower Bound)</h4>
+    <p>Tồn tại <code>c &gt; 0</code> sao cho <code>f(N) ≥ c·g(N)</code> với mọi <code>N ≥ N₀</code>. Tăng ít nhất nhanh bằng <code>g(N)</code>.</p>
+    <ul>
+      <li><b>Chính xác toán học:</b> Nếu <code>f(N) = 2N² + 2N</code> thì <code>f(N)</code> thuộc cả <code>Ω(N²)</code>, <code>Ω(N)</code>, <code>Ω(log N)</code>, <code>Ω(1)</code>.</li>
+      <li><code>f(N) = Θ(g(N))</code> khi và chỉ khi <code>f(N) = O(g(N))</code> <b>và</b> <code>f(N) = Ω(g(N))</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note">
+  <b>📌 Bẫy đề thi COS226 cực hay gặp:</b> Cho hàm <code>f(n) = n log²n + 3n√n - 5n</code>. Vì <code>√n = n^(0.5) &gt;&gt; log²n</code> khi <code>n → ∞</code>, số hạng trội nhất là <code>3n√n = 3n^(1.5)</code>. Do đó:<br>
+  • Xấp xỉ tilde: <code>~ 3n√n</code> (nếu đáp án ghi <code>~ n√n</code> là <b>SAI</b> vì thiếu hệ số 3!).<br>
+  • Cận chặt: <code>Θ(n√n)</code>. Cận trên đúng: <code>O(n√n)</code>, <code>O(n²)</code>, <code>O(n³)</code>. Cận dưới đúng: <code>Ω(n√n)</code>, <code>Ω(n)</code>, <code>Ω(log n)</code>.
+</div>
+
+<h3 id="c-rules">1.2 Các bậc tăng trưởng phổ biến &amp; Quy tắc đếm vòng lặp</h3>
+<table>
+  <tr><th>Bậc tăng (Θ)</th><th>Tên gọi</th><th>Khi N tăng gấp đôi (2N)</th><th>N = 10³</th><th>N = 10⁶</th><th>Ví dụ điển hình</th></tr>
+  <tr><td class="g">1</td><td>Hằng số (Constant)</td><td>Không đổi (×1)</td><td>1</td><td>1</td><td>Truy cập <code>a[i]</code>, <code>push</code>, <code>pop</code></td></tr>
+  <tr><td class="g">log N</td><td>Logarit (Logarithmic)</td><td>Cộng thêm 1 (+1)</td><td>~10</td><td>~20</td><td>Binary search, <code>swim</code>/<code>sink</code> trên Heap</td></tr>
+  <tr><td class="c">N</td><td>Tuyến tính (Linear)</td><td>Gấp 2 lần (×2)</td><td>10³</td><td>10⁶</td><td>Duyệt mảng, tìm min/max, Knuth shuffle</td></tr>
+  <tr><td class="c">N log N</td><td>Linearithmic</td><td>Hơn gấp 2 một chút</td><td>~10⁴</td><td>~2·10⁷</td><td>Mergesort, Heapsort, Quicksort (avg)</td></tr>
+  <tr><td class="y">N²</td><td>Bậc hai (Quadratic)</td><td>Gấp 4 lần (×4)</td><td>10⁶</td><td>10¹² (chậm)</td><td>Selection sort, Insertion sort, 2 vòng for lồng</td></tr>
+  <tr><td class="r">N³</td><td>Bậc ba (Cubic)</td><td>Gấp 8 lần (×8)</td><td>10⁹</td><td>10¹⁸ (bất khả thi)</td><td>3-Sum vét cạn, nhân ma trận chuẩn</td></tr>
+  <tr><td class="r">2ᴺ / N!</td><td>Mũ / Giai thừa</td><td>Bình phương</td><td>∞</td><td>∞</td><td>Duyệt mọi tập con / hoán vị</td></tr>
+</table>
+
+<h4>Các mẫu vòng lặp kinh điển trong đề thi (Tính cả ~ và Θ):</h4>
+<script type="text/plain" class="java" data-title="Các mẫu đếm vòng lặp hay ra thi (Tilde ~ và Big-Theta Θ)">
+// Mẫu 1: Vòng lặp bước nhảy hằng số k -> (N / k) lần
+for (int i = 10; i < n + 5; i += 2) op();
+// Số lần: ~ (1/2)n   -->  Θ(n)
+
+// Mẫu 2: Nhân đôi / Chia đôi biến chạy -> Logarit cơ số 2
+for (int i = 1; i <= n * n * n; i *= 2) op();
+// i chạy tới n^3 => số bước = lg(n^3) + 1  ~  3 lg n   -->  Θ(log n)
+
+// Mẫu 3: Hai vòng lặp phụ thuộc (j chạy từ i+1 đến N) -> Cấp số cộng
+for (int i = 0; i < n; i++)
+    for (int j = i + 1; j < n; j++) op();
+// Tổng: (n-1) + (n-2) + ... + 0 = n(n-1)/2  ~  (1/2)n^2   -->  Θ(n^2)
+
+// Mẫu 4: Vòng ngoài nhân đôi, vòng trong chạy tới i (BẪY RẤT HAY NHẦM VỚI N LOG N!)
+for (int i = 1; i < n; i *= 2)
+    for (int j = 0; j < i; j++) op();
+// Tổng cấp số nhân: 1 + 2 + 4 + 8 + ... + n/2 + n  ~  2n   -->  Θ(n) (KHÔNG PHẢI n log n!)
+
+// Mẫu 5: Vòng ngoài chia đôi, vòng trong chạy tới n_hiện_tại
+for (int m = n; m > 0; m /= 2)
+    for (int i = 0; i < m; i++) op();
+// Tổng: n + n/2 + n/4 + ... + 1  ~  2n   -->  Θ(n)
+
+// Mẫu 6: Vòng ngoài chạy i*i < n (tức i < √n), vòng trong nhân 3
+for (int i = 0; i * i < n; i++)
+    for (int j = 1; j < n; j *= 3) op();
+// Ngoài: √n lần; Trong: log_3(n) lần  =>  ~ √n * log_3(n)   -->  Θ(√n log n)
+
+// Mẫu 7 (Đề thi COS226 f25):
+for (int i = 0; i < n * n; i++)
+    for (int j = i + 1; j < n * n; j++)
+        for (int k = 1; k <= n * n; k = k * 2) op();
+// Hai vòng đầu với M = n^2 cặp: ~ (1/2)M^2 = (1/2)n^4
+// Vòng k: lg(n^2) = 2 lg n  => Tổng: ~ (1/2)n^4 * (2 lg n) = ~ n^4 lg n   -->  Θ(n^4 log n)
+
+// Mẫu 8 (Đề thi COS226 f24): giả sử n chia hết cho 100
+for (int i = 1; i <= n; i++)
+    for (int j = n; j >= i; j--)
+        for (int k = 1; k <= n; k = k + n / 100) op();
+// Hai vòng đầu: n(n+1)/2 ~ (1/2)n^2. Vòng trong: bước nhảy n/100 nên chạy đúng 100 lần!
+// Tổng: ~ (1/2)n^2 * 100 = ~ 50n^2   -->  Θ(n^2)
+
+// Mẫu 9 (Đề thi Cuối kỳ ĐHQGHN 2025-2026):
+for (int i = 0; i < n; i++)
+    for (int j = 0; j < m; j++) {
+        for (int k = 0; k < n; k++) x += k;
+        for (int k = 0; k < m; k++) x += k;
+    }
+// Hai vòng trong nối tiếp: (n + m). Nhân với 2 vòng ngoài (n * m) => O(n * m * (n + m))
+</script>
+
+<h3 id="c-mem">1.3 Doubling Hypothesis &amp; Phân tích bộ nhớ 64-bit (Memory Analysis)</h3>
+<div class="grid2">
+  <div class="card">
+    <h4>⏱️ Giả thuyết Nhân đôi (Doubling Hypothesis)</h4>
+    <p>Giả sử thời gian chạy tuân theo định luật lũy thừa <code>T(N) ~ a·Nᵇ</code>. Đo tỉ số khi tăng gấp đôi đầu vào:</p>
+    <p class="mono" style="text-align:center;color:#67e8f9">T(2N) / T(N)  ≈  2ᵇ   ⇒   b ≈ lg( T(2N) / T(N) )</p>
+    <ul>
+      <li>Tỉ số ≈ 2 → <code>b = 1</code> → tuyến tính <code>~ a·N</code></li>
+      <li>Tỉ số ≈ 4 → <code>b = 2</code> → bậc hai <code>~ a·N²</code></li>
+      <li>Tỉ số ≈ 8 → <code>b = 3</code> → bậc ba <code>~ a·N³</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>💾 Mô hình bộ nhớ Java 64-bit (Sedgewick)</h4>
+    <ul>
+      <li><b>Kiểu nguyên thủy:</b> <code>boolean</code>, <code>byte</code> (1B); <code>char</code>, <code>short</code> (2B); <code>int</code>, <code>float</code> (4B); <code>long</code>, <code>double</code> (8B).</li>
+      <li><b>Object overhead:</b> <b>16 bytes</b> cho mỗi đối tượng.</li>
+      <li><b>Reference (con trỏ tham chiếu):</b> <b>8 bytes</b>.</li>
+      <li><b>Inner class (non-static):</b> tốn thêm <b>8 bytes</b> tham chiếu ẩn tới outer class!</li>
+      <li><b>Padding:</b> tổng kích thước mỗi Object luôn làm tròn lên <b>bội số của 8 bytes</b>.</li>
+      <li><b>Mảng 1 chiều:</b> <b>24 bytes</b> header + <code>N × kích_thước_phần_tử</code> (làm tròn bội của 8).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note">
+  <b>Ví dụ tính bộ nhớ chuẩn đề thi (COS226):</b> Cho lớp <code>BST</code> có <code>private class Node</code> (inner class non-static) gồm: <code>Key key</code> (8B ref), <code>Value val</code> (8B ref), <code>Node parent, left, right</code> (3 × 8B = 24B ref), <code>int count</code> (4B).<br>
+  • Một đối tượng <code>Node</code> tốn: <code>16 (object overhead) + 8 (outer this ref) + 8 (key) + 8 (val) + 24 (3 links) + 4 (int) = 68 bytes</code> → làm tròn lên bội của 8 là <b>72 bytes</b>.<br>
+  • Nếu <code>Node</code> là <code>static class</code> và chỉ có <code>key, val, left, right, count</code>: <code>16 + 8 + 8 + 8 + 8 + 4 = 52</code> → <b>56 bytes/node</b>.<br>
+  • Một <code>Node</code> của Singly Linked List (non-static, gồm <code>Item item</code> + <code>Node next</code>): <code>16 + 8 (outer) + 8 (item) + 8 (next) = 40 bytes/node</code>.
+</div>
+
+<h3 id="c-code">1.4 Code các thuật toán nền tảng chương Complexity</h3>
+<script type="text/plain" class="java" data-title="BinarySearch.java, ThreeSumDeluxe.java (O(N²)), Bitonic & Local Minimum">
+import java.util.Arrays;
+
+public class ComplexityAlgorithms {
+
+    // 1. BINARY SEARCH chuẩn: O(log N), tối đa ⌊lg N⌋ + 1 lần so sánh
+    public static int binarySearch(int[] a, int key) {
+        int lo = 0, hi = a.length - 1;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;   // tránh tràn số (lo + hi)
+            if      (key < a[mid]) hi = mid - 1;
+            else if (key > a[mid]) lo = mid + 1;
+            else return mid;
+        }
+        return -1;
+    }
+
+    // 2. BINARY SEARCH trả về CHỈ SỐ NHỎ NHẤT bằng key (First Occurrence - Bài 1.4.10): O(log N)
+    public static int binarySearchFirst(int[] a, int key) {
+        int lo = 0, hi = a.length - 1, result = -1;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if      (key < a[mid]) hi = mid - 1;
+            else if (key > a[mid]) lo = mid + 1;
+            else {
+                result = mid;               // ghi nhận ứng viên
+                hi = mid - 1;               // tiếp tục tìm bên trái xem còn chỉ số nhỏ hơn không
+            }
+        }
+        return result;
+    }
+
+    // 3. 3-SUM FAST dùng Sort + 2 Con Trỏ (Bài 1.4.15): O(N²) thay vì O(N³)
+    public static int threeSumFast(int[] a) {
+        Arrays.sort(a);                     // O(N log N)
+        int n = a.length, count = 0;
+        for (int i = 0; i < n - 2; i++) {
+            int lo = i + 1, hi = n - 1;     // 2 con trỏ tìm a[lo] + a[hi] == -a[i] trong O(N)
+            while (lo < hi) {
+                int sum = a[i] + a[lo] + a[hi];
+                if (sum == 0) { count++; lo++; hi--; }
+                else if (sum < 0) lo++;
+                else hi--;
+            }
+        }
+        return count;
+    }
+
+    // 4. CỰC TIỂU ĐỊA PHƯƠNG MẢNG (Local Minimum Array - Bài 1.4.18): ~2 lg N so sánh
+    // Tìm chỉ số i sao cho a[i] < a[i-1] và a[i] < a[i+1]
+    public static int localMinimum(int[] a) {
+        int lo = 0, hi = a.length - 1;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            boolean leftOk  = (mid == 0) || (a[mid] < a[mid - 1]);
+            boolean rightOk = (mid == a.length - 1) || (a[mid] < a[mid + 1]);
+            if (leftOk && rightOk) return mid;
+            // Rẽ về phía hàng xóm nhỏ hơn (chắc chắn phía đó có cực tiểu địa phương!)
+            if (mid > 0 && a[mid - 1] < a[mid]) hi = mid - 1;
+            else                                lo = mid + 1;
+        }
+        return -1;
+    }
+}
+</script>
+
+<h3 id="c-viz">1.5 🎬 Visualizer: Binary Search Từng Bước &amp; Tốc Độ Tăng Trưởng Big-O</h3>
+<div class="card">
+  <h4>🔍 Mô phỏng Binary Search (Chuẩn vs Tìm vị trí đầu tiên)</h4>
+  <div class="ctrl">
+    <select id="bsMode">
+      <option value="std">Binary Search chuẩn (dừng ngay khi gặp)</option>
+      <option value="first">First Occurrence (tìm chỉ số nhỏ nhất khi trùng)</option>
+    </select>
+    <label style="font-size:13px;color:var(--tx2)">Key cần tìm: <input id="bsKey" type="number" value="23" style="width:72px"></label>
+    <button id="bsRun" class="pri">▶ Tìm tự động</button>
+    <button id="bsStep">👣 Từng bước</button>
+    <button id="bsNew">🎲 Mảng tăng dần mới</button>
+    <button id="bsDup">👯 Mảng có phần tử trùng</button>
+  </div>
+  <div class="ds-viz">
+    <div id="bsArr" class="arr-row"></div>
+    <div id="bsLog" class="ds-log">
+      <span>Nhấn <b>▶ Tìm tự động</b> hoặc <b>👣 Từng bước</b> để theo dõi con trỏ <code>lo</code>, <code>mid</code>, <code>hi</code>.</span>
+      <span id="bsStat" class="g">So sánh: 0</span>
+    </div>
+  </div>
+
+  <h4 style="margin-top:18px">📊 So sánh trực quan số phép toán theo N (Kéo thanh trượt N)</h4>
+  <div class="ctrl">
+    <label style="font-size:13px;color:var(--tx2)">Kích thước đầu vào <b>N = <span id="bigONVal" class="c">16</span></b>:
+      <input id="bigON" type="range" min="2" max="30" value="16" style="width:220px;vertical-align:middle">
+    </label>
+  </div>
+  <div id="bigOBars" class="ds-viz" style="display:grid;gap:8px"></div>
+</div>
+</section>
+
+<!-- ===================================================== -->
+<section id="stack">
+<span class="tag">02 · Stack (LIFO)</span>
+<h2>2. Stack — Cấu trúc Ngăn xếp</h2>
+<p><b>Nguyên lý:</b> <b>LIFO (Last-In, First-Out)</b> — phần tử vào sau cùng sẽ được lấy ra đầu tiên. Mọi thao tác <code>push</code> (thêm), <code>pop</code> (lấy &amp; xóa), <code>peek</code> (xem đỉnh) đều diễn ra tại một đầu duy nhất gọi là <b>đỉnh (top)</b>.</p>
+
+<h3 id="st-impl">2.1 Hai cách cài đặt Stack: Linked List vs Resizing Array</h3>
+<div class="grid2">
+  <div class="card">
+    <h4>🔗 Cách 1: Singly Linked List (Danh sách liên kết đơn)</h4>
+    <ul>
+      <li>Đỉnh stack là đầu danh sách (<code>first</code> / <code>top</code>).</li>
+      <li><code>push(x)</code>: tạo node mới ở đầu danh sách (<code>first</code>).</li>
+      <li><code>pop()</code>: lấy <code>first.item</code>, dời <code>first = first.next</code>.</li>
+      <li><b>Ưu điểm:</b> Mọi thao tác tốn <b>O(1) trong trường hợp xấu nhất (worst-case)</b>, không bao giờ phải resize.</li>
+      <li><b>Nhược điểm:</b> Tốn bộ nhớ cho con trỏ và object header (~<b>40 bytes/node</b> trên JVM 64-bit), các node nằm rải rác kém thân thiện cache.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>📦 Cách 2: Resizing Array (Mảng co giãn động)</h4>
+    <ul>
+      <li>Lưu phần tử trong mảng <code>a[0..n-1]</code>, đỉnh stack tại <code>a[n-1]</code>.</li>
+      <li><b>Khi đầy (<code>n == a.length</code>):</b> nhân đôi kích thước mảng <code>resize(2 * a.length)</code>.</li>
+      <li><b>Khi vơi còn 1/4 (<code>n &gt; 0 &amp;&amp; n == a.length / 4</code>):</b> thu nhỏ một nửa <code>resize(a.length / 2)</code> (nếu giảm ở 1/2 sẽ bị <b>thrashing</b> O(N) mỗi bước khi xen kẽ push/pop ở ngưỡng nửa mảng!).</li>
+      <li><b>Tránh Loitering:</b> sau khi <code>pop()</code> phải gán <code>a[n] = null</code> để Garbage Collector thu hồi bộ nhớ.</li>
+      <li><b>Ưu điểm:</b> Chi phí <b>O(1) khấu hao (amortized)</b>, tốn rất ít bộ nhớ (~8B–32B cho mỗi tham chiếu), rất nhanh nhờ bộ nhớ liên tục.</li>
+    </ul>
+  </div>
+</div>
+
+<pre class="ascii">Linked List Stack:   top ──► [ 40 | •─]──► [ 30 | •─]──► [ 20 | •─]──► [ 10 | null ]
+Resizing Array:      a[] = [ 10 | 20 | 30 | 40 | null | null | null | null ]   (n = 4, top = n-1 = 3)</pre>
+
+<script type="text/plain" class="java" data-title="LinkedStack.java & ResizingArrayStack.java (Chuẩn Sedgewick + Generic)">
+import java.util.NoSuchElementException;
+
+// ==================== CÁCH 1: STACK BẰNG LINKED LIST ====================
+public class LinkedStack<Item> {
+    private static class Node<Item> {
+        Item item;
+        Node<Item> next;
+    }
+
+    private Node<Item> first;   // đỉnh stack (top)
+    private int n;              // số phần tử
+
+    public boolean isEmpty() { return first == null; }
+    public int size()        { return n; }
+
+    // Push vào đầu danh sách: O(1) worst-case
+    public void push(Item item) {
+        Node<Item> oldFirst = first;
+        first = new Node<>();
+        first.item = item;
+        first.next = oldFirst;
+        n++;
+    }
+
+    // Pop từ đầu danh sách: O(1) worst-case
+    public Item pop() {
+        if (isEmpty()) throw new NoSuchElementException("Stack Underflow");
+        Item item = first.item;
+        first = first.next;     // bỏ node đầu
+        n--;
+        return item;
+    }
+
+    public Item peek() {
+        if (isEmpty()) throw new NoSuchElementException("Stack Underflow");
+        return first.item;
+    }
+}
+
+// ==================== CÁCH 2: STACK BẰNG RESIZING ARRAY ====================
+class ResizingArrayStack<Item> {
+    private Item[] a = (Item[]) new Object[2];
+    private int n = 0;          // vừa là số phần tử, vừa là chỉ số push tiếp theo
+
+    public boolean isEmpty() { return n == 0; }
+    public int size()        { return n; }
+
+    private void resize(int capacity) {
+        Item[] copy = (Item[]) new Object[capacity];
+        for (int i = 0; i < n; i++) copy[i] = a[i];
+        a = copy;
+    }
+
+    // Push: O(1) amortized, O(N) worst-case khi nhân đôi mảng
+    public void push(Item item) {
+        if (n == a.length) resize(2 * a.length);    // đầy -> nhân đôi
+        a[n++] = item;
+    }
+
+    // Pop: O(1) amortized, gán null tránh loitering, còn 1/4 -> giảm một nửa
+    public Item pop() {
+        if (isEmpty()) throw new NoSuchElementException("Stack Underflow");
+        Item item = a[--n];
+        a[n] = null;                                // QUAN TRỌNG: tránh loitering!
+        if (n > 0 && n == a.length / 4) resize(a.length / 2);
+        return item;
+    }
+
+    public Item peek() {
+        if (isEmpty()) throw new NoSuchElementException("Stack Underflow");
+        return a[n - 1];
+    }
+}
+</script>
+
+<h3 id="st-apps">2.2 Các bài toán kinh điển với Stack &amp; Linked List</h3>
+<script type="text/plain" class="java" data-title="Kiểm tra ngoặc, Tính Postfix, Dijkstra 2-Stack, và Đệ quy trên Singly LinkedList">
+import java.util.*;
+
+public class StackAndListProblems {
+
+    // 1. KIỂM TRA DẤU NGOẶC CÂN BẰNG (Balanced Parentheses): O(N) time, O(N) space
+    public static boolean isBalanced(String s) {
+        Deque<Character> stack = new ArrayDeque<>();
+        for (char c : s.toCharArray()) {
+            if (c == '(' || c == '[' || c == '{') {
+                stack.push(c);
+            } else if (c == ')' || c == ']' || c == '}') {
+                if (stack.isEmpty()) return false;
+                char open = stack.pop();
+                if ((c == ')' && open != '(') ||
+                    (c == ']' && open != '[') ||
+                    (c == '}' && open != '{')) return false;
+            }
+        }
+        return stack.isEmpty();     // phải rỗng hoàn toàn ở cuối!
+    }
+
+    // 2. TÍNH BIỂU THỨC HẬU TỐ (Evaluate Postfix / RPN): O(N)
+    // Ví dụ: "3 4 + 2 * 7 /" -> ((3 + 4) * 2) / 7 = 2
+    public static int evalPostfix(String expr) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (String token : expr.trim().split("\\s+")) {
+            if ("+-*/".contains(token)) {
+                int b = stack.pop();    // CHÚ Ý THỨ TỰ: pop toán hạng 2 (b) trước, toán hạng 1 (a) sau!
+                int a = stack.pop();
+                switch (token) {
+                    case "+": stack.push(a + b); break;
+                    case "-": stack.push(a - b); break;
+                    case "*": stack.push(a * b); break;
+                    case "/": stack.push(a / b); break;
+                }
+            } else {
+                stack.push(Integer.parseInt(token));
+            }
+        }
+        return stack.pop();
+    }
+
+    // 3. DIJKSTRA TWO-STACK (Tính biểu thức trung tố đầy đủ ngoặc: "( 1 + ( ( 2 + 3 ) * ( 4 * 5 ) ) )")
+    // Gặp số -> push vào stack Vals; gặp toán tử -> push vào stack Ops; gặp ')' -> pop op & 2 số, tính rồi push lại
+    public static double evaluateInfix(String expr) {
+        Deque<String> ops = new ArrayDeque<>();
+        Deque<Double> vals = new ArrayDeque<>();
+        for (String s : expr.trim().split("\\s+")) {
+            if      (s.equals("(")) ;
+            else if (s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/")) ops.push(s);
+            else if (s.equals(")")) {
+                String op = ops.pop();
+                double v = vals.pop();
+                if      (op.equals("+")) v = vals.pop() + v;
+                else if (op.equals("-")) v = vals.pop() - v;
+                else if (op.equals("*")) v = vals.pop() * v;
+                else if (op.equals("/")) v = vals.pop() / v;
+                vals.push(v);
+            } else vals.push(Double.parseDouble(s));
+        }
+        return vals.pop();
+    }
+
+    // 4. DANH SÁCH LIÊN KẾT ĐƠN CHỈ CÓ FIRST (Bài tập 1.3 StackNQueue.pdf: Cài cả Vòng lặp & Đệ quy)
+    static class LinkedList {
+        static class Node {
+            String data; Node next;
+            Node(String d) { data = d; }
+        }
+        private Node first;
+
+        public void addFirst(String data) {
+            Node n = new Node(data);
+            n.next = first;
+            first = n;
+        }
+
+        // Append đệ quy: O(N)
+        public void append(String data) { first = appendRec(first, data); }
+        private Node appendRec(Node x, String data) {
+            if (x == null) return new Node(data);
+            x.next = appendRec(x.next, data);
+            return x;
+        }
+
+        // Xóa nút đầu tiên chứa data (Đệ quy)
+        public void deleteFirst(String data) { first = deleteFirstRec(first, data); }
+        private Node deleteFirstRec(Node x, String data) {
+            if (x == null) return null;
+            if (x.data.equals(data)) return x.next;     // bỏ qua nút hiện tại, dừng đệ quy
+            x.next = deleteFirstRec(x.next, data);
+            return x;
+        }
+
+        // Xóa TẤT CẢ các nút chứa data (Đệ quy)
+        public void deleteAll(String data) { first = deleteAllRec(first, data); }
+        private Node deleteAllRec(Node x, String data) {
+            if (x == null) return null;
+            x.next = deleteAllRec(x.next, data);        // xóa hết ở phần đuôi trước
+            return x.data.equals(data) ? x.next : x;    // nếu x trùng thì bỏ luôn x
+        }
+    }
+}
+</script>
+
+<h3 id="st-viz">2.3 🎬 Visualizer: Stack (Linked List vs Resizing Array) &amp; Kiểm tra dấu ngoặc</h3>
+<div class="card">
+  <div class="ctrl">
+    <input id="stVal" type="text" class="inp-sm" value="42" placeholder="Giá trị">
+    <button id="stPush" class="pri">⬇ Push</button>
+    <button id="stPop">⬆ Pop</button>
+    <button id="stRand">🎲 Push ngẫu nhiên</button>
+    <button id="stDemoResize">⚡ Demo Nhân đôi &amp; Giảm 1/4</button>
+    <button id="stClear">🗑 Xóa hết</button>
+  </div>
+  <div class="ds-viz">
+    <div style="font-size:12.5px;color:var(--tx2);margin-bottom:4px"><b>1. Singly Linked List Stack</b> (<code>first</code> ở đầu danh sách — mỗi Node tốn 40 bytes trên JVM 64-bit):</div>
+    <div id="stLL" class="ll-row"></div>
+    <div style="font-size:12.5px;color:var(--tx2);margin:12px 0 4px"><b>2. Resizing Array Stack</b> (<code>a[0..capacity-1]</code> — nhân đôi khi <code>n == cap</code>, thu nhỏ 1/2 khi <code>n == cap/4</code>, gán <code>null</code> chống loitering):</div>
+    <div id="stArr" class="arr-row"></div>
+    <div id="stLog" class="ds-log">
+      <span>Sẵn sàng mô phỏng Stack (LIFO).</span>
+      <span id="stStat" class="c">n = 0 · capacity = 4</span>
+    </div>
+  </div>
+
+  <h4 style="margin-top:16px">🧪 Mô phỏng kiểm tra Dấu ngoặc cân bằng (Balanced Brackets)</h4>
+  <div class="ctrl">
+    <input id="brExpr" type="text" value="{[()()]()}" style="background:var(--bg);color:var(--tx);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;width:240px;font-family:monospace">
+    <button id="brRun" class="pri">▶ Kiểm tra từng bước</button>
+    <button onclick="document.getElementById('brExpr').value='([)]';document.getElementById('brRun').click()">Ví dụ SAI: ([)]</button>
+    <button onclick="document.getElementById('brExpr').value='{[(a+b)*(c-d)]}';document.getElementById('brRun').click()">Ví dụ ĐÚNG</button>
+  </div>
+  <div id="brViz" class="ds-viz" style="font-family:monospace;font-size:13.5px">Nhấn <b>▶ Kiểm tra từng bước</b> để xem Stack xử lý từng ký tự ngoặc.</div>
+</div>
+</section>
+
+<!-- ===================================================== -->
+<section id="queue">
+<span class="tag">03 · Queue (FIFO)</span>
+<h2>3. Queue — Cấu trúc Hàng đợi</h2>
+<p><b>Nguyên lý:</b> <b>FIFO (First-In, First-Out)</b> — phần tử vào trước được lấy ra trước. Thêm ở cuối hàng (<code>rear</code> / <code>last</code> — <code>enqueue</code>) và lấy ra ở đầu hàng (<code>front</code> / <code>first</code> — <code>dequeue</code>).</p>
+
+<h3 id="q-impl">3.1 Cài đặt Queue: Linked List vs Circular Resizing Array</h3>
+<pre class="ascii">Linked List Queue:
+  first (front)                                 last (rear)
+       ↓                                             ↓
+    [ 10 | •─]──► [ 20 | •─]──► [ 30 | •─]──► [ 40 | null ]
+  ◄── dequeue() lấy ở first                    enqueue() nối vào sau last ──►
+
+Circular Array Queue (quấn vòng bằng phép chia dư % capacity):
+  Chỉ số tiếp theo:  (idx + 1) % data.length
+  Vị trí phần tử thứ i:  data[(front + i) % data.length]</pre>
+
+<script type="text/plain" class="java" data-title="LinkedQueue.java & CircularArrayQueue.java">
+import java.util.NoSuchElementException;
+
+// ==================== CÁCH 1: QUEUE BẰNG LINKED LIST (O(1) worst-case) ====================
+public class LinkedQueue<Item> {
+    private static class Node<Item> {
+        Item item;
+        Node<Item> next;
+    }
+
+    private Node<Item> first;   // đầu hàng (dequeue tại đây)
+    private Node<Item> last;    // cuối hàng (enqueue tại đây)
+    private int n;
+
+    public boolean isEmpty() { return first == null; }
+    public int size()        { return n; }
+
+    public void enqueue(Item item) {
+        Node<Item> oldLast = last;
+        last = new Node<>();
+        last.item = item;
+        last.next = null;
+        if (isEmpty()) first = last;        // BẪY 1: hàng rỗng -> cập nhật cả first!
+        else           oldLast.next = last;
+        n++;
+    }
+
+    public Item dequeue() {
+        if (isEmpty()) throw new NoSuchElementException("Queue Underflow");
+        Item item = first.item;
+        first = first.next;
+        n--;
+        if (isEmpty()) last = null;         // BẪY 2: vừa xóa phần tử cuối -> phải gán last = null!
+        return item;
+    }
+
+    public Item peek() {
+        if (isEmpty()) throw new NoSuchElementException("Queue Underflow");
+        return first.item;
+    }
+}
+
+// ==================== CÁCH 2: QUEUE BẰNG MẢNG XOAY VÒNG (CIRCULAR RESIZING ARRAY) ====================
+class CircularArrayQueue<Item> {
+    private Item[] q = (Item[]) new Object[2];
+    private int n = 0;          // số phần tử hiện có
+    private int first = 0;      // chỉ số phần tử đầu hàng
+    private int last = 0;       // chỉ số ô trống tiếp theo ở cuối hàng
+
+    public boolean isEmpty() { return n == 0; }
+    public int size()        { return n; }
+
+    private void resize(int capacity) {
+        Item[] copy = (Item[]) new Object[capacity];
+        for (int i = 0; i < n; i++)
+            copy[i] = q[(first + i) % q.length];    // trải phẳng từ first -> last
+        q = copy;
+        first = 0;
+        last = n;
+    }
+
+    public void enqueue(Item item) {
+        if (n == q.length) resize(2 * q.length);
+        q[last] = item;
+        last = (last + 1) % q.length;               // quấn vòng (wrap-around)
+        n++;
+    }
+
+    public Item dequeue() {
+        if (isEmpty()) throw new NoSuchElementException("Queue Underflow");
+        Item item = q[first];
+        q[first] = null;                            // tránh loitering
+        first = (first + 1) % q.length;             // quấn vòng
+        n--;
+        if (n > 0 && n == q.length / 4) resize(q.length / 2);
+        return item;
+    }
+}
+</script>
+
+<h3 id="q-two-stack">3.2 Cài đặt Queue bằng 2 Stack (Amortized O(1))</h3>
+<p><b>Ý tưởng:</b> Dùng 2 stack <code>inStack</code> (chuyên nhận <code>enqueue</code>) và <code>outStack</code> (chuyên phục vụ <code>dequeue</code>/<code>peek</code>). Khi <code>outStack</code> rỗng mà cần <code>dequeue</code>, ta đổ toàn bộ phần tử từ <code>inStack</code> sang <code>outStack</code> (thứ tự LIFO bị đảo ngược 2 lần thành FIFO!). Mỗi phần tử chỉ được push/pop tối đa 2 lần → <b>O(1) amortized</b>.</p>
+<script type="text/plain" class="java" data-title="QueueWithTwoStacks.java — O(1) Amortized">
+import java.util.*;
+
+public class QueueWithTwoStacks<Item> {
+    private final Deque<Item> inStack  = new ArrayDeque<>();
+    private final Deque<Item> outStack = new ArrayDeque<>();
+
+    public void enqueue(Item item) {
+        inStack.push(item);                 // luôn O(1)
+    }
+
+    private void moveIfNeeded() {
+        if (outStack.isEmpty()) {           // CHỈ đổ sang khi outStack thực sự rỗng!
+            while (!inStack.isEmpty())
+                outStack.push(inStack.pop());
+        }
+    }
+
+    public Item dequeue() {
+        moveIfNeeded();
+        if (outStack.isEmpty()) throw new NoSuchElementException("Queue Empty");
+        return outStack.pop();              // O(1) amortized
+    }
+
+    public Item peek() {
+        moveIfNeeded();
+        return outStack.peek();
+    }
+}
+</script>
+
+<h3 id="q-viz">3.3 🎬 Visualizer: Queue (Linked List · Circular Array · 2 Stacks)</h3>
+<div class="card">
+  <div class="ctrl">
+    <input id="qVal" type="text" class="inp-sm" value="50" placeholder="Giá trị">
+    <button id="qEnq" class="pri">➕ Enqueue (vào cuối)</button>
+    <button id="qDeq">➖ Dequeue (ra đầu)</button>
+    <button id="qRand">🎲 Enqueue ngẫu nhiên</button>
+    <button id="qWrapDemo">🔄 Demo Quấn vòng (Wrap-around)</button>
+    <button id="qClear">🗑 Xóa hết</button>
+  </div>
+  <div class="ds-viz">
+    <div style="font-size:12.5px;color:var(--tx2);margin-bottom:4px"><b>1. Linked List Queue</b> (<code>dequeue</code> ở <code>first</code>, <code>enqueue</code> nối vào sau <code>last</code>):</div>
+    <div id="qLL" class="ll-row"></div>
+    <div style="font-size:12.5px;color:var(--tx2);margin:12px 0 4px"><b>2. Circular Resizing Array Queue</b> (quấn vòng bằng <code>(idx + 1) % q.length</code>):</div>
+    <div id="qArr" class="arr-row"></div>
+    <div style="font-size:12.5px;color:var(--tx2);margin:12px 0 4px"><b>3. Queue cài bằng 2 Stack</b> (<code>inStack</code> nhận <code>enqueue</code>, đổ sang <code>outStack</code> khi <code>outStack</code> rỗng):</div>
+    <div id="q2St" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px"></div>
+    <div id="qLog" class="ds-log">
+      <span>Sẵn sàng mô phỏng Queue (FIFO).</span>
+      <span id="qStat" class="c">n = 0 · first = 0 · last = 0</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===================================================== -->
+<section id="heap">
+<span class="tag">04 · Priority Queue &amp; Binary Heap</span>
+<h2>4. Hàng đợi ưu tiên (Priority Queue) &amp; Binary Heap</h2>
+<p>Khác với Stack (lấy phần tử mới nhất) và Queue (lấy phần tử cũ nhất), <b>Priority Queue</b> luôn lấy ra phần tử có <b>độ ưu tiên cao nhất</b>: <code>MaxPQ</code> hỗ trợ <code>insert</code> và <code>delMax</code>; <code>MinPQ</code> hỗ trợ <code>insert</code> và <code>delMin</code>.</p>
+
+<table>
+  <tr><th>Cách cài đặt Priority Queue</th><th><code>insert()</code></th><th><code>delMax()</code></th><th><code>max()</code> (peek)</th><th>Ghi chú (Câu hỏi 2.4.11 &amp; 2.4.12)</th></tr>
+  <tr><td><b>Mảng không sắp thứ tự</b> (Unordered Array)</td><td class="g">O(1)</td><td class="y">O(N)</td><td class="y">O(N)</td><td>Tốt nếu chỉ toàn <code>insert</code>, cực ít <code>delMax</code></td></tr>
+  <tr><td><b>Mảng có sắp thứ tự</b> (Ordered Array)</td><td class="y">O(N)</td><td class="g">O(1)</td><td class="g">O(1)</td><td>Tốt nếu rất nhiều <code>max</code>/<code>delMax</code>, cực ít <code>insert</code></td></tr>
+  <tr><td><b>Binary Heap</b> (Cây nhị phân hoàn chỉnh)</td><td class="g">O(log N)</td><td class="g">O(log N)</td><td class="g">O(1)</td><td><b>Tối ưu tổng quát</b>, chiều cao luôn <code>⌊lg N⌋</code></td></tr>
+</table>
+
+<h3 id="h-core">4.1 Biểu diễn Binary Heap bằng mảng &amp; Phép <code>swim</code> / <code>sink</code></h3>
+<p><b>Định nghĩa Binary Heap:</b> Là một <b>cây nhị phân hoàn chỉnh (complete binary tree)</b> (mọi tầng đều đầy trừ tầng đáy được điền từ trái sang phải) thỏa mãn <b>thứ tự Heap (heap-ordered)</b>: trong <b>Max-Heap</b>, khóa của mỗi node <b>≥</b> khóa của 2 con nó (root tại <code>pq[1]</code> là phần tử lớn nhất).</p>
+
+<div class="grid2">
+  <div class="card">
+    <h4>📐 Chỉ số mảng 1-based (Chuẩn Sedgewick, bỏ trống <code>pq[0]</code>)</h4>
+    <ul>
+      <li>Root nằm tại <code>pq[1]</code>, các phần tử từ <code>pq[1..N]</code>.</li>
+      <li>Node cha của <code>k</code>: <b><code>k / 2</code></b>.</li>
+      <li>Hai con của <code>k</code>: <b><code>2k</code></b> (trái) và <b><code>2k + 1</code></b> (phải).</li>
+      <li>Các node lá (không có con): từ chỉ số <b><code>⌊N/2⌋ + 1</code> đến <code>N</code></b>.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>📐 Chỉ số mảng 0-based (Bài 2.4.10 — đặt root tại <code>pq[0]</code>)</h4>
+    <ul>
+      <li>Root nằm tại <code>pq[0]</code>, các phần tử từ <code>pq[0..N-1]</code>.</li>
+      <li>Node cha của <code>k</code>: <b><code>(k - 1) / 2</code></b>.</li>
+      <li>Hai con của <code>k</code>: <b><code>2k + 1</code></b> (trái) và <b><code>2k + 2</code></b> (phải).</li>
+      <li>Các node trong (internal nodes): từ <code>0</code> đến <code>⌊N/2⌋ - 1</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<pre class="ascii">                   [1] 80                         Mảng 1-based pq[1..11]:
+                 /        \                       idx:  0   1   2   3   4   5   6   7   8   9  10  11
+           [2] 75          [3] 70                 val: [ - |80 |75 |70 |10 |55 |65 |40 | 5 | 0 |20 |30 ]
+           /    \          /    \
+       [4]10   [5]55   [6]65   [7]40              • swim(k): khi khóa ở k LỚN HƠN cha k/2 -> đổi chỗ với cha k/2, lặp lên.
+       /  \     /  \                              • sink(k): khi khóa ở k NHỎ HƠN con -> đổi chỗ với CON LỚN HƠN trong (2k, 2k+1).
+    [8]5 [9]0 [10]20 [11]30</pre>
+
+<ul>
+  <li><b>Thêm phần tử <code>insert(x)</code>:</b> Đặt <code>x</code> vào cuối mảng <code>pq[++N] = x</code>, rồi gọi <code>swim(N)</code> để đẩy lên (tối đa <code>⌊lg N⌋</code> phép so sánh).</li>
+  <li><b>Xóa phần tử lớn nhất <code>delMax()</code>:</b> Lấy <code>max = pq[1]</code>, đổi chỗ <code>exch(1, N--)</code>, gán <code>pq[N+1] = null</code>, rồi gọi <code>sink(1)</code> để đẩy phần tử mới ở gốc xuống đúng chỗ (tối đa <code>2⌊lg N⌋</code> phép so sánh vì mỗi tầng phải so 2 con <code>2k</code> và <code>2k+1</code> rồi so với cha).</li>
+</ul>
+
+<h3 id="h-build">4.2 Xây dựng Heap Bottom-Up O(N) &amp; Các tính chất hay hỏi thi</h3>
+<ul>
+  <li><b>Build Heap Bottom-Up (Floyd):</b> Cho mảng <code>N</code> phần tử bất kỳ, gọi <code>sink(k)</code> ngược từ <code>k = N/2</code> về <code>1</code> (bỏ qua toàn bộ các lá vì lá đã là heap kích thước 1). Chi phí: <b>dưới <code>2N</code> phép so sánh và dưới <code>N</code> phép đổi chỗ → <code>O(N)</code> tuyến tính</b> (nhanh hơn chèn từng phần tử từ đầu tốn <code>O(N log N)</code>).</li>
+  <li><b>Mảng đã sắp xếp giảm dần có phải Max-Heap không? (Bài 2.4.4):</b> <b>CÓ!</b> Vì với mọi <code>k ≥ 1</code>, ta luôn có <code>k &lt; 2k &lt; 2k+1</code> nên <code>a[k] ≥ a[2k] ≥ a[2k+1]</code>.</li>
+  <li><b>Vị trí của phần tử lớn thứ <code>k</code> trên Max-Heap (Bài 2.4.7):</b>
+    <ul>
+      <li>Lớn thứ 1 (max): chỉ ở vị trí <code>1</code>.</li>
+      <li>Lớn thứ 2: chỉ có thể ở vị trí <code>2</code> hoặc <code>3</code> (con trực tiếp của root).</li>
+      <li>Lớn thứ 3: có thể ở các vị trí <code>2, 3, 4, 5, 6, 7</code> (tầng 1 và tầng 2, tức <code>≤ 2³ - 1 = 7</code>).</li>
+      <li>Tổng quát: phần tử lớn thứ <code>k</code> chỉ có thể nằm ở các độ sâu <code>≤ k - 1</code> (chỉ số <code>≤ 2ᵏ - 1</code>). Phần tử nhỏ nhất (min) của Max-Heap bắt buộc phải là một <b>node lá</b> (chỉ số từ <code>⌊N/2⌋ + 1</code> đến <code>N</code>).</li>
+    </ul>
+  </li>
+  <li><b>Kiểm tra một mảng <code>pq[1..N]</code> có phải Min-Heap trong O(N) (Bài 2.4.15):</b> Duyệt <code>k</code> từ <code>1</code> đến <code>N/2</code>, kiểm tra <code>pq[k] ≤ pq[2k]</code> và (nếu <code>2k+1 ≤ N</code>) <code>pq[k] ≤ pq[2k+1]</code>.</li>
+</ul>
+
+<h3 id="h-code">4.3 Code Java đầy đủ: MaxPQ &amp; Các bài tập Hàng đợi ưu tiên</h3>
+<script type="text/plain" class="java" data-title="MaxPQ.java (Resizing Binary Heap) + Giải các bài tập Priority Queue">
+import java.util.*;
+
+public class MaxPQ<Key extends Comparable<Key>> {
+    private Key[] pq;       // mảng heap 1-based (pq[1..n])
+    private int n;          // số phần tử hiện có
+
+    public MaxPQ(int capacity) {
+        pq = (Key[]) new Comparable[capacity + 1];
+        n = 0;
+    }
+
+    // Constructor xây dựng Heap Bottom-Up trong O(N) (Bài 2.4.19)
+    public MaxPQ(Key[] keys) {
+        n = keys.length;
+        pq = (Key[]) new Comparable[n + 1];
+        for (int i = 0; i < n; i++) pq[i + 1] = keys[i];
+        for (int k = n / 2; k >= 1; k--) sink(k);
+    }
+
+    public boolean isEmpty() { return n == 0; }
+    public int size()        { return n; }
+    public Key max()         { return pq[1]; }
+
+    // Thêm phần tử: O(log N)
+    public void insert(Key x) {
+        if (n == pq.length - 1) resize(2 * pq.length);
+        pq[++n] = x;
+        swim(n);
+    }
+
+    // Xóa và trả về max: O(log N)
+    public Key delMax() {
+        if (isEmpty()) throw new NoSuchElementException("PQ Underflow");
+        Key max = pq[1];
+        exch(1, n--);
+        sink(1);
+        pq[n + 1] = null;   // tránh loitering
+        if (n > 0 && n == (pq.length - 1) / 4) resize(pq.length / 2);
+        return max;
+    }
+
+    // Đẩy nút k lên khi pq[k] > pq[k/2]
+    private void swim(int k) {
+        while (k > 1 && less(k / 2, k)) {
+            exch(k / 2, k);
+            k = k / 2;
+        }
+    }
+
+    // Đẩy nút k xuống khi pq[k] nhỏ hơn con của nó
+    private void sink(int k) {
+        while (2 * k <= n) {
+            int j = 2 * k;                      // con trái
+            if (j < n && less(j, j + 1)) j++;   // chọn con LỚN HƠN giữa 2k và 2k+1
+            if (!less(k, j)) break;             // nếu cha >= con lớn hơn thì dừng!
+            exch(k, j);
+            k = j;
+        }
+    }
+
+    // Kiểm tra mảng pq[1..n] có phải Min-Heap trong O(N) (Bài 2.4.15)
+    public static boolean isMinHeap(Comparable[] pq, int n) {
+        for (int k = 1; k <= n / 2; k++) {
+            if (pq[k].compareTo(pq[2 * k]) > 0) return false;
+            if (2 * k + 1 <= n && pq[k].compareTo(pq[2 * k + 1]) > 0) return false;
+        }
+        return true;
+    }
+
+    private void resize(int cap) {
+        Key[] temp = (Key[]) new Comparable[cap];
+        for (int i = 1; i <= n; i++) temp[i] = pq[i];
+        pq = temp;
+    }
+    private boolean less(int i, int j) { return pq[i].compareTo(pq[j]) < 0; }
+    private void exch(int i, int j)    { Key t = pq[i]; pq[i] = pq[j]; pq[j] = t; }
+}
+
+// ==================== BÀI TẬP THỰC HÀNH PRIORITY QUEUE (2.4. Hàng đợi ưu tiên.pdf) ====================
+class PriorityQueueProblems {
+
+    // Bài 3: JESSE AND COOKIES — Dùng Min-Heap: O(N log N)
+    public static int cookies(int k, List<Integer> A) {
+        PriorityQueue<Long> minPQ = new PriorityQueue<>(); // Mặc định Java PriorityQueue là Min-Heap!
+        for (int x : A) minPQ.add((long) x);
+        int ops = 0;
+        while (minPQ.size() >= 2 && minPQ.peek() < k) {
+            long m1 = minPQ.poll();             // nhỏ nhất
+            long m2 = minPQ.poll();             // nhỏ thứ hai
+            minPQ.add(m1 + 2 * m2);
+            ops++;
+        }
+        return (!minPQ.isEmpty() && minPQ.peek() >= k) ? ops : -1;
+    }
+
+    // Bài 4: STUDENT COMPARATOR (CGPA giảm dần -> Name tăng dần A-Z -> ID tăng dần)
+    static class Student { int id; String name; double cgpa; }
+    static class StudentComparator implements Comparator<Student> {
+        @Override
+        public int compare(Student x, Student y) {
+            int cmpCgpa = Double.compare(y.cgpa, x.cgpa);   // CGPA cao hơn đứng trước
+            if (cmpCgpa != 0) return cmpCgpa;
+            int cmpName = x.name.compareTo(y.name);         // Tên theo bảng chữ cái A-Z
+            if (cmpName != 0) return cmpName;
+            return Integer.compare(x.id, y.id);             // ID nhỏ hơn đứng trước
+        }
+    }
+
+    // Bài 5: FIND THE RUNNING MEDIAN (Dùng 2 Heap: maxPQ lưu nửa nhỏ, minPQ lưu nửa lớn): O(log N) mỗi số
+    // Bất biến: 0 <= maxPQ.size() - minPQ.size() <= 1  và  mọi số trong maxPQ <= mọi số trong minPQ
+    public static void runningMedian(int[] stream) {
+        PriorityQueue<Integer> maxPQ = new PriorityQueue<>(Collections.reverseOrder()); // nửa nhỏ
+        PriorityQueue<Integer> minPQ = new PriorityQueue<>();                           // nửa lớn
+        for (int x : stream) {
+            if (maxPQ.isEmpty() || x <= maxPQ.peek()) maxPQ.add(x);
+            else                                      minPQ.add(x);
+
+            // Cân bằng kích thước 2 heap
+            if (maxPQ.size() > minPQ.size() + 1) minPQ.add(maxPQ.poll());
+            else if (minPQ.size() > maxPQ.size()) maxPQ.add(minPQ.poll());
+
+            double median = (maxPQ.size() > minPQ.size())
+                    ? maxPQ.peek()
+                    : (maxPQ.peek() + minPQ.peek()) / 2.0;
+            System.out.printf("%.1f%n", median);
+        }
+    }
+}
+</script>
+
+<h3 id="h-viz">4.4 🎬 Visualizer: Binary Heap (Mảng 1-based + Cây Nhị Phân Hoàn Chỉnh + Swim/Sink)</h3>
+<div class="card">
+  <div class="ctrl">
+    <select id="hpType">
+      <option value="max">Max-Heap (Cha ≥ Con)</option>
+      <option value="min">Min-Heap (Cha ≤ Con)</option>
+    </select>
+    <input id="hpVal" type="number" value="85" style="width:78px">
+    <button id="hpIns" class="pri">➕ Insert (Swim ↑)</button>
+    <button id="hpDel">🔥 delMax / delMin (Sink ↓)</button>
+    <button id="hpBuild">🏗 Build Heap O(N) (Bottom-up)</button>
+    <button id="hpRand">🎲 Mảng mẫu</button>
+    <button id="hpClear">🗑 Xóa hết</button>
+  </div>
+  <div class="ds-viz">
+    <div style="font-size:12.5px;color:var(--tx2);margin-bottom:4px"><b>Mảng 1-based <code>pq[1..N]</code></b> (ô <code>pq[0]</code> bỏ trống; cha của <code>k</code> là <code>⌊k/2⌋</code>, con là <code>2k</code> và <code>2k+1</code>):</div>
+    <div id="hpArr" class="arr-row"></div>
+    <div style="font-size:12.5px;color:var(--tx2);margin:10px 0 4px"><b>Cây nhị phân hoàn chỉnh tương ứng:</b></div>
+    <svg id="hpSvg" class="tree-svg" viewBox="0 0 860 280"></svg>
+    <div id="hpLog" class="ds-log">
+      <span>Nhấn <b>Insert</b> để xem hiệu ứng <code>swim(k)</code>, hoặc <b>delMax</b> để xem <code>sink(1)</code> từng bước.</span>
+      <span id="hpStat" class="g">N = 0</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===================================================== -->
+<section id="bst">
+<span class="tag">05 · Binary Search Tree (BST)</span>
+<h2>5. Cây Nhị Phân Tìm Kiếm (Binary Search Tree — BST)</h2>
+<p><b>Định nghĩa (Symmetric Order):</b> Một cây nhị phân tìm kiếm (BST) là một cây nhị phân mà mỗi node <code>x</code> có một khóa <code>Comparable</code> sao cho <b>MỌI khóa trong cây con trái &lt; <code>x.key</code> &lt; MỌI khóa trong cây con phải</b>.</p>
+
+<div class="note danger">
+  <b>⚠️ Bẫy đề thi "Đây có phải BST hợp lệ?":</b> Không được chỉ kiểm tra từng cặp cha–con! Ví dụ: Root = <code>25</code>, con phải của <code>25</code> là <code>42</code>, con trái của <code>42</code> là <code>20</code>. Mặc dù <code>20 &lt; 42</code>, nhưng <code>20</code> lại nằm trong <b>cây con phải của 25</b> mà <code>20 &lt; 25</code> → <b>SAI (Không phải BST)!</b><br>
+  <b>Cách kiểm tra nhanh nhất khi làm bài:</b> Đọc thứ tự <b>In-order (Trái → Gốc → Phải)</b>, nếu dãy khóa thu được <b>tăng dần nghiêm ngặt</b> thì là BST hợp lệ.
+</div>
+
+<h3 id="bst-ops">5.1 Các thao tác tìm kiếm, chèn, và thứ tự trên BST</h3>
+<ul>
+  <li><b>Tìm kiếm <code>get(key)</code> &amp; Chèn <code>put(key, val)</code>:</b> Bắt đầu từ <code>root</code>. Nhỏ hơn thì rẽ trái, lớn hơn thì rẽ phải, bằng thì tìm thấy (hoặc cập nhật value). Khi gặp <code>null</code>: <code>get</code> trả về <code>null</code> (search miss); <code>put</code> tạo node mới tại đúng chỗ <code>null</code> đó (node mới chèn luôn là <b>lá</b>!).</li>
+  <li><b>Số phép so sánh:</b> Bằng <code>1 + depth(node)</code>.
+    <ul>
+      <li><b>Best case</b> (cây cân bằng hoàn hảo): chiều cao <code>h ≈ lg N</code>.</li>
+      <li><b>Average case</b> (chèn ngẫu nhiên <code>N</code> khóa): số phép so sánh trung bình <code>~ 2 ln N ≈ 1.39 lg N</code> (tương ứng 1–1 với Quicksort partitioning!).</li>
+      <li><b>Worst case</b> (chèn dãy đã tăng dần hoặc giảm dần): cây suy biến thành danh sách liên kết, chiều cao <code>h = N - 1</code> → <b>O(N)</b>.</li>
+    </ul>
+  </li>
+  <li><b><code>min()</code> / <code>max()</code>:</b> Đi sang trái tận cùng (cho đến khi <code>x.left == null</code>) / đi sang phải tận cùng.</li>
+  <li><b><code>floor(key)</code> (lớn nhất ≤ key):</b>
+    <ul>
+      <li>Nếu <code>key == x.key</code> → trả về <code>x.key</code>.</li>
+      <li>Nếu <code>key &lt; x.key</code> → <code>floor</code> bắt buộc phải nằm ở <b>cây con trái</b>.</li>
+      <li>Nếu <code>key &gt; x.key</code> → <code>x.key</code> là ứng viên, nhưng thử tìm xem trong <b>cây con phải</b> có khóa nào <code>≤ key</code> không; nếu có thì lấy kết quả bên phải, nếu không thì trả về <code>x.key</code>.</li>
+    </ul>
+  </li>
+  <li><b><code>rank(key)</code> (số khóa &lt; key) &amp; <code>select(k)</code> (khóa nhỏ thứ k, tính từ 0):</b> Duy trì biến <code>x.count = 1 + size(x.left) + size(x.right)</code> ở mỗi node, thực hiện trong <code>O(h)</code>.</li>
+</ul>
+
+<h3 id="bst-del">5.2 Xóa node trong BST (Hibbard Deletion) &amp; 4 Cách duyệt cây</h3>
+<div class="grid2">
+  <div class="card">
+    <h4>🗑 Hibbard Deletion: 3 trường hợp khi xóa node <code>t</code></h4>
+    <ol>
+      <li><b>Node lá (0 con):</b> Trả về <code>null</code> cho link của cha.</li>
+      <li><b>Node có 1 con:</b> Trả về link trỏ tới đứa con duy nhất đó để nối thẳng lên cha.</li>
+      <li><b>Node có 2 con (QUAN TRỌNG NHẤT):</b>
+        <ul>
+          <li>Tìm <b>Successor</b> <code>x = min(t.right)</code> (node trái nhất của cây con phải — không có con trái) <i>hoặc Predecessor = <code>max(t.left)</code></i>.</li>
+          <li>Xóa min khỏi cây con phải: <code>x.right = deleteMin(t.right)</code>.</li>
+          <li>Gán lại con trái: <code>x.left = t.left</code>, rồi đặt <code>x</code> thay vào vị trí của <code>t</code>.</li>
+        </ul>
+      </li>
+    </ol>
+    <p style="font-size:12.5px;color:var(--tx2)">Lưu ý: Hibbard deletion không đối xứng nên sau nhiều lần chèn/xóa ngẫu nhiên, chiều cao cây trung bình bị tăng lên <b><code>~ √N</code></b>.</p>
+  </div>
+  <div class="card">
+    <h4>🧭 4 Cách duyệt cây (Tree Traversals — O(N))</h4>
+    <ul>
+      <li><b>Pre-order (NLR — Tiền thứ tự):</b> <b>Gốc → Trái → Phải</b>. Gốc luôn đứng đầu tiên. Dùng để clone cây, lưu cấu trúc cây.</li>
+      <li><b>In-order (LNR — Trung thứ tự):</b> <b>Trái → Gốc → Phải</b>. Với mọi BST (thường, AVL, Red-Black), In-order <b>luôn cho dãy khóa tăng dần</b>!</li>
+      <li><b>Post-order (LRN — Hậu thứ tự):</b> <b>Trái → Phải → Gốc</b>. Gốc luôn đứng cuối cùng. Dùng để tính chiều cao <code>height(x)</code>, giải phóng bộ nhớ.</li>
+      <li><b>Level-order (BFS — Theo tầng):</b> Dùng <b>Queue</b> duyệt từ trên xuống dưới, trái sang phải.</li>
+    </ul>
+  </div>
+</div>
+
+<pre class="ascii">Minh họa Hibbard Deletion (Xóa node 65 có 2 con — giống Câu 2 Đề thi cuối kỳ):
+          34                                       34
+         /  \                                     /  \
+       15    65  ◄── cần xóa 65                 15    69  ◄── đưa successor = min(65.right) = 69 lên thay!
+            /  \                                     /  \
+          62    80                                 62    80
+         /     /                                  /     /
+       42    69  ◄── min của cây con phải       42    75
+                \
+                 75</pre>
+
+<h3 id="bst-code">5.3 Code Java đầy đủ cho BST (kèm <code>isBST</code> &amp; <code>LCA</code>)</h3>
+<script type="text/plain" class="java" data-title="BST.java — Đầy đủ các hàm chuẩn Sedgewick + isBST + LCA">
+import java.util.*;
+
+public class BST<Key extends Comparable<Key>, Value> {
+    private class Node {
+        Key key;
+        Value val;
+        Node left, right;
+        int count;          // số node trong cây con gốc tại đây
+
+        Node(Key key, Value val, int count) {
+            this.key = key; this.val = val; this.count = count;
+        }
+    }
+
+    private Node root;
+
+    public int size() { return size(root); }
+    private int size(Node x) { return x == null ? 0 : x.count; }
+
+    // 1. SEARCH (Vòng lặp - tối ưu thực tế): O(h)
+    public Value get(Key key) {
+        Node x = root;
+        while (x != null) {
+            int cmp = key.compareTo(x.key);
+            if      (cmp < 0) x = x.left;
+            else if (cmp > 0) x = x.right;
+            else return x.val;
+        }
+        return null;
+    }
+
+    // 2. INSERT (Đệ quy): O(h)
+    public void put(Key key, Value val) { root = put(root, key, val); }
+    private Node put(Node x, Key key, Value val) {
+        if (x == null) return new Node(key, val, 1);
+        int cmp = key.compareTo(x.key);
+        if      (cmp < 0) x.left  = put(x.left,  key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else              x.val   = val;
+        x.count = 1 + size(x.left) + size(x.right);
+        return x;
+    }
+
+    // 3. MIN / MAX / FLOOR / CEILING: O(h)
+    public Key min() { return min(root).key; }
+    private Node min(Node x) { return x.left == null ? x : min(x.left); }
+
+    public Key max() { return max(root).key; }
+    private Node max(Node x) { return x.right == null ? x : max(x.right); }
+
+    public Key floor(Key key) {
+        Node x = floor(root, key);
+        return x == null ? null : x.key;
+    }
+    private Node floor(Node x, Key key) {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp == 0) return x;
+        if (cmp <  0) return floor(x.left, key);
+        Node t = floor(x.right, key);
+        return (t != null) ? t : x;
+    }
+
+    // 4. RANK (số khóa < key) & SELECT (khóa có rank = k): O(h)
+    public int rank(Key key) { return rank(key, root); }
+    private int rank(Key key, Node x) {
+        if (x == null) return 0;
+        int cmp = key.compareTo(x.key);
+        if      (cmp < 0) return rank(key, x.left);
+        else if (cmp > 0) return 1 + size(x.left) + rank(key, x.right);
+        else              return size(x.left);
+    }
+
+    public Key select(int k) { return select(root, k).key; }
+    private Node select(Node x, int k) {
+        if (x == null) return null;
+        int t = size(x.left);
+        if      (t > k) return select(x.left, k);
+        else if (t < k) return select(x.right, k - t - 1);
+        else            return x;
+    }
+
+    // 5. DELETE MIN & HIBBARD DELETE: O(h)
+    public void deleteMin() { root = deleteMin(root); }
+    private Node deleteMin(Node x) {
+        if (x.left == null) return x.right;
+        x.left = deleteMin(x.left);
+        x.count = 1 + size(x.left) + size(x.right);
+        return x;
+    }
+
+    public void delete(Key key) { root = delete(root, key); }
+    private Node delete(Node x, Key key) {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if      (cmp < 0) x.left  = delete(x.left,  key);
+        else if (cmp > 0) x.right = delete(x.right, key);
+        else {
+            if (x.right == null) return x.left;     // 0 hoặc 1 con trái
+            if (x.left  == null) return x.right;    // 1 con phải
+            Node t = x;                             // 2 con: thay bằng successor = min(t.right)
+            x = min(t.right);
+            x.right = deleteMin(t.right);           // phải gọi deleteMin trước khi gán x.left!
+            x.left  = t.left;
+        }
+        x.count = 1 + size(x.left) + size(x.right);
+        return x;
+    }
+
+    // 6. CHIỀU CAO CÂY (quy ước lá có height = 0, null có height = -1): O(N)
+    public int height() { return height(root); }
+    private int height(Node x) {
+        if (x == null) return -1;
+        return 1 + Math.max(height(x.left), height(x.right));
+    }
+
+    // 7. KIỂM TRA CÂY CÓ PHẢI BST HỢP LỆ (Is This a BST? - Bài 5): O(N)
+    public boolean isBST() { return isBST(root, null, null); }
+    private boolean isBST(Node x, Key min, Key max) {
+        if (x == null) return true;
+        if (min != null && x.key.compareTo(min) <= 0) return false;
+        if (max != null && x.key.compareTo(max) >= 0) return false;
+        return isBST(x.left, min, x.key) && isBST(x.right, x.key, max);
+    }
+
+    // 8. TỔ TIÊN CHUNG GẦN NHẤT TRÊN BST (Lowest Common Ancestor - Bài 4): O(h)
+    public Node lca(Node x, Key v1, Key v2) {
+        while (x != null) {
+            if (v1.compareTo(x.key) < 0 && v2.compareTo(x.key) < 0)
+                x = x.left;     // cả 2 đều nhỏ hơn x -> LCA nằm bên trái
+            else if (v1.compareTo(x.key) > 0 && v2.compareTo(x.key) > 0)
+                x = x.right;    // cả 2 đều lớn hơn x -> LCA nằm bên phải
+            else
+                return x;       // rẽ 2 hướng (hoặc chạm x) -> x chính là LCA!
+        }
+        return null;
+    }
+}
+</script>
+
+<h3 id="bst-viz">5.4 🎬 Visualizer: Binary Search Tree (Insert · Search · Hibbard Delete · 4 Duyệt Cây)</h3>
+<div class="card">
+  <div class="ctrl">
+    <input id="bstKey" type="number" value="42" style="width:76px">
+    <button id="bstIns" class="pri">➕ Insert</button>
+    <button id="bstSearch">🔍 Search</button>
+    <button id="bstDel">🗑 Delete (Hibbard)</button>
+    <button id="bstPresetExam">📝 Cây đề thi (xóa 65)</button>
+    <button id="bstPresetSkew">📈 Chèn tăng dần (Suy biến)</button>
+    <button id="bstClear">🧹 Xóa cây</button>
+  </div>
+  <div class="ctrl" style="margin-top:-4px">
+    <span style="font-size:12.5px;color:var(--tx2)"><b>Duyệt cây từng bước:</b></span>
+    <button id="bstPre">▶ Pre-order (NLR)</button>
+    <button id="bstIn">▶ In-order (LNR tăng dần)</button>
+    <button id="bstPost">▶ Post-order (LRN)</button>
+    <button id="bstBfs">▶ Level-order (BFS)</button>
+  </div>
+  <div class="ds-viz">
+    <svg id="bstSvg" class="tree-svg" viewBox="0 0 860 300"></svg>
+    <div id="bstLog" class="ds-log">
+      <span>Thử nhấn <b>🗑 Delete (Hibbard)</b> với khóa <code>65</code> trên cây đề thi để xem <b>successor = min(t.right) = 69</b> thế chỗ!</span>
+      <span id="bstStat" class="c">Size = 0 · Height = -1</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===================================================== -->
+<section id="avl">
+<span class="tag">06 · Balanced Search Trees: AVL, 2-3 &amp; Red-Black BST</span>
+<h2>6. Cây Tìm Kiếm Cân Bằng: AVL Tree, 2-3 Tree &amp; Red-Black BST</h2>
+<p>Để khắc phục nhược điểm suy biến <code>O(N)</code> của BST thường khi dữ liệu đầu vào có thứ tự, các cây tìm kiếm cân bằng tự động tái cấu trúc sau khi chèn/xóa để <b>đảm bảo chiều cao luôn <code>O(log N)</code> trong mọi trường hợp</b>.</p>
+
+<h3 id="avl-rot">6.1 Cây AVL (AVL Tree) &amp; Bốn Trường Hợp Xoay Cân Bằng</h3>
+<ul>
+  <li><b>Định nghĩa:</b> Cây AVL là một BST mà tại <b>mọi node <code>v</code></b>, độ chênh lệch chiều cao giữa cây con trái và cây con phải không vượt quá 1:<br>
+  <b>Hệ số cân bằng (Balance Factor):</b> <code>BF(v) = height(v.left) - height(v.right) ∈ {-1, 0, +1}</code>.</li>
+  <li><b>Chiều cao tối đa:</b> Cây AVL có <code>N</code> node luôn có chiều cao <b><code>h ≤ 1.44 lg(N + 2)</code></b> (chứng minh qua dãy Fibonacci <code>N(h) = 1 + N(h-1) + N(h-2)</code>). Do đó <code>find</code>, <code>insert</code>, <code>remove</code> đều đảm bảo <b><code>O(log N)</code></b> worst-case!</li>
+  <li><b>Quy trình chèn vào AVL:</b> Chèn như BST thường ở lá, sau đó trên đường đệ quy quay ngược lên gốc, cập nhật <code>height</code> từng node. Gặp node mất cân bằng đầu tiên <code>z</code> (có <code>|BF(z)| == 2</code>), gọi <code>y</code> là con cao hơn của <code>z</code> và <code>x</code> là con cao hơn của <code>y</code>. Có đúng <b>4 trường hợp (LL, RR, LR, RL)</b>:</li>
+</ul>
+
+<div class="grid2">
+  <div class="card">
+    <h4>1️⃣ Left–Left (LL): Lệch Trái–Trái (<code>BF(z) &gt; 1</code> và <code>BF(y) ≥ 0</code>)</h4>
+    <p><code>x</code> nằm ở nhánh trái của con trái <code>y</code> → Chỉ cần <b>1 phép Xoay Phải đơn</b>: <code>rotateRight(z)</code>.</p>
+  </div>
+  <div class="card">
+    <h4>2️⃣ Right–Right (RR): Lệch Phải–Phải (<code>BF(z) &lt; -1</code> và <code>BF(y) ≤ 0</code>)</h4>
+    <p><code>x</code> nằm ở nhánh phải của con phải <code>y</code> → Chỉ cần <b>1 phép Xoay Trái đơn</b>: <code>rotateLeft(z)</code>.</p>
+  </div>
+  <div class="card">
+    <h4>3️⃣ Left–Right (LR): Gấp khúc Trái–Phải (<code>BF(z) &gt; 1</code> và <code>BF(y) &lt; 0</code>)</h4>
+    <p><b>Xoay kép (2 bước):</b> (1) Xoay trái tại con trái <code>z.left = rotateLeft(z.left)</code> để biến thành dạng LL; (2) Xoay phải tại <code>z</code>: <code>rotateRight(z)</code>.</p>
+  </div>
+  <div class="card">
+    <h4>4️⃣ Right–Left (RL): Gấp khúc Phải–Trái (<code>BF(z) &lt; -1</code> và <code>BF(y) &gt; 0</code>)</h4>
+    <p><b>Xoay kép (2 bước):</b> (1) Xoay phải tại con phải <code>z.right = rotateRight(z.right)</code> để biến thành dạng RR; (2) Xoay trái tại <code>z</code>: <code>rotateLeft(z)</code>.</p>
+  </div>
+</div>
+
+<pre class="ascii">     [LL Case]               Xoay Phải(5)            [Balanced]             [RR Case]            Xoay Trái(3)
+        5 (z, BF=+2)        ──────────────►              4                    3 (z, BF=-2)      ──────────────►
+       / \                                              / \                  / \
+      4   D                                            3   5                A   4 (y)
+     / \                                              / \ / \                  / \
+    3   C                                            A  B C  D                B   5 (x)
+   / \                                                                           / \
+  A   B                                                                         C   D
+
+     [LR Case]            1) Xoay Trái(3)            [LL Case]            2) Xoay Phải(5)         [Balanced]
+        5 (z, BF=+2)      ──────────────►               5                 ──────────────►             4
+       / \                                             / \                                           / \
+      3   D                                           4   D                                         3   5
+     / \                                             / \                                           / \ / \
+    A   4 (x)                                       3   C                                         A  B C  D
+       / \                                         / \
+      B   C                                       A   B</pre>
+
+<div class="note">
+  <b>Khác biệt giữa Insert và Remove trên cây AVL (Slide 33Z_AVLTrees.pdf):</b><br>
+  • <b>Khi Insert:</b> Sau khi thực hiện đúng <b>1 lần</b> xoay (đơn hoặc kép) tại node mất cân bằng thấp nhất <code>z</code>, chiều cao cây con gốc <code>z</code> trở lại bằng trước khi chèn → toàn bộ các tổ tiên phía trên đều tự động cân bằng! (Tối đa 1 lần restructure).<br>
+  • <b>Khi Remove (Xóa):</b> Sau khi xoay tại <code>z</code>, chiều cao cây con có thể giảm 1, làm mất cân bằng một node tổ tiên cao hơn → phải <b>tiếp tục kiểm tra và xoay dọc đường lên đến tận <code>root</code></b> (tối đa <code>O(log N)</code> lần xoay).
+</div>
+
+<h3 id="avl-code">6.2 Code Java đầy đủ cho Cây AVL (Insert + Delete + Tự động cân bằng)</h3>
+<script type="text/plain" class="java" data-title="AVLTree.java — Cài đặt chuẩn HackerRank (Self Balancing Tree) & Giáo trình">
+public class AVLTree {
+    static class Node {
+        int val;
+        int ht;             // chiều cao của node (quy ước lá ht = 0, null ht = -1)
+        Node left, right;
+
+        Node(int val) { this.val = val; this.ht = 0; }
+    }
+
+    private static int height(Node x) {
+        return x == null ? -1 : x.ht;
+    }
+
+    private static void updateHeight(Node x) {
+        x.ht = 1 + Math.max(height(x.left), height(x.right));
+    }
+
+    // Hệ số cân bằng: BF = height(left) - height(right)
+    private static int balanceFactor(Node x) {
+        return x == null ? 0 : height(x.left) - height(x.right);
+    }
+
+    // Xoay Phải tại y (dùng cho LL): O(1)
+    private static Node rotateRight(Node y) {
+        Node x = y.left;
+        Node T2 = x.right;
+
+        x.right = y;        // đưa x lên làm cha của y
+        y.left = T2;        // gắn cây con phải T2 của x sang làm con trái của y
+
+        updateHeight(y);    // QUAN TRỌNG: cập nhật chiều cao con (y) TRƯỚC, cha mới (x) SAU!
+        updateHeight(x);
+        return x;
+    }
+
+    // Xoay Trái tại x (dùng cho RR): O(1)
+    private static Node rotateLeft(Node x) {
+        Node y = x.right;
+        Node T2 = y.left;
+
+        y.left = x;         // đưa y lên làm cha của x
+        x.right = T2;
+
+        updateHeight(x);    // cập nhật chiều cao x trước, y sau
+        updateHeight(y);
+        return y;
+    }
+
+    // Khôi phục cân bằng AVL tại node z (xử lý đủ 4 trường hợp LL, LR, RR, RL)
+    private static Node rebalance(Node z) {
+        updateHeight(z);
+        int bf = balanceFactor(z);
+
+        // Lệch Trái (BF > 1)
+        if (bf > 1) {
+            if (balanceFactor(z.left) < 0)          // Case LR: con trái lệch phải
+                z.left = rotateLeft(z.left);
+            return rotateRight(z);                  // Case LL (hoặc bước 2 của LR)
+        }
+        // Lệch Phải (BF < -1)
+        if (bf < -1) {
+            if (balanceFactor(z.right) > 0)         // Case RL: con phải lệch trái
+                z.right = rotateRight(z.right);
+            return rotateLeft(z);                   // Case RR (hoặc bước 2 của RL)
+        }
+        return z;                                   // Đã cân bằng (-1 <= BF <= 1)
+    }
+
+    // CHÈN (INSERT) vào cây AVL: O(log N)
+    public static Node insert(Node root, int val) {
+        if (root == null) return new Node(val);
+        if      (val < root.val) root.left  = insert(root.left,  val);
+        else if (val > root.val) root.right = insert(root.right, val);
+        else return root;                           // không chèn khóa trùng
+
+        return rebalance(root);                     // tự động xoay trên đường quay lên
+    }
+
+    // XÓA (DELETE) khỏi cây AVL: O(log N)
+    public static Node delete(Node root, int val) {
+        if (root == null) return null;
+        if      (val < root.val) root.left  = delete(root.left,  val);
+        else if (val > root.val) root.right = delete(root.right, val);
+        else {
+            if (root.left == null || root.right == null) {
+                root = (root.left != null) ? root.left : root.right;
+            } else {
+                Node succ = root.right;             // tìm successor = min(root.right)
+                while (succ.left != null) succ = succ.left;
+                root.val = succ.val;
+                root.right = delete(root.right, succ.val);
+            }
+        }
+        if (root == null) return null;
+        return rebalance(root);                     // cân bằng lại từ đáy lên đến tận root
+    }
+}
+</script>
+
+<h3 id="rb-tree">6.3 Cây 2-3 (2-3 Search Tree) &amp; Left-Leaning Red-Black BST (LLRB)</h3>
+<p>Trong giáo trình Sedgewick (Chương 3.3), cây cân bằng được dạy qua <b>Cây 2-3</b> và cài đặt bằng <b>Cây Đỏ-Đen nghiêng trái (LLRB)</b>:</p>
+<ul>
+  <li><b>Cây 2-3 (2-3 Search Tree):</b> Cho phép 2 loại node:
+    <ul>
+      <li><b>2-node:</b> chứa 1 khóa, 2 nhánh con (như BST).</li>
+      <li><b>3-node:</b> chứa 2 khóa <code>a &lt; b</code>, 3 nhánh con (<code>&lt; a</code>, nằm giữa <code>(a, b)</code>, và <code>&gt; b</code>).</li>
+      <li><b>Cơ chế chèn:</b> Chèn khóa mới vào node lá ở đáy. Nếu lá là 3-node thì tạo thành <b>4-node tạm <code>[a | b | c]</code></b> → lập tức <b>tách (split)</b> thành hai 2-node <code>a</code> và <code>c</code>, đồng thời <b>đẩy khóa giữa <code>b</code> lên cha</b>. Cây chỉ tăng chiều cao khi <code>root</code> bị tách → <b>mọi đường từ root tới <code>null</code> có độ dài bằng nhau tuyệt đối</b>! Chiều cao cây 2-3 luôn nằm trong <b><code>[⌊log₃ N⌋ ≈ 0.63 lg N, ⌊lg N⌋]</code></b>.</li>
+    </ul>
+  </li>
+  <li><b>Tương ứng 1–1 giữa Cây 2-3 và LLRB:</b> Mỗi <b>3-node <code>[a | b]</code></b> được biểu diễn trong BST bằng 2 node nối bởi <b>cạnh ĐỎ nghiêng trái</b> (khóa lớn hơn <code>b</code> làm cha ĐEN, khóa nhỏ hơn <code>a</code> làm con trái ĐỎ).</li>
+  <li><b>3 Bất biến của LLRB:</b>
+    <ol>
+      <li>Mọi cạnh ĐỎ đều <b>nghiêng sang trái</b> (không có con phải đỏ).</li>
+      <li>Không có node nào gắn với <b>2 cạnh ĐỎ liên tiếp</b>.</li>
+      <li><b>Perfect Black Balance:</b> mọi đường đi từ <code>root</code> tới <code>null</code> đi qua <b>cùng một số lượng cạnh ĐEN</b> (= chiều cao cây 2-3). Chiều cao LLRB luôn <b><code>≤ 2 lg N</code></b>.</li>
+    </ol>
+  </li>
+</ul>
+
+<pre class="ascii">Tương ứng 1-1:     Cây 2-3               Left-Leaning Red-Black BST (LLRB)
+                  [ 13 | 20 ]                         20 (BLACK)
+                  /    |    \                        //  \
+               (&lt;13) (13..20) (&gt;20)       (RED) 13    (&gt;20)
+                                                   /  \
+                                               (&lt;13) (13..20)</pre>
+
+<script type="text/plain" class="java" data-title="RedBlackBST.java — Left-Leaning Red-Black BST (Chuẩn Sedgewick)">
+public class RedBlackBST<Key extends Comparable<Key>, Value> {
+    private static final boolean RED   = true;
+    private static final boolean BLACK = false;
+
+    private class Node {
+        Key key; Value val;
+        Node left, right;
+        boolean color;      // màu của link từ CHA trỏ tới node này
+
+        Node(Key key, Value val, boolean color) {
+            this.key = key; this.val = val; this.color = color;
+        }
+    }
+
+    private Node root;
+    private boolean isRed(Node x) { return x != null && x.color == RED; }
+
+    // 1. Xoay trái: sửa cạnh ĐỎ nghiêng phải -> nghiêng trái
+    private Node rotateLeft(Node h) {
+        Node x = h.right;
+        h.right = x.left;
+        x.left = h;
+        x.color = h.color;
+        h.color = RED;
+        return x;
+    }
+
+    // 2. Xoay phải: xử lý 2 cạnh ĐỎ trái liên tiếp
+    private Node rotateRight(Node h) {
+        Node x = h.left;
+        h.left = x.right;
+        x.right = h;
+        x.color = h.color;
+        h.color = RED;
+        return x;
+    }
+
+    // 3. Đổi màu (Tách 4-node tạm: đẩy cạnh ĐỎ lên cha)
+    private void flipColors(Node h) {
+        h.color = RED;
+        h.left.color = BLACK;
+        h.right.color = BLACK;
+    }
+
+    // CHÈN VÀO LLRB: chỉ thêm đúng 3 dòng if vào cuối hàm put() của BST chuẩn!
+    public void put(Key key, Value val) {
+        root = put(root, key, val);
+        root.color = BLACK; // root luôn là BLACK
+    }
+
+    private Node put(Node h, Key key, Value val) {
+        if (h == null) return new Node(key, val, RED);  // luôn gắn node mới ở đáy bằng link ĐỎ
+
+        int cmp = key.compareTo(h.key);
+        if      (cmp < 0) h.left  = put(h.left,  key, val);
+        else if (cmp > 0) h.right = put(h.right, key, val);
+        else              h.val   = val;
+
+        // 3 phép biến đổi trên đường đệ quy quay lên:
+        if (isRed(h.right) && !isRed(h.left))     h = rotateLeft(h);    // 1. Cạnh đỏ phải -> xoay trái
+        if (isRed(h.left)  && isRed(h.left.left)) h = rotateRight(h);   // 2. 2 đỏ trái liên tiếp -> xoay phải
+        if (isRed(h.left)  && isRed(h.right))     flipColors(h);        // 3. Cả 2 con đều đỏ -> đổi màu
+
+        return h;
+    }
+}
+</script>
+
+<h3 id="avl-viz">6.4 🎬 Visualizer: Cây AVL (4 Phép Xoay LL/RR/LR/RL) &amp; Red-Black BST (LLRB)</h3>
+<div class="card">
+  <div class="ctrl">
+    <select id="balMode">
+      <option value="avl">AVL Tree (hiển thị Height &amp; Balance Factor BF)</option>
+      <option value="llrb">Left-Leaning Red-Black BST (hiển thị cạnh ĐỎ nghiêng trái)</option>
+    </select>
+    <input id="avlKey" type="number" value="25" style="width:76px">
+    <button id="avlIns" class="pri">➕ Insert</button>
+    <button id="avlDel">🗑 Delete (AVL)</button>
+    <button id="avlClear">🧹 Xóa cây</button>
+  </div>
+  <div class="ctrl" style="margin-top:-4px">
+    <span style="font-size:12.5px;color:var(--tx2)"><b>Kịch bản mẫu:</b></span>
+    <button id="avlLL">⚡ Case LL (30, 20, 10)</button>
+    <button id="avlRR">⚡ Case RR (10, 20, 30)</button>
+    <button id="avlLR">⚡ Case LR (30, 10, 20)</button>
+    <button id="avlRL">⚡ Case RL (10, 30, 20)</button>
+    <button id="avlSeq">🔥 Chèn 1..10 tăng dần (Không bị suy biến!)</button>
+  </div>
+  <div class="ds-viz">
+    <svg id="avlSvg" class="tree-svg" viewBox="0 0 860 310"></svg>
+    <div id="avlLog" class="ds-log">
+      <span>Mỗi node hiển thị <code>khóa</code> và nhãn <code>BF = h(L) - h(R) ∈ {-1, 0, +1}</code>. Nhấn các nút <b>Case LL/RR/LR/RL</b> để xem phép xoay!</span>
+      <span id="avlStat" class="g">Nodes = 0 · Height = -1</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===================================================== -->
+<section id="sort">
+<span class="tag">07 · Sorting</span>
+<h2>7. Các thuật toán sắp xếp</h2>
+<p>Tất cả code dưới đây dùng chung các hàm tiện ích <code>less</code> và <code>exch</code> (giống sách Sedgewick):</p>
+<script type="text/plain" class="java" data-title="Helpers dùng chung">
+private static boolean less(Comparable a, Comparable b) { return a.compareTo(b) < 0; }
+
+private static void exch(Object[] a, int i, int j) {
+    Object t = a[i]; a[i] = a[j]; a[j] = t;
+}
+
+private static boolean isSorted(Comparable[] a) {
+    for (int i = 1; i < a.length; i++)
+        if (less(a[i], a[i - 1])) return false;
+    return true;
+}
+</script>
+<div class="note"><b>Stable (ổn định)</b>: các phần tử có key bằng nhau giữ nguyên thứ tự tương đối ban đầu (quan trọng khi sắp xếp theo nhiều khóa). <b>In-place</b>: chỉ dùng thêm O(1) hoặc O(log N) bộ nhớ.<br>
+<b>Cận dưới</b>: mọi thuật toán sắp xếp <b>dựa trên so sánh</b> cần ít nhất <b>lg(N!) ~ N lg N</b> phép so sánh trong trường hợp xấu nhất (cây quyết định có N! lá).</div>
+
+<!-- Selection -->
+<h3 id="s-selection">7.1 Selection Sort (Sắp xếp chọn)</h3>
+<p><b>Ý tưởng:</b> ở vòng thứ i, tìm phần tử <b>nhỏ nhất</b> trong <code>a[i..N-1]</code> rồi đổi chỗ với <code>a[i]</code>.</p>
+<ul>
+<li>So sánh: <b>~N²/2</b> (luôn luôn, kể cả mảng đã sắp xếp). Đổi chỗ: đúng <b>N</b> lần, ít nhất trong các thuật toán.</li>
+<li>Không ổn định, in-place. Thời gian không phụ thuộc input.</li>
+</ul>
+<pre class="ascii">[ 5 3 8 1 9 2 ]  → min=1, đổi với 5 → [ 1 | 3 8 5 9 2 ]
+                  → min=2, đổi với 3 → [ 1 2 | 8 5 9 3 ]
+                  → min=3, đổi với 8 → [ 1 2 3 | 5 9 8 ] ...</pre>
+<script type="text/plain" class="java" data-title="Selection.java">
+public static void selectionSort(Comparable[] a) {
+    int n = a.length;
+    for (int i = 0; i < n; i++) {
+        int min = i;
+        for (int j = i + 1; j < n; j++)
+            if (less(a[j], a[min])) min = j;   // tìm chỉ số nhỏ nhất
+        exch(a, i, min);                      // đưa về đúng vị trí i
+    }
+}
+</script>
+
+<!-- Insertion -->
+<h3 id="s-insertion">7.2 Insertion Sort (Sắp xếp chèn)</h3>
+<p><b>Ý tưởng:</b> giống xếp bài trên tay, lấy <code>a[i]</code> và <b>chèn ngược về</b> đúng chỗ trong phần đã sắp xếp <code>a[0..i-1]</code> bằng cách đổi chỗ liên tiếp sang trái.</p>
+<ul>
+<li>Trung bình: ~N²/4 so sánh và ~N²/4 đổi chỗ. Xấu nhất (mảng giảm dần): ~N²/2. <b>Tốt nhất (đã sắp xếp): N−1 so sánh, 0 đổi chỗ.</b></li>
+<li>Số lần đổi chỗ = <b>số nghịch thế (inversions)</b>. Với mảng <b>gần như đã sắp xếp</b> (số nghịch thế ≤ cN) → <b>tuyến tính</b>.</li>
+<li>Ổn định, in-place, rất nhanh với mảng nhỏ (Mergesort/Quicksort chuyển sang insertion khi mảng con ≤ ~10 phần tử).</li>
+</ul>
+<script type="text/plain" class="java" data-title="Insertion.java">
+public static void insertionSort(Comparable[] a) {
+    int n = a.length;
+    for (int i = 1; i < n; i++) {
+        for (int j = i; j > 0 && less(a[j], a[j - 1]); j--)
+            exch(a, j, j - 1);                 // đẩy a[j] sang trái đến đúng chỗ
+    }
+}
+
+// Bản tối ưu: dịch (shift) thay vì exch → giảm một nửa số lần truy cập mảng
+public static void insertionSortShift(int[] a) {
+    for (int i = 1; i < a.length; i++) {
+        int key = a[i], j = i - 1;
+        while (j >= 0 && a[j] > key) {
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = key;
+    }
+}
+</script>
+
+<!-- Shell -->
+<h3 id="s-shell">7.3 Shell Sort</h3>
+<p><b>Ý tưởng:</b> insertion sort với bước nhảy <code>h</code> giảm dần (h-sort). Mảng <b>h-sorted</b> = h dãy con xen kẽ đều đã sắp xếp. Bước lớn đưa phần tử đi xa nhanh, bước cuối h = 1 là insertion sort trên mảng gần sắp xếp.</p>
+<ul>
+<li>Dãy Knuth: <code>h = 3h + 1</code> → 1, 4, 13, 40, 121, 364…</li>
+<li>Xấu nhất với 3x+1: <b>O(N^(3/2))</b>. Thực nghiệm khoảng N^1.25. Chưa có công thức chính xác cho trường hợp trung bình.</li>
+<li>Không ổn định, in-place, code ngắn → hay dùng trong hệ nhúng.</li>
+</ul>
+<script type="text/plain" class="java" data-title="Shell.java">
+public static void shellSort(Comparable[] a) {
+    int n = a.length;
+    int h = 1;
+    while (h < n / 3) h = 3 * h + 1;          // 1, 4, 13, 40, 121, ...
+    while (h >= 1) {
+        // h-sort mảng: insertion sort với bước h
+        for (int i = h; i < n; i++)
+            for (int j = i; j >= h && less(a[j], a[j - h]); j -= h)
+                exch(a, j, j - h);
+        h = h / 3;
+    }
+}
+</script>
+
+<!-- Merge -->
+<h3 id="s-merge">7.4 Merge Sort (Sắp xếp trộn)</h3>
+<p><b>Chia để trị:</b> chia đôi mảng, sắp xếp đệ quy từng nửa, rồi <b>trộn (merge)</b> hai nửa đã sắp xếp bằng mảng phụ <code>aux</code>.</p>
+<ul>
+<li>So sánh: từ ~½N lg N đến <b>N lg N</b>. Truy cập mảng ≤ <b>6N lg N</b>. <b>Đảm bảo O(N log N) mọi trường hợp</b>.</li>
+<li>Bộ nhớ phụ <b class="r">O(N)</b> (không in-place). <b>Ổn định</b> (khi bằng nhau lấy từ nửa trái trước).</li>
+<li>Truy hồi: C(N) = 2C(N/2) + N → N lg N.</li>
+<li>Cải tiến: (1) insertion sort cho mảng con ≤ 7; (2) bỏ qua merge nếu <code>a[mid] ≤ a[mid+1]</code> → mảng đã sắp xếp chỉ mất O(N); (3) đổi vai trò a/aux để bỏ bước copy.</li>
+<li>Java dùng <b>TimSort</b> (merge + insertion) cho <code>Arrays.sort(Object[])</code> vì cần ổn định.</li>
+</ul>
+<pre class="ascii">         [38 27 43 3 9 82 10]
+         /                   \
+   [38 27 43 3]          [9 82 10]
+    /        \            /      \
+ [38 27]   [43 3]      [9 82]   [10]
+  /  \      /  \        /  \      |
+[38][27]  [43][3]     [9] [82]  [10]
+  \  /      \  /        \  /      |
+ [27 38]   [3 43]      [9 82]   [10]
+    \        /            \      /
+   [3 27 38 43]          [9 10 82]
+          \                 /
+       [3 9 10 27 38 43 82]</pre>
+<script type="text/plain" class="java" data-title="Merge.java — Top-down & Bottom-up">
+public class Merge {
+
+    // Trộn a[lo..mid] và a[mid+1..hi] (cả hai đã sắp xếp)
+    private static void merge(Comparable[] a, Comparable[] aux, int lo, int mid, int hi) {
+        for (int k = lo; k <= hi; k++) aux[k] = a[k];      // copy sang aux
+
+        int i = lo, j = mid + 1;
+        for (int k = lo; k <= hi; k++) {
+            if      (i > mid)              a[k] = aux[j++]; // nửa trái hết
+            else if (j > hi)               a[k] = aux[i++]; // nửa phải hết
+            else if (less(aux[j], aux[i])) a[k] = aux[j++]; // phải nhỏ hơn (strict → ổn định)
+            else                           a[k] = aux[i++]; // trái <= phải → lấy trái
+        }
+    }
+
+    // ---------- TOP-DOWN (đệ quy) ----------
+    public static void sort(Comparable[] a) {
+        Comparable[] aux = new Comparable[a.length];       // cấp phát 1 lần duy nhất
+        sort(a, aux, 0, a.length - 1);
+    }
+    private static void sort(Comparable[] a, Comparable[] aux, int lo, int hi) {
+        if (hi <= lo) return;
+        // cải tiến: if (hi <= lo + 7) { insertionSort(a, lo, hi); return; }
+        int mid = lo + (hi - lo) / 2;
+        sort(a, aux, lo, mid);
+        sort(a, aux, mid + 1, hi);
+        if (!less(a[mid + 1], a[mid])) return;             // đã có thứ tự → bỏ qua merge
+        merge(a, aux, lo, mid, hi);
+    }
+
+    // ---------- BOTTOM-UP (không đệ quy) ----------
+    // Trộn các mảng con kích thước 1, 2, 4, 8, ...  (~lg N lượt, mỗi lượt N)
+    public static void sortBU(Comparable[] a) {
+        int n = a.length;
+        Comparable[] aux = new Comparable[n];
+        for (int sz = 1; sz < n; sz = sz + sz)
+            for (int lo = 0; lo < n - sz; lo += sz + sz)
+                merge(a, aux, lo, lo + sz - 1, Math.min(lo + sz + sz - 1, n - 1));
+    }
+
+    private static boolean less(Comparable a, Comparable b) { return a.compareTo(b) < 0; }
+}
+</script>
+
+<!-- Quick -->
+<h3 id="s-quick">7.5 Quick Sort (Sắp xếp nhanh)</h3>
+<p><b>Chia để trị:</b> <b>xáo trộn</b> mảng, chọn <b>pivot</b> <code>a[lo]</code>, <b>phân hoạch (partition)</b> sao cho bên trái ≤ pivot ≤ bên phải, rồi đệ quy hai phần.</p>
+<ul>
+<li>Trung bình: <b>~2N ln N ≈ 1.39 N lg N</b> so sánh, ~⅓N ln N đổi chỗ. Nhiều so sánh hơn mergesort 39% nhưng <b>nhanh hơn trong thực tế</b> vì ít di chuyển dữ liệu và thân thiện cache.</li>
+<li>Xấu nhất: <b class="r">~½N²</b> (pivot luôn là min/max, ví dụ mảng đã sắp xếp mà không shuffle) → vì vậy phải <b>shuffle</b> trước.</li>
+<li>Tốt nhất: ~N lg N (pivot luôn chia đôi).</li>
+<li><b>In-place</b> (stack đệ quy O(log N) kỳ vọng), <b>không ổn định</b>.</li>
+<li>Cải tiến: insertion sort cho mảng con nhỏ; chọn pivot là <b>median-of-3</b>; <b>3-way partition</b> khi có nhiều key trùng.</li>
+</ul>
+<h4>Partition kiểu Sedgewick (2 con trỏ)</h4>
+<ol>
+<li><code>i</code> chạy từ trái sang khi <code>a[i] &lt; pivot</code>.</li>
+<li><code>j</code> chạy từ phải sang khi <code>a[j] &gt; pivot</code>.</li>
+<li>Nếu <code>i &gt;= j</code> thì dừng; ngược lại đổi <code>a[i]</code> với <code>a[j]</code>, lặp lại.</li>
+<li>Cuối cùng đổi <code>a[lo]</code> (pivot) với <code>a[j]</code>, trả về <code>j</code>.</li>
+</ol>
+<pre class="ascii">pivot = K
+ K  R  A  T  E  L  E  P  U  I  M  Q  C  X  O  S
+    i→                                      ←j     i dừng ở R (≥K), j dừng ở C (≤K) → đổi
+ K  C  A  T  E  L  E  P  U  I  M  Q  R  X  O  S
+          i                       j              i ở T, j ở I → đổi ... đến khi i >= j
+ E  C  A  I  E  K  L  P  U  T  M  Q  R  X  O  S  ← cuối: đổi pivot với a[j]
+ └── ≤ K ──┘   ↑   └────────── ≥ K ──────────┘</pre>
+
+<script type="text/plain" class="java" data-title="Quick.java — Quicksort, 3-way Quicksort, Quickselect">
+import java.util.Random;
+
+public class Quick {
+    private static final Random RND = new Random();
+
+    // ---------- QUICKSORT chuẩn ----------
+    public static void sort(Comparable[] a) {
+        shuffle(a);                        // QUAN TRỌNG: đảm bảo hiệu năng xác suất
+        sort(a, 0, a.length - 1);
+    }
+    private static void sort(Comparable[] a, int lo, int hi) {
+        if (hi <= lo) return;
+        int j = partition(a, lo, hi);      // a[j] đã ở đúng vị trí cuối cùng
+        sort(a, lo, j - 1);
+        sort(a, j + 1, hi);
+    }
+
+    private static int partition(Comparable[] a, int lo, int hi) {
+        int i = lo, j = hi + 1;
+        Comparable v = a[lo];              // pivot
+        while (true) {
+            while (less(a[++i], v)) if (i == hi) break;   // tìm phần tử >= v bên trái
+            while (less(v, a[--j])) if (j == lo) break;   // tìm phần tử <= v bên phải
+            if (i >= j) break;                            // hai con trỏ gặp nhau
+            exch(a, i, j);
+        }
+        exch(a, lo, j);                    // đưa pivot vào giữa
+        return j;
+    }
+
+    // ---------- 3-WAY QUICKSORT (Dijkstra) — tốt khi có nhiều key trùng ----------
+    // Chia thành: [ < v | == v | > v ]
+    //              lo..lt-1  lt..gt  gt+1..hi
+    public static void sort3way(Comparable[] a, int lo, int hi) {
+        if (hi <= lo) return;
+        int lt = lo, gt = hi, i = lo + 1;
+        Comparable v = a[lo];
+        while (i <= gt) {
+            int cmp = a[i].compareTo(v);
+            if      (cmp < 0) exch(a, lt++, i++);
+            else if (cmp > 0) exch(a, i, gt--);      // không tăng i: phần tử mới đổi về chưa xét
+            else              i++;
+        }
+        sort3way(a, lo, lt - 1);
+        sort3way(a, gt + 1, hi);
+    }
+
+    // ---------- QUICKSELECT: phần tử nhỏ thứ k (k từ 0). Trung bình O(N) ----------
+    public static Comparable select(Comparable[] a, int k) {
+        shuffle(a);
+        int lo = 0, hi = a.length - 1;
+        while (hi > lo) {
+            int j = partition(a, lo, hi);
+            if      (j < k) lo = j + 1;
+            else if (j > k) hi = j - 1;
+            else return a[k];
+        }
+        return a[k];
+    }
+
+    // ---------- LOMUTO PARTITION (Quicksort In-Place / HackerRank) ----------
+    // Chọn pivot = a[hi] (cuối mảng), duy trì vùng [lo..i-1] <= pivot
+    public static int lomutoPartition(int[] a, int lo, int hi) {
+        int pivot = a[hi];
+        int i = lo;
+        for (int j = lo; j < hi; j++) {
+            if (a[j] <= pivot) {
+                int tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+                i++;
+            }
+        }
+        int tmp = a[i]; a[i] = a[hi]; a[hi] = tmp; // đưa pivot về vị trí i
+        return i;
+    }
+
+    // ---------- helpers ----------
+    private static void shuffle(Object[] a) {          // Knuth shuffle
+        for (int i = 0; i < a.length; i++) {
+            int r = RND.nextInt(i + 1);                 // 0..i
+            exch(a, i, r);
+        }
+    }
+    private static boolean less(Comparable a, Comparable b) { return a.compareTo(b) < 0; }
+    private static void exch(Object[] a, int i, int j) { Object t = a[i]; a[i] = a[j]; a[j] = t; }
+}
+</script>
+<div class="note"><b>Vì sao Hoare/Sedgewick partition dừng khi bằng pivot?</b> Nếu mảng toàn key bằng nhau mà không dừng (dùng <code>&lt;=</code>), partition sẽ lệch hẳn về một phía → <b class="r">~½N²</b>. Dừng khi bằng nhau dù đổi chỗ thừa nhưng chia đôi mảng đều → <b class="g">~N lg N</b>. 3-way quicksort còn tốt hơn: với mảng có ít key khác nhau, chi phí là <b class="g">O(N)</b> tuyến tính.</div>
+
+<!-- Heap sort -->
+<h3 id="s-heap">7.6 Heap Sort</h3>
+<p><b>Hai pha:</b> (1) <b>Xây max-heap</b> bottom-up trong O(N); (2) lặp lại: đổi <code>a[1]</code> (max) với phần tử cuối, giảm kích thước heap, <code>sink(1)</code>.</p>
+<ul>
+<li>Xây heap ≤ 2N so sánh; sắp xếp ≤ <b>2N lg N</b> so sánh. <b>Đảm bảo O(N log N) và in-place O(1)</b>: thuật toán duy nhất trong bảng có cả hai.</li>
+<li>Nhược: <b>không ổn định</b>, vòng lặp trong dài hơn quicksort, truy cập bộ nhớ nhảy cóc (kém cache).</li>
+<li><b>Introsort</b> (C++ <code>std::sort</code>): quicksort, chuyển sang heapsort khi đệ quy quá sâu (2 lg N), insertion cho mảng nhỏ.</li>
+</ul>
+<script type="text/plain" class="java" data-title="Heap.java — Heapsort (dùng chỉ số 1..n ánh xạ sang 0..n-1)">
+public class Heap {
+    public static void sort(Comparable[] a) {
+        int n = a.length;
+        // Pha 1: xây max-heap, sink từ node trong cuối cùng về root
+        for (int k = n / 2; k >= 1; k--)
+            sink(a, k, n);
+        // Pha 2: lấy max ra cuối mảng
+        while (n > 1) {
+            exch(a, 1, n--);       // max về vị trí cuối
+            sink(a, 1, n);         // khôi phục heap trên a[1..n]
+        }
+    }
+
+    private static void sink(Comparable[] a, int k, int n) {
+        while (2 * k <= n) {
+            int j = 2 * k;
+            if (j < n && less(a, j, j + 1)) j++;
+            if (!less(a, k, j)) break;
+            exch(a, k, j);
+            k = j;
+        }
+    }
+
+    // Chỉ số heap i (1-based) ↔ a[i-1] (0-based)
+    private static boolean less(Comparable[] a, int i, int j) { return a[i - 1].compareTo(a[j - 1]) < 0; }
+    private static void exch(Object[] a, int i, int j) { Object t = a[i - 1]; a[i - 1] = a[j - 1]; a[j - 1] = t; }
+}
+</script>
+
+<!-- Others -->
+<h3 id="s-other">7.7 Sắp xếp không dựa trên so sánh &amp; Shuffle</h3>
+<p>Khi key là <b>số nguyên trong phạm vi nhỏ</b> hoặc chuỗi, có thể vượt cận N lg N.</p>
+<script type="text/plain" class="java" data-title="Counting sort (key-indexed), LSD Radix sort, Knuth shuffle">
+// Counting sort: key trong [0, R). O(N + R), ổn định, bộ nhớ O(N + R)
+public static void countingSort(int[] a, int R) {
+    int n = a.length;
+    int[] count = new int[R + 1];
+    int[] aux = new int[n];
+    for (int x : a) count[x + 1]++;                  // 1) đếm tần suất
+    for (int r = 0; r < R; r++) count[r + 1] += count[r]; // 2) cộng dồn → vị trí bắt đầu
+    for (int x : a) aux[count[x]++] = x;             // 3) phân phối (giữ thứ tự → ổn định)
+    System.arraycopy(aux, 0, a, 0, n);               // 4) copy lại
+}
+
+// LSD Radix sort cho số nguyên không âm: sắp theo từng chữ số từ PHẢI sang TRÁI
+// O(d * (N + 10)), d = số chữ số. Mỗi lượt phải ổn định!
+public static void radixSort(int[] a) {
+    int max = 0;
+    for (int x : a) max = Math.max(max, x);
+    int[] aux = new int[a.length];
+    for (int exp = 1; max / exp > 0; exp *= 10) {
+        int[] count = new int[11];
+        for (int x : a) count[(x / exp) % 10 + 1]++;
+        for (int r = 0; r < 10; r++) count[r + 1] += count[r];
+        for (int x : a) aux[count[(x / exp) % 10]++] = x;
+        System.arraycopy(aux, 0, a, 0, a.length);
+    }
+}
+
+// Bubble Sort có cờ dừng sớm (mysterySort trong đề COS226):
+// Best case (đã sắp xếp): N-1 so sánh, 0 swap -> O(N). Worst/Average: ~N^2/2 -> O(N^2), Stable.
+public static void bubbleSort(Comparable[] a) {
+    int n = a.length;
+    for (int i = 0; i < n - 1; i++) {
+        boolean swapped = false;
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (less(a[j + 1], a[j])) {
+                exch(a, j, j + 1);
+                swapped = true;
+            }
+        }
+        if (!swapped) break; // dừng sớm nếu không có nghịch thế
+    }
+}
+
+// Knuth (Fisher–Yates) shuffle: hoán vị ngẫu nhiên đều, O(N)
+public static void shuffle(Object[] a) {
+    java.util.Random rnd = new java.util.Random();
+    for (int i = 0; i < a.length; i++) {
+        int r = rnd.nextInt(i + 1);      // chọn trong [0, i]; dùng [0, N) là SAI (không đều)
+        Object t = a[i]; a[i] = a[r]; a[r] = t;
+    }
+}
+</script>
+
+<h4>Mẹo nhận diện cột trạng thái trung gian (Đề thi trắc nghiệm)</h4>
+<table>
+<tr><th>Thuật toán</th><th>Dấu hiệu nhận biết mảng ở giữa quá trình chạy</th></tr>
+<tr><td><b>Selection Sort</b></td><td><code>k</code> phần tử đầu tiên đã tăng dần <b>VÀ là k phần tử nhỏ nhất toàn mảng</b> (đã về đúng vị trí cuối cùng). Phần còn lại chỉ bị đổi chỗ tối đa <code>k</code> vị trí.</td></tr>
+<tr><td><b>Insertion Sort</b></td><td><code>k</code> phần tử đầu tiên đã tăng dần (tương đối với nhau), nhưng <b>k phần tử cuối hoàn toàn chưa bị chạm tới</b> (giữ nguyên vị trí ban đầu).</td></tr>
+<tr><td><b>Shell Sort (h-sort)</b></td><td>Các dãy con cách nhau <code>h</code> vị trí (ví dụ <code>h = 4</code>: chỉ số <code>0, 4, 8, 12...</code>) đều đã tăng dần.</td></tr>
+<tr><td><b>Merge Sort (Top-down)</b></td><td>Nửa trái <code>[0..N/2-1]</code> đã sắp xếp hoàn chỉnh trước khi nửa phải được sắp xếp.</td></tr>
+<tr><td><b>Merge Sort (Bottom-up)</b></td><td>Các cụm kích thước <code>2, 4, 8...</code> liên tiếp đã được sắp xếp tăng dần.</td></tr>
+<tr><td><b>Quick Sort (1 lần partition)</b></td><td>Phần tử pivot <code>v</code> đã về vị trí <code>j</code> sao cho mọi phần tử bên trái <code>&le; v</code> và mọi phần tử bên phải <code>&ge; v</code> (hai bên chưa sắp xếp).</td></tr>
+<tr><td><b>Heap Sort</b></td><td>Sau pha heapify: <code>a[0]</code> là max và thỏa mãn <code>a[k] &ge; a[2k+1], a[2k+2]</code>. Đang sort: các phần tử lớn nhất nằm ở cuối mảng tăng dần.</td></tr>
+</table>
+
+<!-- Visualizer -->
+<h3 id="s-viz">7.8 🎬 Visualizer</h3>
+<div class="card">
+<div class="ctrl">
+  <select id="vAlgo">
+    <option value="selection">Selection Sort</option>
+    <option value="insertion">Insertion Sort</option>
+    <option value="bubble">Bubble Sort (cờ dừng sớm)</option>
+    <option value="shell">Shell Sort</option>
+    <option value="merge">Merge Sort</option>
+    <option value="quick" selected>Quick Sort (2-way)</option>
+    <option value="quick3">3-Way Quick Sort (Dijkstra)</option>
+    <option value="heap">Heap Sort</option>
+  </select>
+  <select id="vInput">
+    <option value="random">Ngẫu nhiên</option>
+    <option value="sorted">Đã sắp xếp</option>
+    <option value="reverse">Giảm dần</option>
+    <option value="nearly">Gần sắp xếp</option>
+    <option value="few">Nhiều key trùng</option>
+  </select>
+  <label style="font-size:13px;color:var(--tx2)">N <input id="vN" type="number" value="60" min="5" max="200" style="width:70px"></label>
+  <label style="font-size:13px;color:var(--tx2)">Tốc độ <input id="vSpeed" type="range" min="1" max="100" value="70"></label>
+  <button id="vNew">🎲 Mảng mới</button>
+  <button id="vRun" class="pri">▶ Chạy</button>
+</div>
+<div class="viz" id="viz"></div>
+<div class="mono" style="font-size:13px;color:var(--tx2)" id="vStat">So sánh: 0 · Ghi/đổi chỗ: 0</div>
+<p style="font-size:13px;color:var(--tx2)">🟨 đang so sánh · 🟥 đang đổi chỗ/ghi · 🟩 hoàn tất. Thử Insertion trên "Gần sắp xếp", hoặc Quick vs Merge trên "Nhiều key trùng".</p>
+</div>
+</section>
+
+<!-- ===================================================== -->
+<section id="cheat">
+<span class="tag">08 · Cheat Sheet</span>
+<h2>8. Bảng tổng kết</h2>
+
+<h3>8.1 Thuật toán sắp xếp</h3>
+<div style="overflow-x:auto">
+<table>
+<tr><th>Thuật toán</th><th>Best</th><th>Average</th><th>Worst</th><th>Bộ nhớ phụ</th><th>Stable</th><th>In-place</th><th>Ghi chú</th></tr>
+<tr><td><b>Selection</b></td><td class="y">½N²</td><td class="y">½N²</td><td class="y">½N²</td><td class="g">O(1)</td><td class="r">✗</td><td class="g">✓</td><td>N lần đổi chỗ, không phụ thuộc input</td></tr>
+<tr><td><b>Insertion</b></td><td class="g">N</td><td class="y">¼N²</td><td class="y">½N²</td><td class="g">O(1)</td><td class="g">✓</td><td class="g">✓</td><td>Tốt cho N nhỏ / gần sắp xếp</td></tr>
+<tr><td><b>Shell</b></td><td class="g">N log N</td><td>? (~N^1.25)</td><td class="c">N^(3/2)</td><td class="g">O(1)</td><td class="r">✗</td><td class="g">✓</td><td>Code ngắn, nhanh vừa phải</td></tr>
+<tr><td><b>Merge</b></td><td class="c">½N lg N</td><td class="c">N lg N</td><td class="c">N lg N</td><td class="r">O(N)</td><td class="g">✓</td><td class="r">✗</td><td>Đảm bảo N log N, ổn định</td></tr>
+<tr><td><b>Quick</b></td><td class="c">N lg N</td><td class="c">2N ln N</td><td class="r">½N²</td><td class="y">O(log N)</td><td class="r">✗</td><td class="g">✓</td><td>Nhanh nhất thực tế (có shuffle)</td></tr>
+<tr><td><b>3-way Quick</b></td><td class="g">N</td><td class="c">2N ln N</td><td class="r">½N²</td><td class="y">O(log N)</td><td class="r">✗</td><td class="g">✓</td><td>Tốt khi nhiều key trùng</td></tr>
+<tr><td><b>Heap</b></td><td class="c">N lg N</td><td class="c">2N lg N</td><td class="c">2N lg N</td><td class="g">O(1)</td><td class="r">✗</td><td class="g">✓</td><td>Đảm bảo N log N + in-place</td></tr>
+<tr><td><b>Counting</b></td><td>N + R</td><td>N + R</td><td>N + R</td><td>O(N + R)</td><td class="g">✓</td><td class="r">✗</td><td>Key nguyên trong [0, R)</td></tr>
+<tr><td><b>LSD Radix</b></td><td>d(N + R)</td><td>d(N + R)</td><td>d(N + R)</td><td>O(N + R)</td><td class="g">✓</td><td class="r">✗</td><td>Key độ dài cố định</td></tr>
+</table>
+</div>
+
+<h3>8.2 Cấu trúc dữ liệu</h3>
+<div style="overflow-x:auto">
+<table>
+<tr><th>Cấu trúc</th><th>Search</th><th>Insert</th><th>Delete</th><th>Min / Max</th><th>Có thứ tự?</th></tr>
+<tr><td>Stack / Queue</td><td class="y">N</td><td class="g">1</td><td class="g">1 (đỉnh/đầu)</td><td class="y">N</td><td>—</td></tr>
+<tr><td>Mảng không sắp xếp</td><td class="y">N</td><td class="g">1</td><td class="y">N</td><td class="y">N</td><td class="r">✗</td></tr>
+<tr><td>Mảng đã sắp xếp (binary search)</td><td class="g">log N</td><td class="y">N</td><td class="y">N</td><td class="g">1</td><td class="g">✓</td></tr>
+<tr><td>Binary heap (MaxPQ)</td><td class="y">N</td><td class="c">log N</td><td class="c">log N (delMax)</td><td class="g">1 (max)</td><td>một phần</td></tr>
+<tr><td>BST (trung bình)</td><td class="c">1.39 lg N</td><td class="c">1.39 lg N</td><td class="y">√N</td><td class="c">log N</td><td class="g">✓</td></tr>
+<tr><td>BST (xấu nhất)</td><td class="r">N</td><td class="r">N</td><td class="r">N</td><td class="r">N</td><td class="g">✓</td></tr>
+<tr><td>AVL (xấu nhất)</td><td class="g">1.44 lg N</td><td class="g">log N</td><td class="g">log N</td><td class="g">log N</td><td class="g">✓</td></tr>
+<tr><td>Red-Black BST (xấu nhất)</td><td class="g">2 lg N</td><td class="g">2 lg N</td><td class="g">2 lg N</td><td class="g">log N</td><td class="g">✓</td></tr>
+<tr><td>Hash table (trung bình)</td><td class="g">1</td><td class="g">1</td><td class="g">1</td><td class="y">N</td><td class="r">✗</td></tr>
+</table>
+</div>
+
+<h3>8.3 Chọn thuật toán nào?</h3>
+<table>
+<tr><th>Tình huống</th><th>Nên dùng</th></tr>
+<tr><td>Mảng nhỏ (N &lt; ~15) hoặc gần như đã sắp xếp</td><td><b>Insertion sort</b></td></tr>
+<tr><td>Cần ổn định, đảm bảo N log N (sắp xếp object, nhiều khóa)</td><td><b>Merge sort</b> / TimSort</td></tr>
+<tr><td>Kiểu nguyên thủy, cần nhanh nhất, chấp nhận không ổn định</td><td><b>Quick sort</b> (Java dùng Dual-Pivot Quicksort cho <code>int[]</code>)</td></tr>
+<tr><td>Nhiều key trùng</td><td><b>3-way quicksort</b></td></tr>
+<tr><td>Bộ nhớ hạn chế, cần đảm bảo worst case</td><td><b>Heap sort</b></td></tr>
+<tr><td>Ghi (write) rất đắt (ví dụ flash memory)</td><td><b>Selection sort</b> (chỉ N lần đổi chỗ)</td></tr>
+<tr><td>Số nguyên phạm vi nhỏ</td><td><b>Counting / Radix sort</b></td></tr>
+<tr><td>Phần tử thứ k / median</td><td><b>Quickselect</b> O(N) trung bình</td></tr>
+<tr><td>Top-K trong luồng dữ liệu khổng lồ</td><td><b>MinPQ kích thước K</b>, O(N log K)</td></tr>
+</table>
+</section>
+
+<!-- ===================================================== -->
+<section id="tips">
+<span class="tag">09 · Exam Tips</span>
+<h2>9. Mẹo làm bài &amp; bẫy hay gặp</h2>
+<div class="grid2">
+<div class="card"><h4>📈 Complexity</h4><ul>
+<li>Vòng <code>i *= 2</code> hoặc <code>i /= 2</code> → log N.</li>
+<li>Vòng trong chạy <code>i</code> lần với <code>i</code> giảm một nửa → tổng <b>2N</b>, không phải N log N.</li>
+<li><code>j</code> chạy từ <code>i+1</code> → ~N²/2, vẫn là O(N²).</li>
+<li>Gọi <code>s.length()</code> / <code>substring</code> / nối chuỗi trong vòng lặp có thể ẩn thêm một chi phí O(N).</li>
+</ul></div>
+<div class="card"><h4>📚 Stack / Queue</h4><ul>
+<li>Stack mảng: <b>gấp đôi khi đầy, giảm nửa khi còn ¼</b>.</li>
+<li>Pop xong gán null (loitering).</li>
+<li>Queue linked list: enqueue vào queue rỗng phải gán cả <code>first</code>; dequeue phần tử cuối phải gán <code>last = null</code>.</li>
+<li>Kiểm tra dãy pop hợp lệ bằng cách mô phỏng.</li>
+</ul></div>
+<div class="card"><h4>⛰ Heap</h4><ul>
+<li>Chỉ số từ 1: cha <code>k/2</code>, con <code>2k</code>, <code>2k+1</code>.</li>
+<li>sink đổi với <b>con lớn hơn</b> (max-heap).</li>
+<li>Xây heap bottom-up là <b>O(N)</b>, chèn từng phần tử là O(N log N).</li>
+<li>Heap không phải BST, tìm một key bất kỳ tốn O(N).</li>
+</ul></div>
+<div class="card"><h4>🌳 BST / AVL</h4><ul>
+<li>Phần tử đầu tiên được chèn là root.</li>
+<li>Xóa node có 2 con: <b>successor = min của cây con phải</b>.</li>
+<li>Inorder của BST luôn tăng dần.</li>
+<li>AVL: tìm node mất cân bằng <b>thấp nhất</b> trên đường từ node mới chèn lên; LL/RR xoay đơn, LR/RL xoay kép.</li>
+<li>Chèn dãy tăng dần vào BST thường → cây suy biến; vào AVL → vẫn cân bằng.</li>
+</ul></div>
+<div class="card"><h4>🔀 Sorting</h4><ul>
+<li>Nhận diện trạng thái trung gian: <b>Selection</b>: phần đầu đã sắp xếp và là các phần tử <b>nhỏ nhất</b>. <b>Insertion</b>: phần đầu đã sắp xếp nhưng <b>chưa chắc</b> là nhỏ nhất. <b>Heap sort</b>: phần cuối mảng là các phần tử lớn nhất.</li>
+<li>Merge sort bottom-up: các khối kích thước 2, 4, 8 lần lượt được sắp xếp.</li>
+<li>Quick sort sau partition: pivot đứng đúng vị trí cuối cùng.</li>
+<li>Ổn định: Insertion, Merge, Counting, Radix. Không ổn định: Selection, Shell, Quick, Heap.</li>
+</ul></div>
+<div class="card"><h4>🧮 Số liệu cần thuộc</h4><ul>
+<li>Selection: ~N²/2 so sánh, N đổi chỗ.</li>
+<li>Insertion: ~N²/4 trung bình, số đổi chỗ = số nghịch thế.</li>
+<li>Merge: ≤ N lg N so sánh, ≤ 6N lg N truy cập mảng.</li>
+<li>Quick: ~1.39 N lg N trung bình, ~N²/2 xấu nhất.</li>
+<li>Heap: ≤ 2N (xây) + 2N lg N (sắp xếp).</li>
+<li>BST ngẫu nhiên: ~1.39 lg N; AVL ≤ 1.44 lg N; LLRB ≤ 2 lg N.</li>
+</ul></div>
+</div>
+</section>
+
+<footer style="margin-top:50px;padding-top:20px;border-top:1px solid var(--border);color:var(--mut);font-size:13px;text-align:center">
+Tổng hợp dựa trên <i>Algorithms, 4th Edition</i> (Sedgewick &amp; Wayne) và tài liệu trong thư mục DSA-1.
+</footer>
+</main>
+
+<button class="top-btn" onclick="window.scrollTo({top:0})" title="Lên đầu trang">↑</button>
+
+<script>
+/* ============ Render code blocks + syntax highlight ============ */
+(function () {
+  const KW = new Set(('public private protected static final class interface extends implements new return if else for while do ' +
+    'break continue switch case default void int long double float boolean char byte short true false null this super ' +
+    'throw throws try catch finally import package instanceof var').split(' '));
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|\b([A-Za-z_][A-Za-z0-9_]*)\b(\s*\()?|\b(\d+(?:\.\d+)?)\b/g;
+
+  function highlight(src) {
+    let out = '', last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      if (m[1]) out += '<span class="cm">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="st">' + esc(m[2]) + '</span>';
+      else if (m[3]) {
+        const w = m[3];
+        if (KW.has(w)) out += '<span class="kw">' + w + '</span>';
+        else if (/^[A-Z]/.test(w)) out += '<span class="ty">' + w + '</span>';
+        else if (m[4]) out += '<span class="fn">' + w + '</span>';
+        else out += w;
+        if (m[4]) out += esc(m[4]);
+      } else if (m[5]) out += '<span class="nu">' + m[5] + '</span>';
+      last = re.lastIndex;
+    }
+    return out + esc(src.slice(last));
+  }
+
+  document.querySelectorAll('script.java').forEach(s => {
+    const code = s.textContent.replace(/^\s*\n/, '').replace(/\s+$/, '');
+    const box = document.createElement('div');
+    box.className = 'codebox';
+    box.innerHTML = '<div class="bar"><span>☕ ' + esc(s.dataset.title || 'Java') + '</span><button>Copy</button></div><pre></pre>';
+    box.querySelector('pre').innerHTML = highlight(code);
+    box.querySelector('button').onclick = e => {
+      navigator.clipboard.writeText(code).then(() => {
+        e.target.textContent = '✓ Copied';
+        setTimeout(() => e.target.textContent = 'Copy', 1500);
+      });
+    };
+    s.replaceWith(box);
+  });
+})();
+
+/* ============ TOC: PDF-style jump on click + accurate scroll-spy + filter ============ */
+(function () {
+  const toc = document.getElementById('toc');
+  const links = [...toc.querySelectorAll('a[href^="#"]')];
+  const items = links.map(a => {
+    const id = a.getAttribute('href').slice(1);
+    return { link: a, id, el: document.getElementById(id) };
+  }).filter(x => x.el);
+
+  let clickLockUntil = 0;
+
+  function setActive(id, scrollToc = true) {
+    let activeLink = null;
+    links.forEach(a => {
+      const match = a.getAttribute('href') === '#' + id;
+      a.classList.toggle('active', match);
+      if (match) activeLink = a;
+    });
+    if (activeLink && scrollToc) {
+      const tocRect = toc.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+      if (linkRect.top < tocRect.top + 60 || linkRect.bottom > tocRect.bottom - 40) {
+        activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }
+
+  function jumpToId(id) {
+    const target = document.getElementById(id);
+    if (!target) return;
+    clickLockUntil = Date.now() + 750;
+    setActive(id, true);
+
+    // Scroll main window to exact element position
+    const top = target.getBoundingClientRect().top + window.pageYOffset - 22;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+
+    // Flash the heading or section title so user sees where it jumped
+    const flashEl = target.tagName === 'SECTION' ? (target.querySelector('h2') || target) : target;
+    flashEl.classList.remove('jump-flash');
+    void flashEl.offsetWidth; // force reflow
+    flashEl.classList.add('jump-flash');
+    history.replaceState(null, '', '#' + id);
+  }
+
+  // Intercept clicks on all sidebar TOC links and hero pill links
+  document.querySelectorAll('#toc a[href^="#"], .pill-row a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      if (document.getElementById(id)) {
+        e.preventDefault();
+        jumpToId(id);
+      }
+    });
+  });
+
+  // Scroll-spy based on exact top offset (handles nested <h3> inside <section> properly)
+  let ticking = false;
+  function onScroll() {
+    if (Date.now() < clickLockUntil) return;
+    const threshold = 110;
+    let current = items[0];
+    for (const item of items) {
+      const rect = item.el.getBoundingClientRect();
+      if (rect.top <= threshold) {
+        current = item;
+      } else {
+        break;
+      }
+    }
+    // If scrolled to the very bottom of the page, activate the last visible item
+    if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 15) {
+      current = items[items.length - 1];
+    }
+    if (current) setActive(current.id, true);
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => { onScroll(); ticking = false; });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Filter TOC on search input + Enter key jumps to first matching item
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase();
+    links.forEach(a => a.classList.toggle('hidden-by-search', Boolean(q && !a.textContent.toLowerCase().includes(q))));
+    toc.querySelectorAll('.grp').forEach(g => g.style.display = q ? 'none' : '');
+  });
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const firstVisible = links.find(a => !a.classList.contains('hidden-by-search'));
+      if (firstVisible) firstVisible.click();
+    }
+  });
+
+  // Initial sync (and jump if URL already has #hash)
+  if (location.hash && document.getElementById(location.hash.slice(1))) {
+    setTimeout(() => jumpToId(location.hash.slice(1)), 60);
+  } else {
+    onScroll();
+  }
+})();
+
+/* ============ Sorting visualizer ============ */
+(function () {
+  const viz = document.getElementById('viz'), stat = document.getElementById('vStat');
+  let arr = [], bars = [], running = false, cmpCnt = 0, swCnt = 0;
+
+  function makeArray() {
+    const n = Math.max(5, Math.min(200, +document.getElementById('vN').value || 60));
+    const type = document.getElementById('vInput').value;
+    arr = Array.from({ length: n }, (_, i) => i + 1);
+    if (type === 'few') arr = arr.map(() => 1 + Math.floor(Math.random() * 5) * (n / 5));
+    if (type === 'random' || type === 'few') for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    if (type === 'reverse') arr.reverse();
+    if (type === 'nearly') for (let k = 0; k < n / 10; k++) { const i = Math.floor(Math.random() * (n - 1)); [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]]; }
+    viz.innerHTML = '';
+    bars = arr.map(() => viz.appendChild(document.createElement('div')));
+    cmpCnt = swCnt = 0;
+    draw();
+  }
+  function draw(mark = {}) {
+    const mx = Math.max(...arr);
+    arr.forEach((v, i) => {
+      bars[i].style.height = (v / mx * 100) + '%';
+      bars[i].className = mark[i] || '';
+    });
+    stat.textContent = `So sánh: ${cmpCnt} · Ghi/đổi chỗ: ${swCnt}`;
+  }
+  const delay = () => new Promise(r => setTimeout(r, Math.max(0, 101 - document.getElementById('vSpeed').value) * 3));
+
+  async function cmp(i, j) { cmpCnt++; draw({ [i]: 'cmp', [j]: 'cmp' }); await delay(); return arr[i] - arr[j]; }
+  async function swap(i, j) { swCnt++; [arr[i], arr[j]] = [arr[j], arr[i]]; draw({ [i]: 'sw', [j]: 'sw' }); await delay(); }
+  async function write(i, v) { swCnt++; arr[i] = v; draw({ [i]: 'sw' }); await delay(); }
+
+  const algos = {
+    async selection() {
+      const n = arr.length;
+      for (let i = 0; i < n; i++) { let m = i; for (let j = i + 1; j < n; j++) if (await cmp(j, m) < 0) m = j; await swap(i, m); }
+    },
+    async insertion() {
+      for (let i = 1; i < arr.length; i++) for (let j = i; j > 0 && await cmp(j, j - 1) < 0; j--) await swap(j, j - 1);
+    },
+    async bubble() {
+      const n = arr.length;
+      for (let i = 0; i < n - 1; i++) {
+        let sw = false;
+        for (let j = 0; j < n - 1 - i; j++) {
+          if (await cmp(j + 1, j) < 0) { await swap(j, j + 1); sw = true; }
+        }
+        if (!sw) break;
+      }
+    },
+    async shell() {
+      const n = arr.length; let h = 1; while (h < n / 3) h = 3 * h + 1;
+      while (h >= 1) { for (let i = h; i < n; i++) for (let j = i; j >= h && await cmp(j, j - h) < 0; j -= h) await swap(j, j - h); h = Math.floor(h / 3); }
+    },
+    async merge() {
+      const aux = [];
+      const ms = async (lo, hi) => {
+        if (hi <= lo) return;
+        const mid = (lo + hi) >> 1;
+        await ms(lo, mid); await ms(mid + 1, hi);
+        for (let k = lo; k <= hi; k++) aux[k] = arr[k];
+        let i = lo, j = mid + 1;
+        for (let k = lo; k <= hi; k++) {
+          if (i > mid) await write(k, aux[j++]);
+          else if (j > hi) await write(k, aux[i++]);
+          else { cmpCnt++; if (aux[j] < aux[i]) await write(k, aux[j++]); else await write(k, aux[i++]); }
+        }
+      };
+      await ms(0, arr.length - 1);
+    },
+    async quick() {
+      const qs = async (lo, hi) => {
+        if (hi <= lo) return;
+        let i = lo, j = hi + 1;
+        while (true) {
+          while (await cmp(++i, lo) < 0) if (i === hi) break;
+          while (await cmp(lo, --j) < 0) if (j === lo) break;
+          if (i >= j) break;
+          await swap(i, j);
+        }
+        await swap(lo, j);
+        await qs(lo, j - 1); await qs(j + 1, hi);
+      };
+      await qs(0, arr.length - 1);
+    },
+    async quick3() {
+      const qs3 = async (lo, hi) => {
+        if (hi <= lo) return;
+        let lt = lo, gt = hi, i = lo + 1, v = arr[lo];
+        while (i <= gt) {
+          cmpCnt++; draw({ [i]: 'cmp', [lt]: 'cmp' }); await delay();
+          if (arr[i] < v) await swap(lt++, i++);
+          else if (arr[i] > v) await swap(i, gt--);
+          else i++;
+        }
+        await qs3(lo, lt - 1); await qs3(gt + 1, hi);
+      };
+      await qs3(0, arr.length - 1);
+    },
+    async heap() {
+      let n = arr.length;
+      const sink = async (k, n) => {
+        while (2 * k <= n) {
+          let j = 2 * k;
+          if (j < n && await cmp(j - 1, j) < 0) j++;
+          if (!(await cmp(k - 1, j - 1) < 0)) break;
+          await swap(k - 1, j - 1); k = j;
+        }
+      };
+      for (let k = n >> 1; k >= 1; k--) await sink(k, n);
+      while (n > 1) { await swap(0, --n); await sink(1, n); }
+    }
+  };
+
+  document.getElementById('vNew').onclick = () => { if (!running) makeArray(); };
+  document.getElementById('vInput').onchange = () => { if (!running) makeArray(); };
+  document.getElementById('vRun').onclick = async () => {
+    if (running) return;
+    running = true; cmpCnt = swCnt = 0;
+    const btn = document.getElementById('vRun'); btn.textContent = '⏳ Đang chạy...';
+    await algos[document.getElementById('vAlgo').value]();
+    const done = {}; arr.forEach((_, i) => done[i] = 'done'); draw(done);
+    btn.textContent = '▶ Chạy'; running = false;
+  };
+  makeArray();
+})();
+
+/* ============ 1. Complexity & Binary Search Visualizer ============ */
+(function () {
+  const bsArrEl = document.getElementById('bsArr');
+  const bsLogEl = document.getElementById('bsLog').firstElementChild;
+  const bsStatEl = document.getElementById('bsStat');
+  let a = [2, 5, 8, 12, 16, 19, 23, 28, 31, 35, 42, 49, 56, 64];
+  let lo = 0, hi = a.length - 1, mid = -1, steps = 0, res = -1, done = false, timer = null;
+
+  function resetState(msg) {
+    if (timer) { clearInterval(timer); timer = null; }
+    lo = 0; hi = a.length - 1; mid = -1; steps = 0; res = -1; done = false;
+    render(msg || 'Sẵn sàng. Nhấn ▶ Tìm tự động hoặc 👣 Từng bước.');
+  }
+
+  function render(msg) {
+    bsArrEl.innerHTML = a.map((v, i) => {
+      let cls = 'cell';
+      if (!done && (i < lo || i > hi)) cls += ' dim';
+      if (i === res && done) cls += ' hi-g';
+      else if (i === mid) cls += ' hi-y';
+      else if (!done && (i === lo || i === hi)) cls += ' active';
+      const ptrs = [];
+      if (!done && i === lo) ptrs.push('lo');
+      if (i === mid) ptrs.push('mid');
+      if (!done && i === hi) ptrs.push('hi');
+      const badge = ptrs.length ? `<span class="ptr-badge" style="background:${i === mid ? 'var(--y)' : 'var(--pri)'}">${ptrs.join(',')}</span>` : '';
+      return `<div class="${cls}">${badge}<span class="idx">[${i}]</span><span class="val">${v}</span></div>`;
+    }).join('');
+    if (msg) bsLogEl.innerHTML = msg;
+    bsStatEl.textContent = `So sánh: ${steps} / tối đa ${Math.floor(Math.log2(a.length)) + 1}`;
+  }
+
+  function stepOnce() {
+    if (done) resetState();
+    const key = +document.getElementById('bsKey').value;
+    const mode = document.getElementById('bsMode').value;
+    if (lo > hi) {
+      done = true; mid = -1;
+      if (res !== -1) render(`✅ Hoàn tất (First Occurrence): tìm thấy <code>${key}</code> tại chỉ số nhỏ nhất <b>[${res}]</b>.`);
+      else render(`❌ Search Miss: <code>lo (${lo}) &gt; hi (${hi})</code> — không tìm thấy <b>${key}</b>.`);
+      return false;
+    }
+    mid = lo + Math.floor((hi - lo) / 2);
+    steps++;
+    if (key < a[mid]) {
+      render(`Bước ${steps}: <code>mid = ${mid}</code>, <code>a[${mid}] = ${a[mid]} &gt; ${key}</code> → Rẽ trái: <code>hi = mid - 1 = ${mid - 1}</code>`);
+      hi = mid - 1;
+    } else if (key > a[mid]) {
+      render(`Bước ${steps}: <code>mid = ${mid}</code>, <code>a[${mid}] = ${a[mid]} &lt; ${key}</code> → Rẽ phải: <code>lo = mid + 1 = ${mid + 1}</code>`);
+      lo = mid + 1;
+    } else {
+      res = mid;
+      if (mode === 'std') {
+        done = true;
+        render(`🎯 Tìm thấy <b>a[${mid}] == ${key}</b> sau ${steps} phép so sánh!`);
+        return false;
+      } else {
+        render(`Bước ${steps}: Gặp <code>a[${mid}] == ${key}</code> → Ghi nhận <code>result = ${mid}</code>, tiếp tục tìm bên trái (<code>hi = ${mid - 1}</code>)`);
+        hi = mid - 1;
+      }
+    }
+    return true;
+  }
+
+  document.getElementById('bsStep').onclick = () => { if (timer) { clearInterval(timer); timer = null; } stepOnce(); };
+  document.getElementById('bsRun').onclick = () => {
+    resetState();
+    timer = setInterval(() => { if (!stepOnce()) { clearInterval(timer); timer = null; } }, 650);
+  };
+  document.getElementById('bsNew').onclick = () => {
+    let cur = 2;
+    a = Array.from({ length: 14 }, () => { cur += 2 + Math.floor(Math.random() * 6); return cur; });
+    document.getElementById('bsKey').value = a[Math.floor(Math.random() * a.length)];
+    resetState('Đã tạo mảng tăng dần ngẫu nhiên mới.');
+  };
+  document.getElementById('bsDup').onclick = () => {
+    a = [4, 9, 15, 23, 23, 23, 23, 23, 31, 38, 45, 52, 60, 71];
+    document.getElementById('bsKey').value = 23;
+    document.getElementById('bsMode').value = 'first';
+    resetState('Mảng có nhiều số 23 trùng nhau — hãy thử chế độ First Occurrence!');
+  };
+  resetState();
+
+  // Big-O Comparison Bars
+  const bigON = document.getElementById('bigON'), bigONVal = document.getElementById('bigONVal'), bigOBars = document.getElementById('bigOBars');
+  function renderBigO() {
+    const n = +bigON.value;
+    bigONVal.textContent = n;
+    const rows = [
+      { name: 'O(1) — Hằng số', val: 1, col: 'var(--g)' },
+      { name: 'O(lg N) — Binary Search', val: Math.max(1, Math.round(Math.log2(n) * 10) / 10), col: 'var(--g)' },
+      { name: 'O(N) — Duyệt tuyến tính', val: n, col: 'var(--c)' },
+      { name: 'O(N lg N) — Merge/Quick', val: Math.round(n * Math.log2(n)), col: 'var(--pri2)' },
+      { name: 'O(N²) — 2 vòng lặp lồng', val: n * n, col: 'var(--y)' },
+      { name: 'O(N³) — 3-Sum vét cạn', val: n * n * n, col: 'var(--r)' },
+      { name: 'O(2ᴺ) — Đệ quy nhánh đôi', val: Math.pow(2, n), col: 'var(--p)' }
+    ];
+    const maxLog = Math.log10(Math.pow(2, 30));
+    bigOBars.innerHTML = rows.map(r => {
+      const pct = Math.min(100, Math.max(3, (Math.log10(r.val + 1) / maxLog) * 100));
+      return `<div style="display:grid;grid-template-columns:190px 1fr 120px;align-items:center;gap:10px;font-size:12.5px">
+        <span class="mono" style="color:var(--tx)">${r.name}</span>
+        <div style="background:#161f33;height:14px;border-radius:99px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${r.col};border-radius:99px;transition:width 0.15s"></div></div>
+        <span class="mono" style="text-align:right;color:${r.col};font-weight:700">${r.val.toLocaleString()} ops</span>
+      </div>`;
+    }).join('');
+  }
+  bigON.oninput = renderBigO;
+  renderBigO();
+})();
+
+/* ============ 2. Stack & Balanced Brackets Visualizer ============ */
+(function () {
+  const stLL = document.getElementById('stLL'), stArr = document.getElementById('stArr');
+  const stLog = document.getElementById('stLog').firstElementChild, stStat = document.getElementById('stStat');
+  let items = [10, 20, 30], cap = 4;
+
+  function renderStack(msg, highlightIdx = -1) {
+    // 1. Linked List (top = last pushed = items[items.length - 1])
+    if (items.length === 0) {
+      stLL.innerHTML = `<span class="mono" style="color:var(--mut)">first (top) ──► null (Stack rỗng)</span>`;
+    } else {
+      const rev = [...items].reverse();
+      stLL.innerHTML = `<span class="mono" style="color:var(--g);font-weight:700">first (top) ──►</span>` +
+        rev.map((v, i) => `<div class="ll-node" style="${i === 0 ? 'border-color:var(--g);box-shadow:0 0 10px rgba(16,185,129,0.25)' : ''}"><span class="v">${v}</span><span class="nx">${i === rev.length - 1 ? 'null' : '•─►'}</span></div>`).join('<span class="ll-arrow">→</span>');
+    }
+    // 2. Resizing Array a[0..cap-1]
+    stArr.innerHTML = Array.from({ length: cap }, (_, i) => {
+      const has = i < items.length;
+      const isTop = i === items.length - 1;
+      const cls = 'cell ' + (has ? (i === highlightIdx ? 'hi-y' : isTop ? 'hi-g' : 'active') : 'empty');
+      const badge = isTop ? `<span class="ptr-badge" style="background:var(--g)">top=${i}</span>` : (i === items.length ? `<span class="ptr-badge">n=${i}</span>` : '');
+      return `<div class="${cls}">${badge}<span class="idx">a[${i}]</span><span class="val">${has ? items[i] : 'null'}</span></div>`;
+    }).join('');
+    if (msg) stLog.innerHTML = msg;
+    stStat.textContent = `n = ${items.length} · capacity = ${cap} · LL mem ≈ ${items.length * 40}B`;
+  }
+
+  function pushVal(v) {
+    let msg = `<code>push(${v})</code>: đặt vào <code>a[${items.length}]</code> và tạo <code>first</code> mới.`;
+    if (items.length === cap) {
+      cap *= 2;
+      msg = `⚡ <b>Mảng đầy (n == ${cap / 2}) → resize(2 * cap = ${cap})</b> rồi mới <code>push(${v})</code>!`;
+    }
+    items.push(v);
+    renderStack(msg, items.length - 1);
+  }
+
+  function popVal() {
+    if (!items.length) { renderStack(`❌ <b>Stack Underflow!</b> Không thể pop khi stack rỗng.`); return; }
+    const v = items.pop();
+    let msg = `<code>pop() → ${v}</code>: gán <code>a[${items.length}] = null</code> (tránh loitering), dời <code>first = first.next</code>.`;
+    if (items.length > 0 && items.length === Math.floor(cap / 4) && cap > 2) {
+      cap = Math.floor(cap / 2);
+      msg += ` 📉 <b>Còn 1/4 mảng (n == ${items.length}) → resize(cap / 2 = ${cap})</b>!`;
+    }
+    renderStack(msg);
+  }
+
+  document.getElementById('stPush').onclick = () => pushVal(document.getElementById('stVal').value || '0');
+  document.getElementById('stPop').onclick = popVal;
+  document.getElementById('stRand').onclick = () => {
+    const v = Math.floor(10 + Math.random() * 89);
+    document.getElementById('stVal').value = v;
+    pushVal(v);
+  };
+  document.getElementById('stClear').onclick = () => { items = []; cap = 2; renderStack('Đã làm rỗng Stack.'); };
+  document.getElementById('stDemoResize').onclick = async () => {
+    items = [11, 22, 33]; cap = 4; renderStack('Chuẩn bị: n = 3, capacity = 4.');
+    await new Promise(r => setTimeout(r, 700)); pushVal(44);
+    await new Promise(r => setTimeout(r, 900)); pushVal(55);
+    await new Promise(r => setTimeout(r, 900)); popVal();
+    await new Promise(r => setTimeout(r, 900)); popVal();
+    await new Promise(r => setTimeout(r, 900)); popVal();
+  };
+  renderStack();
+
+  // Balanced Brackets Step-by-Step
+  document.getElementById('brRun').onclick = () => {
+    const s = document.getElementById('brExpr').value;
+    const st = [];
+    const logs = [];
+    let ok = true;
+    const match = { ')': '(', ']': '[', '}': '{' };
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if ('([{'.includes(c)) {
+        st.push(c);
+        logs.push(`Bước ${i + 1}: Gặp mở <b>'${c}'</b> → <code>push('${c}')</code> &nbsp;⇒ Stack: <code>[${st.join(' ')}]</code>`);
+      } else if (')]}'.includes(c)) {
+        if (!st.length) {
+          ok = false;
+          logs.push(`<span class="r">Bước ${i + 1}: Gặp đóng <b>'${c}'</b> nhưng Stack RỖNG → <b>SAI (false)</b>!</span>`);
+          break;
+        }
+        const top = st.pop();
+        if (top !== match[c]) {
+          ok = false;
+          logs.push(`<span class="r">Bước ${i + 1}: Gặp <b>'${c}'</b> nhưng <code>pop() = '${top}'</code> (lệch cặp!) → <b>SAI (false)</b>!</span>`);
+          break;
+        }
+        logs.push(`Bước ${i + 1}: Gặp đóng <b>'${c}'</b> khớp với <code>pop() = '${top}'</code> ✓ &nbsp;⇒ Stack: <code>[${st.join(' ')}]</code>`);
+      }
+    }
+    if (ok && st.length > 0) {
+      ok = false;
+      logs.push(`<span class="r">Kết thúc chuỗi nhưng Stack còn dư <code>[${st.join(' ')}]</code> chưa đóng → <b>SAI (false)</b>!</span>`);
+    } else if (ok) {
+      logs.push(`<span class="g">✅ Kết thúc chuỗi &amp; <code>stack.isEmpty() == true</code> → <b>HỢP LỆ (true)</b>!</span>`);
+    }
+    document.getElementById('brViz').innerHTML = logs.join('<br>');
+  };
+})();
+
+/* ============ 3. Queue Visualizer (Linked List + Circular Array + 2 Stacks) ============ */
+(function () {
+  const qLL = document.getElementById('qLL'), qArr = document.getElementById('qArr'), q2St = document.getElementById('q2St');
+  const qLog = document.getElementById('qLog').firstElementChild, qStat = document.getElementById('qStat');
+  let cap = 6, q = [null, 15, 25, 35, null, null], first = 1, last = 4, n = 3;
+  let inSt = [35], outSt = [25, 15]; // outSt top is 15 (front of queue)
+
+  function getOrdered() {
+    return Array.from({ length: n }, (_, i) => q[(first + i) % cap]);
+  }
+
+  function renderQueue(msg) {
+    const ord = getOrdered();
+    // 1. Linked List
+    if (n === 0) {
+      qLL.innerHTML = `<span class="mono" style="color:var(--mut)">first = null, last = null (Queue rỗng)</span>`;
+    } else {
+      qLL.innerHTML = `<span class="mono" style="color:var(--g);font-weight:700">first ──►</span>` +
+        ord.map((v, i) => `<div class="ll-node" style="${i === 0 ? 'border-color:var(--g)' : i === ord.length - 1 ? 'border-color:var(--c)' : ''}"><span class="v">${v}</span><span class="nx">${i === ord.length - 1 ? 'null' : '•─►'}</span></div>`).join('<span class="ll-arrow">→</span>') +
+        `<span class="mono" style="color:var(--c);font-weight:700">◄── last</span>`;
+    }
+    // 2. Circular Array
+    qArr.innerHTML = Array.from({ length: cap }, (_, i) => {
+      const val = q[i];
+      const has = val !== null;
+      const isF = (i === first && n > 0);
+      const isL = (i === last);
+      const cls = 'cell ' + (isF ? 'hi-g' : has ? 'active' : isL ? 'hi-c' : 'empty');
+      const tags = [];
+      if (isF) tags.push('first');
+      if (isL) tags.push('last');
+      const badge = tags.length ? `<span class="ptr-badge" style="background:${isF ? 'var(--g)' : 'var(--c)'}">${tags.join('/')}</span>` : '';
+      return `<div class="${cls}">${badge}<span class="idx">q[${i}]</span><span class="val">${has ? val : 'null'}</span></div>`;
+    }).join('');
+    // 3. Two Stacks
+    q2St.innerHTML = `
+      <div style="background:#161f33;padding:8px 12px;border-radius:7px;border:1px solid var(--border)">
+        <div class="mono" style="font-size:11.5px;color:var(--c)">📥 inStack (chuyên nhận enqueue):</div>
+        <div class="mono" style="font-size:13px;margin-top:4px">[ ${inSt.join(' , ') || '<span style="color:var(--mut)">rỗng</span>'} ] ← top</div>
+      </div>
+      <div style="background:#161f33;padding:8px 12px;border-radius:7px;border:1px solid var(--border)">
+        <div class="mono" style="font-size:11.5px;color:var(--g)">📤 outStack (chuyên phục vụ dequeue):</div>
+        <div class="mono" style="font-size:13px;margin-top:4px">[ ${outSt.join(' , ') || '<span style="color:var(--mut)">rỗng</span>'} ] ← top (ra trước)</div>
+      </div>`;
+    if (msg) qLog.innerHTML = msg;
+    qStat.textContent = `n = ${n} · cap = ${cap} · first = ${first} · last = ${last}`;
+  }
+
+  function resizeQ(newCap) {
+    const copy = Array(newCap).fill(null);
+    for (let i = 0; i < n; i++) copy[i] = q[(first + i) % cap];
+    q = copy; cap = newCap; first = 0; last = n;
+  }
+
+  function enqueue(v) {
+    let msg = '';
+    if (n === cap) { resizeQ(cap * 2); msg = `⚡ Đầy mảng → <code>resize(${cap})</code> (trải phẳng về 0..${n - 1}). `; }
+    const oldLast = last;
+    q[last] = v;
+    last = (last + 1) % cap;
+    n++;
+    inSt.push(v);
+    msg += `<code>enqueue(${v})</code> tại <code>q[${oldLast}]</code>, cập nhật <code>last = (${oldLast}+1) % ${cap} = ${last}</code>${last === 0 ? ' <b>(Quấn vòng về 0!)</b>' : ''}.`;
+    renderQueue(msg);
+  }
+
+  function dequeue() {
+    if (n === 0) { renderQueue(`❌ <b>Queue Underflow!</b> Hàng đợi đang rỗng.`); return; }
+    const v = q[first];
+    const oldFirst = first;
+    q[first] = null;
+    first = (first + 1) % cap;
+    n--;
+    let stMsg = '';
+    if (outSt.length === 0) {
+      while (inSt.length) outSt.push(inSt.pop());
+      stMsg = ` (2-Stack: <code>outStack</code> rỗng → đổ toàn bộ <code>inStack</code> sang <code>outStack</code>!)`;
+    }
+    outSt.pop();
+    if (n > 0 && n === Math.floor(cap / 4) && cap >= 4) resizeQ(Math.floor(cap / 2));
+    renderQueue(`<code>dequeue() → ${v}</code> từ <code>q[${oldFirst}]</code>, <code>first = (${oldFirst}+1) % ${cap} = ${first}</code>${stMsg}.`);
+  }
+
+  document.getElementById('qEnq').onclick = () => enqueue(document.getElementById('qVal').value || '0');
+  document.getElementById('qDeq').onclick = dequeue;
+  document.getElementById('qRand').onclick = () => {
+    const v = Math.floor(10 + Math.random() * 89);
+    document.getElementById('qVal').value = v;
+    enqueue(v);
+  };
+  document.getElementById('qWrapDemo').onclick = () => {
+    cap = 6; q = [99, null, null, 60, 70, 80]; first = 3; last = 1; n = 4;
+    inSt = [80, 99]; outSt = [70, 60];
+    renderQueue(`🔄 Minh họa <b>Quấn vòng (Wrap-around)</b>: <code>first = 3</code>, các phần tử nằm ở <code>q[3], q[4], q[5], q[0]</code> và <code>last = 1</code>!`);
+  };
+  document.getElementById('qClear').onclick = () => {
+    cap = 6; q = Array(6).fill(null); first = 0; last = 0; n = 0; inSt = []; outSt = [];
+    renderQueue('Đã xóa rỗng Queue.');
+  };
+  renderQueue();
+})();
+
+/* ============ 4. Binary Heap Visualizer (1-based Array + Complete Tree SVG) ============ */
+(function () {
+  const hpArr = document.getElementById('hpArr'), hpSvg = document.getElementById('hpSvg');
+  const hpLog = document.getElementById('hpLog').firstElementChild, hpStat = document.getElementById('hpStat');
+  let pq = [null, 85, 72, 68, 45, 50, 32, 20], busy = false;
+
+  const isMax = () => document.getElementById('hpType').value === 'max';
+  const better = (a, b) => isMax() ? a > b : a < b;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  function renderHeap(msg, hiMap = {}) {
+    const N = pq.length - 1;
+    // 1. 1-based Array pq[0..N]
+    hpArr.innerHTML = pq.map((v, i) => {
+      if (i === 0) return `<div class="cell empty"><span class="idx">pq[0]</span><span class="val">-</span></div>`;
+      const cls = 'cell ' + (hiMap[i] || (i === 1 ? 'hi-g' : 'active'));
+      const role = i === 1 ? 'root' : `p=${Math.floor(i / 2)}`;
+      return `<div class="${cls}"><span class="idx">[${i}] (${role})</span><span class="val">${v}</span></div>`;
+    }).join('');
+
+    // 2. Complete Binary Tree SVG
+    if (N === 0) {
+      hpSvg.innerHTML = `<text x="430" y="140" text-anchor="middle" fill="#6b7280" font-size="14">Heap đang rỗng — Hãy nhấn Insert hoặc Mảng mẫu</text>`;
+    } else {
+      const coords = {};
+      const maxLevel = Math.floor(Math.log2(N));
+      for (let i = 1; i <= N; i++) {
+        const lv = Math.floor(Math.log2(i));
+        const pos = i - (1 << lv);
+        const cnt = 1 << lv;
+        coords[i] = {
+          x: (860 / (cnt + 1)) * (pos + 1),
+          y: 38 + lv * Math.min(68, 210 / Math.max(1, maxLevel))
+        };
+      }
+      let edges = '', nodes = '';
+      for (let i = 2; i <= N; i++) {
+        const p = Math.floor(i / 2);
+        const hiEdge = hiMap[i] && hiMap[p];
+        edges += `<line x1="${coords[p].x}" y1="${coords[p].y}" x2="${coords[i].x}" y2="${coords[i].y}" stroke="${hiEdge ? '#f59e0b' : '#334155'}" stroke-width="${hiEdge ? 3 : 2}"/>`;
+      }
+      for (let i = 1; i <= N; i++) {
+        const c = coords[i];
+        const fill = hiMap[i] === 'hi-y' ? '#d97706' : hiMap[i] === 'hi-r' ? '#dc2626' : i === 1 ? '#059669' : '#4f46e5';
+        nodes += `<g transform="translate(${c.x},${c.y})">
+          <circle r="20" fill="${fill}" stroke="#e5e7eb" stroke-width="1.5"/>
+          <text y="5" text-anchor="middle" fill="#fff" font-weight="700" font-size="13" font-family="monospace">${pq[i]}</text>
+          <text y="-24" text-anchor="middle" fill="#9ca3af" font-size="10.5" font-family="monospace">[${i}]</text>
+        </g>`;
+      }
+      hpSvg.innerHTML = edges + nodes;
+    }
+    if (msg) hpLog.innerHTML = msg;
+    hpStat.textContent = `N = ${N} · Height = ${N ? Math.floor(Math.log2(N)) : -1}`;
+  }
+
+  async function swimAnim(k) {
+    while (k > 1) {
+      const p = Math.floor(k / 2);
+      renderHeap(`So sánh con <code>pq[${k}]=${pq[k]}</code> với cha <code>pq[${p}]=${pq[p]}</code>...`, { [k]: 'hi-y', [p]: 'hi-y' });
+      await sleep(520);
+      if (better(pq[k], pq[p])) {
+        [pq[k], pq[p]] = [pq[p], pq[k]];
+        renderHeap(`<code>swim(${k})</code>: Đổi chỗ <code>pq[${k}] ↔ pq[${p}]</code>!`, { [k]: 'hi-r', [p]: 'hi-r' });
+        await sleep(520);
+        k = p;
+      } else break;
+    }
+  }
+
+  async function sinkAnim(k) {
+    const N = pq.length - 1;
+    while (2 * k <= N) {
+      let j = 2 * k;
+      if (j < N && better(pq[j + 1], pq[j])) j++;
+      renderHeap(`<code>sink(${k})</code>: So sánh cha <code>pq[${k}]=${pq[k]}</code> với con ưu tiên hơn <code>pq[${j}]=${pq[j]}</code>...`, { [k]: 'hi-y', [j]: 'hi-y' });
+      await sleep(520);
+      if (!better(pq[j], pq[k])) break;
+      [pq[k], pq[j]] = [pq[j], pq[k]];
+      renderHeap(`<code>sink(${k})</code>: Đổi chỗ <code>pq[${k}] ↔ pq[${j}]</code>!`, { [k]: 'hi-r', [j]: 'hi-r' });
+      await sleep(520);
+      k = j;
+    }
+  }
+
+  document.getElementById('hpIns').onclick = async () => {
+    if (busy) return;
+    if (pq.length >= 16) { renderHeap('⚠️ Giới hạn tối đa 15 node để hiển thị cây rõ nhất.'); return; }
+    busy = true;
+    const v = +document.getElementById('hpVal').value || 50;
+    pq.push(v);
+    const k = pq.length - 1;
+    renderHeap(`Bước 1: Đặt <b>${v}</b> vào cuối mảng <code>pq[${k}]</code>, bắt đầu <code>swim(${k})</code>...`, { [k]: 'hi-y' });
+    await sleep(500);
+    await swimAnim(k);
+    renderHeap(`✅ Đã chèn <b>${v}</b> và khôi phục thứ tự Heap!`);
+    busy = false;
+  };
+
+  document.getElementById('hpDel').onclick = async () => {
+    if (busy || pq.length <= 1) return;
+    busy = true;
+    const top = pq[1], lastIdx = pq.length - 1;
+    renderHeap(`Bước 1: Đổi chỗ <code>pq[1]=${top}</code> với phần tử cuối <code>pq[${lastIdx}]=${pq[lastIdx]}</code>...`, { 1: 'hi-r', [lastIdx]: 'hi-r' });
+    await sleep(550);
+    pq[1] = pq[lastIdx];
+    pq.pop();
+    if (pq.length > 1) await sinkAnim(1);
+    renderHeap(`✅ Đã lấy ra <b>${top}</b> và hoàn tất <code>sink(1)</code>!`);
+    busy = false;
+  };
+
+  document.getElementById('hpBuild').onclick = async () => {
+    if (busy) return;
+    busy = true;
+    const N = pq.length - 1;
+    for (let k = Math.floor(N / 2); k >= 1; k--) {
+      renderHeap(`🏗 <b>Build Heap Bottom-Up</b>: Gọi <code>sink(${k})</code> (từ <code>⌊N/2⌋=${Math.floor(N / 2)}</code> về <code>1</code>)...`, { [k]: 'hi-y' });
+      await sleep(450);
+      await sinkAnim(k);
+    }
+    renderHeap(`✅ Hoàn tất <b>Build Heap O(N)</b>!`);
+    busy = false;
+  };
+
+  document.getElementById('hpRand').onclick = () => {
+    if (busy) return;
+    pq = [null, ...Array.from({ length: 10 }, () => Math.floor(10 + Math.random() * 89))];
+    renderHeap('Đã tạo mảng 10 phần tử ngẫu nhiên (chưa heapify) — Hãy nhấn <b>🏗 Build Heap O(N)</b>!');
+  };
+  document.getElementById('hpType').onchange = () => document.getElementById('hpBuild').click();
+  document.getElementById('hpClear').onclick = () => { if (!busy) { pq = [null]; renderHeap('Đã xóa Heap.'); } };
+  renderHeap();
+})();
+
+/* ============ 5. Binary Search Tree (BST) Visualizer ============ */
+(function () {
+  const svg = document.getElementById('bstSvg');
+  const logEl = document.getElementById('bstLog').firstElementChild, statEl = document.getElementById('bstStat');
+  let root = null, busy = false;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  function ins(x, k) {
+    if (!x) return { k, l: null, r: null };
+    if (k < x.k) x.l = ins(x.l, k);
+    else if (k > x.k) x.r = ins(x.r, k);
+    return x;
+  }
+  function minNode(x) { while (x.l) x = x.l; return x; }
+  function del(x, k) {
+    if (!x) return null;
+    if (k < x.k) x.l = del(x.l, k);
+    else if (k > x.k) x.r = del(x.r, k);
+    else {
+      if (!x.r) return x.l;
+      if (!x.l) return x.r;
+      const succ = minNode(x.r);
+      x.k = succ.k;
+      x.r = del(x.r, succ.k);
+    }
+    return x;
+  }
+  function sz(x) { return x ? 1 + sz(x.l) + sz(x.r) : 0; }
+  function ht(x) { return x ? 1 + Math.max(ht(x.l), ht(x.r)) : -1; }
+
+  function renderBST(msg, hi = {}) {
+    if (!root) {
+      svg.innerHTML = `<text x="430" y="150" text-anchor="middle" fill="#6b7280" font-size="14">Cây BST đang rỗng</text>`;
+    } else {
+      const pos = new Map();
+      let idx = 0;
+      const total = sz(root);
+      function assignInOrder(x, d) {
+        if (!x) return;
+        assignInOrder(x.l, d + 1);
+        idx++;
+        pos.set(x.k, { x: (860 / (total + 1)) * idx, y: 36 + d * 52, node: x });
+        assignInOrder(x.r, d + 1);
+      }
+      assignInOrder(root, 0);
+      let edges = '', nodes = '';
+      pos.forEach((p, k) => {
+        if (p.node.l && pos.has(p.node.l.k)) {
+          const c = pos.get(p.node.l.k);
+          edges += `<line x1="${p.x}" y1="${p.y}" x2="${c.x}" y2="${c.y}" stroke="#334155" stroke-width="2"/>`;
+        }
+        if (p.node.r && pos.has(p.node.r.k)) {
+          const c = pos.get(p.node.r.k);
+          edges += `<line x1="${p.x}" y1="${p.y}" x2="${c.x}" y2="${c.y}" stroke="#334155" stroke-width="2"/>`;
+        }
+      });
+      pos.forEach((p, k) => {
+        const col = hi[k] === 'y' ? '#d97706' : hi[k] === 'g' ? '#059669' : hi[k] === 'r' ? '#dc2626' : '#4f46e5';
+        nodes += `<g transform="translate(${p.x},${p.y})">
+          <circle r="19" fill="${col}" stroke="#e5e7eb" stroke-width="1.5"/>
+          <text y="5" text-anchor="middle" fill="#fff" font-weight="700" font-size="13" font-family="monospace">${k}</text>
+        </g>`;
+      });
+      svg.innerHTML = edges + nodes;
+    }
+    if (msg) logEl.innerHTML = msg;
+    statEl.textContent = `Size = ${sz(root)} · Height = ${ht(root)}`;
+  }
+
+  function loadExamTree() {
+    root = null;
+    [34, 15, 65, 62, 80, 42, 69, 75].forEach(k => root = ins(root, k));
+    document.getElementById('bstKey').value = 65;
+    renderBST('Đã nạp cây BST chuẩn Đề thi cuối kỳ: <code>[34, 15, 65, 62, 80, 42, 69, 75]</code>. Hãy nhấn <b>🗑 Delete (Hibbard)</b> với khóa <code>65</code>!');
+  }
+
+  document.getElementById('bstIns').onclick = async () => {
+    if (busy) return;
+    const k = +document.getElementById('bstKey').value;
+    busy = true;
+    let cur = root;
+    const hi = {};
+    while (cur) {
+      hi[cur.k] = 'y';
+      renderBST(`So sánh <code>${k}</code> với node <code>${cur.k}</code> → rẽ ${k < cur.k ? 'TRÁI' : k > cur.k ? 'PHẢI' : 'TRÙNG'}`, hi);
+      await sleep(420);
+      if (k < cur.k) cur = cur.l;
+      else if (k > cur.k) cur = cur.r;
+      else break;
+    }
+    root = ins(root, k);
+    renderBST(`✅ Đã chèn khóa <b>${k}</b> vào BST!`, { [k]: 'g' });
+    busy = false;
+  };
+
+  document.getElementById('bstSearch').onclick = async () => {
+    if (busy) return;
+    const k = +document.getElementById('bstKey').value;
+    busy = true;
+    let cur = root, steps = 0;
+    const hi = {};
+    while (cur) {
+      steps++;
+      if (k === cur.k) {
+        hi[cur.k] = 'g';
+        renderBST(`🎯 Tìm thấy khóa <b>${k}</b> sau ${steps} phép so sánh!`, hi);
+        busy = false;
+        return;
+      }
+      hi[cur.k] = 'y';
+      renderBST(`Bước ${steps}: <code>${k} ${k < cur.k ? '<' : '>'} ${cur.k}</code> → rẽ ${k < cur.k ? 'trái' : 'phải'}...`, hi);
+      await sleep(480);
+      cur = k < cur.k ? cur.l : cur.r;
+    }
+    renderBST(`❌ Search Miss: Không tìm thấy <b>${k}</b> sau ${steps} bước.`, hi);
+    busy = false;
+  };
+
+  document.getElementById('bstDel').onclick = async () => {
+    if (busy) return;
+    const k = +document.getElementById('bstKey').value;
+    busy = true;
+    // Check if node has 2 children to highlight successor
+    let cur = root;
+    while (cur && cur.k !== k) cur = k < cur.k ? cur.l : cur.r;
+    if (!cur) { renderBST(`❌ Khóa <b>${k}</b> không có trong cây.`); busy = false; return; }
+    if (cur.l && cur.r) {
+      const succ = minNode(cur.r);
+      renderBST(`🗑 Xóa node <b>${k}</b> có 2 con → Tìm <b>successor = min(${k}.right) = ${succ.k}</b> để đưa lên thay thế!`, { [k]: 'r', [succ.k]: 'g' });
+      await sleep(950);
+    }
+    root = del(root, k);
+    renderBST(`✅ Đã xóa khóa <b>${k}</b> theo Hibbard Deletion!`);
+    busy = false;
+  };
+
+  async function animateOrder(name, list) {
+    if (busy || !list.length) return;
+    busy = true;
+    const hi = {};
+    const visited = [];
+    for (const k of list) {
+      hi[k] = 'g';
+      visited.push(k);
+      renderBST(`<b>${name}:</b> <code>[ ${visited.join(' → ')} ]</code>`, hi);
+      await sleep(420);
+    }
+    busy = false;
+  }
+
+  document.getElementById('bstPre').onclick = () => {
+    const a = []; (function f(x) { if (!x) return; a.push(x.k); f(x.l); f(x.r); })(root);
+    animateOrder('Pre-order (Gốc → Trái → Phải)', a);
+  };
+  document.getElementById('bstIn').onclick = () => {
+    const a = []; (function f(x) { if (!x) return; f(x.l); a.push(x.k); f(x.r); })(root);
+    animateOrder('In-order (Trái → Gốc → Phải — luôn tăng dần!)', a);
+  };
+  document.getElementById('bstPost').onclick = () => {
+    const a = []; (function f(x) { if (!x) return; f(x.l); f(x.r); a.push(x.k); })(root);
+    animateOrder('Post-order (Trái → Phải → Gốc)', a);
+  };
+  document.getElementById('bstBfs').onclick = () => {
+    const a = [], q = root ? [root] : [];
+    while (q.length) { const x = q.shift(); a.push(x.k); if (x.l) q.push(x.l); if (x.r) q.push(x.r); }
+    animateOrder('Level-order (BFS theo từng tầng)', a);
+  };
+  document.getElementById('bstPresetExam').onclick = loadExamTree;
+  document.getElementById('bstPresetSkew').onclick = () => {
+    root = null;
+    [10, 20, 30, 40, 50].forEach(k => root = ins(root, k));
+    renderBST('⚠️ Chèn dãy tăng dần <code>10, 20, 30, 40, 50</code> vào BST thường → Cây suy biến thành danh sách liên kết <b>O(N)</b>!');
+  };
+  document.getElementById('bstClear').onclick = () => { root = null; renderBST('Đã xóa cây BST.'); };
+  loadExamTree();
+})();
+
+/* ============ 6. AVL & Left-Leaning Red-Black BST Visualizer ============ */
+(function () {
+  const svg = document.getElementById('avlSvg');
+  const logEl = document.getElementById('avlLog').firstElementChild, statEl = document.getElementById('avlStat');
+  let root = null, lastAction = '';
+
+  const h = x => x ? x.h : -1;
+  const upd = x => { if (x) x.h = 1 + Math.max(h(x.l), h(x.r)); };
+  const bf = x => x ? h(x.l) - h(x.r) : 0;
+
+  function rotR(y) {
+    const x = y.l, t2 = x.r;
+    x.r = y; y.l = t2;
+    upd(y); upd(x);
+    return x;
+  }
+  function rotL(x) {
+    const y = x.r, t2 = y.l;
+    y.l = x; x.r = t2;
+    upd(x); upd(y);
+    return y;
+  }
+
+  function rebAVL(z) {
+    upd(z);
+    const b = bf(z);
+    if (b > 1) {
+      if (bf(z.l) < 0) {
+        lastAction = `🔄 Phát hiện <b>Case LR tại node ${z.k} (BF=+2, BF(${z.l.k})=-1)</b> → Xoay Trái(${z.l.k}) rồi Xoay Phải(${z.k})!`;
+        z.l = rotL(z.l);
+        return rotR(z);
+      }
+      lastAction = `🔄 Phát hiện <b>Case LL tại node ${z.k} (BF=+2)</b> → Xoay Phải đơn <code>rotateRight(${z.k})</code>!`;
+      return rotR(z);
+    }
+    if (b < -1) {
+      if (bf(z.r) > 0) {
+        lastAction = `🔄 Phát hiện <b>Case RL tại node ${z.k} (BF=-2, BF(${z.r.k})=+1)</b> → Xoay Phải(${z.r.k}) rồi Xoay Trái(${z.k})!`;
+        z.r = rotR(z.r);
+        return rotL(z);
+      }
+      lastAction = `🔄 Phát hiện <b>Case RR tại node ${z.k} (BF=-2)</b> → Xoay Trái đơn <code>rotateLeft(${z.k})</code>!`;
+      return rotL(z);
+    }
+    return z;
+  }
+
+  function insAVL(x, k) {
+    if (!x) return { k, l: null, r: null, h: 0, red: true };
+    if (k < x.k) x.l = insAVL(x.l, k);
+    else if (k > x.k) x.r = insAVL(x.r, k);
+    else return x;
+    return rebAVL(x);
+  }
+
+  function delAVL(x, k) {
+    if (!x) return null;
+    if (k < x.k) x.l = delAVL(x.l, k);
+    else if (k > x.k) x.r = delAVL(x.r, k);
+    else {
+      if (!x.l || !x.r) return x.l || x.r;
+      let s = x.r; while (s.l) s = s.l;
+      x.k = s.k;
+      x.r = delAVL(x.r, s.k);
+    }
+    return rebAVL(x);
+  }
+
+  // LLRB insertion
+  const isRed = x => x != null && x.red === true;
+  function rbRotL(hNode) {
+    const x = hNode.r; hNode.r = x.l; x.l = hNode;
+    x.red = hNode.red; hNode.red = true;
+    upd(hNode); upd(x);
+    return x;
+  }
+  function rbRotR(hNode) {
+    const x = hNode.l; hNode.l = x.r; x.r = hNode;
+    x.red = hNode.red; hNode.red = true;
+    upd(hNode); upd(x);
+    return x;
+  }
+  function flip(hNode) {
+    hNode.red = true;
+    if (hNode.l) hNode.l.red = false;
+    if (hNode.r) hNode.r.red = false;
+  }
+  function insLLRB(hNode, k) {
+    if (!hNode) return { k, l: null, r: null, h: 0, red: true };
+    if (k < hNode.k) hNode.l = insLLRB(hNode.l, k);
+    else if (k > hNode.k) hNode.r = insLLRB(hNode.r, k);
+    if (isRed(hNode.r) && !isRed(hNode.l)) { lastAction = `LLRB: Cạnh đỏ bên phải tại ${hNode.k} → <code>rotateLeft(${hNode.k})</code>`; hNode = rbRotL(hNode); }
+    if (isRed(hNode.l) && isRed(hNode.l.l)) { lastAction = `LLRB: 2 cạnh đỏ trái liên tiếp tại ${hNode.k} → <code>rotateRight(${hNode.k})</code>`; hNode = rbRotR(hNode); }
+    if (isRed(hNode.l) && isRed(hNode.r)) { lastAction = `LLRB: Cả 2 con của ${hNode.k} đều ĐỎ → <code>flipColors(${hNode.k})</code> (tách 4-node tạm)`; flip(hNode); }
+    upd(hNode);
+    return hNode;
+  }
+
+  function countNodes(x) { return x ? 1 + countNodes(x.l) + countNodes(x.r) : 0; }
+
+  function renderAVL(msg) {
+    const mode = document.getElementById('balMode').value;
+    const total = countNodes(root);
+    if (!root) {
+      svg.innerHTML = `<text x="430" y="150" text-anchor="middle" fill="#6b7280" font-size="14">Cây đang rỗng — Nhấn các nút Case LL/RR/LR/RL hoặc Insert để xem tự cân bằng</text>`;
+    } else {
+      const pos = new Map();
+      let idx = 0;
+      (function f(x, d) {
+        if (!x) return;
+        f(x.l, d + 1);
+        idx++;
+        pos.set(x.k, { x: (860 / (total + 1)) * idx, y: 44 + d * 56, node: x });
+        f(x.r, d + 1);
+      })(root, 0);
+
+      let edges = '', nodes = '';
+      pos.forEach(p => {
+        ['l', 'r'].forEach(dir => {
+          const ch = p.node[dir];
+          if (ch && pos.has(ch.k)) {
+            const c = pos.get(ch.k);
+            const redEdge = mode === 'llrb' && ch.red;
+            edges += `<line x1="${p.x}" y1="${p.y}" x2="${c.x}" y2="${c.y}" stroke="${redEdge ? '#ef4444' : '#475569'}" stroke-width="${redEdge ? 4 : 2}"/>`;
+          }
+        });
+      });
+      pos.forEach((p, k) => {
+        const b = bf(p.node);
+        const col = mode === 'llrb' ? (p.node.red ? '#dc2626' : '#1e293b') : (b === 0 ? '#059669' : '#4f46e5');
+        const label = mode === 'avl' ? `BF=${b > 0 ? '+' + b : b}, h=${p.node.h}` : (p.node.red ? 'RED' : 'BLACK');
+        nodes += `<g transform="translate(${p.x},${p.y})">
+          <circle r="20" fill="${col}" stroke="#e5e7eb" stroke-width="1.8"/>
+          <text y="5" text-anchor="middle" fill="#fff" font-weight="700" font-size="13" font-family="monospace">${k}</text>
+          <text y="-25" text-anchor="middle" fill="#a5b4fc" font-size="10.5" font-family="monospace">${label}</text>
+        </g>`;
+      });
+      svg.innerHTML = edges + nodes;
+    }
+    if (msg) logEl.innerHTML = msg;
+    statEl.textContent = `Nodes = ${total} · Height = ${h(root)} (≤ 1.44 lg N)`;
+  }
+
+  function insertKey(k) {
+    lastAction = '';
+    const mode = document.getElementById('balMode').value;
+    if (mode === 'avl') root = insAVL(root, k);
+    else { root = insLLRB(root, k); if (root) root.red = false; }
+    renderAVL(lastAction ? `Chèn <b>${k}</b> → ${lastAction}` : `✅ Đã chèn <b>${k}</b> (Cây vẫn cân bằng, không cần xoay).`);
+  }
+
+  document.getElementById('avlIns').onclick = () => insertKey(+document.getElementById('avlKey').value || 10);
+  document.getElementById('avlDel').onclick = () => {
+    const k = +document.getElementById('avlKey').value;
+    lastAction = '';
+    root = delAVL(root, k);
+    renderAVL(lastAction ? `Xóa <b>${k}</b> → ${lastAction}` : `🗑 Đã xóa <b>${k}</b> và cân bằng lại AVL.`);
+  };
+  document.getElementById('avlClear').onclick = () => { root = null; renderAVL('Đã xóa cây.'); };
+
+  async function runDemo(seq, desc) {
+    root = null;
+    renderAVL(`Bắt đầu kịch bản: <b>${desc}</b>`);
+    for (const k of seq) {
+      await new Promise(r => setTimeout(r, 650));
+      insertKey(k);
+    }
+  }
+  document.getElementById('avlLL').onclick = () => runDemo([30, 20, 10], 'Case LL: Chèn 30 → 20 → 10 (Lệch Trái-Trái → Xoay Phải tại 30)');
+  document.getElementById('avlRR').onclick = () => runDemo([10, 20, 30], 'Case RR: Chèn 10 → 20 → 30 (Lệch Phải-Phải → Xoay Trái tại 10)');
+  document.getElementById('avlLR').onclick = () => runDemo([30, 10, 20], 'Case LR: Chèn 30 → 10 → 20 (Gấp khúc Trái-Phải → Xoay Trái(10) rồi Xoay Phải(30))');
+  document.getElementById('avlRL').onclick = () => runDemo([10, 30, 20], 'Case RL: Chèn 10 → 30 → 20 (Gấp khúc Phải-Trái → Xoay Phải(30) rồi Xoay Trái(10))');
+  document.getElementById('avlSeq').onclick = () => runDemo([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 'Chèn dãy tăng dần 1..10: Cây tự động xoay giữ chiều cao = 3!');
+  document.getElementById('balMode').onchange = () => document.getElementById('avlSeq').click();
+
+  // Initialize with a balanced AVL tree
+  [20, 10, 30, 5, 15, 25, 35].forEach(k => root = insAVL(root, k));
+  renderAVL();
+})();
+</script>
+</body>
+</html>
