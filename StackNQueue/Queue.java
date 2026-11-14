@@ -4,7 +4,7 @@
  * ============================================================
  *
  *  📌 Khái niệm:
- *  Queue là cấu trúc dữ liệu hoạt động theo nguyên tắc FIFO (thêm cuối xóa đấu)
+ *  Queue là cấu trúc dữ liệu hoạt động theo nguyên tắc FIFO (thêm cuối xóa đấu) 
  *  (First In, First Out) — phần tử được thêm vào ĐẦU TIÊN
  *  sẽ được lấy ra ĐẦU TIÊN.
  * // đề bài có thể cài đặt queue bằng array hoặc bằng linkedlist và có resizing 
